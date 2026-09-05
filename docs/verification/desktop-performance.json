@@ -1,12 +1,12 @@
 {
-  "meanFrameMs": 13.23444444444445,
+  "meanFrameMs": 13.189999999735088,
   "p95FrameMs": 13.400000000000546,
   "units": 40,
   "soldiers": 392,
   "representedSoldiers": 392,
   "flyingRiders": 16,
   "detailedSquads": 0,
-  "instanceBatches": 24,
+  "instanceBatches": 26,
   "fieldWidth": 108,
   "quality": "full",
   "zoom": 185,
@@ -20,11 +20,11 @@
     0,
     0
   ],
-  "drawCalls": 188,
-  "triangles": 561255,
-  "geometries": 58,
+  "drawCalls": 190,
+  "triangles": 600007,
+  "geometries": 59,
   "textures": 44,
-  "averageRenderMs": 1.88057553811039,
+  "averageRenderMs": 1.7057347707850958,
   "busy": false,
-  "lastTime": 4441.6
+  "lastTime": 4438.2
 }

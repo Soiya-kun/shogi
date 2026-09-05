@@ -88,7 +88,7 @@ def field():
     return create_field()
 
 SILVER=(.43,.53,.57); TRIM=(.61,.39,.10); DARK=(.055,.069,.08); LEATHER=(.13,.07,.032); SKIN=(.60,.34,.19); WHITE=(.71,.76,.71)
-ROLES=['P','L','N','S','G','B','R','K','A']
+ROLES=['P','L','N','S','G','B','R','K','A','H']
 
 def soldiers(roles=None,write_assets=True):
     s=new_scene('Aether_Army')
@@ -96,6 +96,10 @@ def soldiers(roles=None,write_assets=True):
     soft=bpy.data.materials.get('Details') or vertex_material('Details',.05,.8)
     team=bpy.data.materials.get('TeamCloth') or material('TeamCloth',(.04,.22,.46),0,.8)
     for role in roles or ROLES:
+        if role=='H':
+            from heavy_knight import heavy_knight
+            heavy_knight(hard,soft,team)
+            continue
         if role=='A':
             from archer import archer
             archer(hard,soft,team)
@@ -250,7 +254,7 @@ def make_lods(scene,roles=None):
             if node.type=='MESH':
                 node.data=obj.data.copy()
                 mod=node.modifiers.new('Distant simplification','DECIMATE')
-                mod.ratio=1 if obj.name.endswith(('_Bowstring','_Arrows')) else .70 if 'WingMembrane' in obj.name or obj.name.endswith('_Bow') else .23
+                mod.ratio=1 if obj.name.endswith(('_Bowstring','_Arrows')) else .70 if 'WingMembrane' in obj.name or obj.name.endswith(('_Bow','_Broadsword')) else .45 if obj.name.startswith('H_') else .23
                 bpy.context.view_layer.objects.active=node
                 bpy.ops.object.modifier_apply(modifier=mod.name)
             for child in obj.children: copy_low(child,node)
@@ -275,7 +279,7 @@ if __name__=='__main__':
         stage(fs)
         if ars:
             # Put a single example on the field for a useful editable opening scene.
-            for role,x in zip(ROLES,range(-4,5)):
+            for role,x in zip(ROLES,range(-4,-4+len(ROLES))):
                 original=ars.objects['Unit_'+role]
                 def copy_tree(o,parent=None):
                     n=o.copy(); fs.collection.objects.link(n); n.parent=parent

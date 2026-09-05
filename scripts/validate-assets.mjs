@@ -17,7 +17,7 @@ for(const name of ['meadow','army']) {
   const data=parseGLB(bytes);
   assert(data.buffers.every(b=>!b.uri),'GLB must be self-contained');
   assert(!data.images?.length,'Current artwork uses portable vertex colors');
-  const required=name==='army'?['P','L','N','S','G','B','R','K','A'].flatMap(t=>['Unit_'+t,'LOD_'+t]):['Terrain'];
+  const required=name==='army'?['P','L','N','S','G','B','R','K','A','H'].flatMap(t=>['Unit_'+t,'LOD_'+t]):['Terrain'];
   for(const n of required)assert(data.nodes.some(o=>o.name===n),`Missing ${n}`);
   const triangles=data.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+data.accessors[p.indices].count/3,0);
   reports[name]={bytes:bytes.length,triangles,meshes:data.meshes.length};
@@ -25,6 +25,13 @@ for(const name of ['meadow','army']) {
     const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length),'');
     gltf.scene.updateMatrixWorld(true);
     for(const prefix of ['Unit_','LOD_']){
+      const heavy=gltf.scene.getObjectByName(prefix+'H');assert.equal(heavy.userData.armor,'full_plate');
+      for(const part of ['Cuirass','GreatHelm','TowerShield','Broadsword','Promotion']){
+        let found=false;heavy.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Heavy knight missing ${prefix}${part}`);
+      }
+      const heavyBounds=new Box3().setFromObject(heavy),infantryBounds=new Box3().setFromObject(gltf.scene.getObjectByName(prefix+'P'));
+      assert(heavyBounds.max.x-heavyBounds.min.x>(infantryBounds.max.x-infantryBounds.min.x)*1.4,'Heavy armor must have a broader silhouette than infantry');
+      assert((heavyBounds.max.y-heavyBounds.min.y)*1.25>2.1,'Heavy knights must retain their large silhouette in LOD');
       const commander=gltf.scene.getObjectByName(prefix+'N');assert.equal(commander.userData.mount,'horse');
       const archer=gltf.scene.getObjectByName(prefix+'A');assert.equal(archer.userData.weapon,'bow');
       for(const part of ['Bow','Bowstring','Quiver','Arrows','Promotion']){
