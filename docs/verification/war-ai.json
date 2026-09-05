@@ -1,0 +1,34 @@
+{
+  "intervals": [
+    2990,
+    2999
+  ],
+  "stopped": 3,
+  "events": [
+    {
+      "id": 95,
+      "ply": 0,
+      "shown": true
+    },
+    {
+      "id": 97,
+      "ply": 0,
+      "shown": true
+    },
+    {
+      "id": 95,
+      "ply": 1,
+      "shown": true
+    },
+    {
+      "id": 96,
+      "ply": 3,
+      "shown": true
+    },
+    {
+      "id": 96,
+      "ply": 3,
+      "shown": true
+    }
+  ]
+}

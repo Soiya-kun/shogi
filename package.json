@@ -6,7 +6,8 @@
     "dev": "node scripts/serve.mjs",
     "test": "node --test tests/*.test.mjs",
     "test:web": "playwright test",
-    "build": "node scripts/validate-assets.mjs"
+    "build": "node scripts/validate-assets.mjs",
+    "catalog": "node scripts/build-presentation-catalog.mjs"
   },
   "engines": {
     "node": ">=22"

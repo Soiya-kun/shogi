@@ -1,0 +1,29 @@
+{
+  "proof": {
+    "at": 1,
+    "certificate": {
+      "root": "[[{\"t\":\"K\",\"s\":1,\"p\":false},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,{\"t\":\"R\",\"s\":1,\"p\":false},null,null,null,null,null,null,null,null,{\"t\":\"P\",\"s\":0,\"p\":false},null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,{\"t\":\"K\",\"s\":0,\"p\":false}],[[],[]],0]",
+      "usi": "5d5c+",
+      "side": 0,
+      "depth": 7,
+      "loss": 0,
+      "score": 2892,
+      "safe": true,
+      "losingMate": false,
+      "pv": [
+        "5d5c+",
+        "9a8b",
+        "1i2h",
+        "8b8c",
+        "2h1g",
+        "8c7d",
+        "1g2f"
+      ]
+    }
+  },
+  "events": [
+    62,
+    16,
+    46
+  ]
+}

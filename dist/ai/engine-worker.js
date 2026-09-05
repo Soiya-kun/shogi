@@ -19,6 +19,9 @@ function initialize(){
     let done=waitFor(line=>line==='usiok');engine.postMessage('usi');await done;
     for(const required of ['Threads','USI_Hash','MultiPV'])if(!options.has(required))throw new Error('AIが必要な探索設定に対応していません');
     setOption('Threads',1);setOption('USI_Hash',16);setOption('MultiPV',5);
+    // Match the rules engine's legalCount, including optional non-promotion.
+    // Otherwise MultiPV can omit a rank and cannot certify a complete comparison.
+    setOption('GenerateAllLegalMoves','true');
     setOption('BookFile','no_book');setOption('USI_Ponder','false');setOption('EnteringKingRule','NoEnteringKing');
     setOption('ResignValue',99999);setOption('NetworkDelay',0);setOption('NetworkDelay2',0);setOption('MinimumThinkingTime',0);
     done=waitFor(line=>line==='readyok');engine.postMessage('isready');await done;engine.postMessage('usinewgame');
