@@ -1,17 +1,18 @@
 import * as T from './three.module.js';
 import {mergeGeometries} from './vendor/utils/BufferGeometryUtils.js';
 import {formation,SQUADS} from './formations.mjs';
+import {attackPose,defeatPose} from './combat-motion.mjs';
 
 // Merge each model part once, then share its geometry across every member.
 // No per-soldier Object3D hierarchy is placed in the scene.
 export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
   army.updateMatrixWorld(true);
-  const compiled=new Map(), batches=new Map(), unit=new T.Object3D();
+  const compiled=new Map(), batches=new Map(), unit=new T.Object3D(),memberRoot=new T.Object3D(),matrix=new T.Matrix4();
   const material=new T.MeshStandardMaterial({vertexColors:true,roughness:.67,metalness:.32,side:T.DoubleSide});
   const uniformScale=1.25;
   let squads=[], detailed=0, represented=0, dirty=true, previousNear='';
-  function compile(type,side,promoted,near) {
-    const key=[type,side,+promoted,+near].join(':');
+  function compile(type,side,promoted,near,articulated=near) {
+    const key=[type,side,+promoted,+near,+articulated].join(':');
     if(compiled.has(key))return compiled.get(key);
     const root=army.getObjectByName((near?'Unit_':'LOD_')+type);
     if(!root)throw new Error('GLB template missing: '+key);
@@ -21,7 +22,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
       let branch=o,part='Body',pivot=new T.Vector3(),promotion=false;
       while(branch&&branch!==root){
         if(branch.name.endsWith('_Promotion'))promotion=true;
-        if((near&&/_(ArmL|ArmR|LegL|LegR|Cape|ForelegL|ForelegR|HindlegL|HindlegR)$/.test(branch.name))||/_(WingL|WingR|Tail)$/.test(branch.name)){
+        if((articulated&&/_(ArmL|ArmR|LegL|LegR|Cape|ForelegL|ForelegR|HindlegL|HindlegR)$/.test(branch.name))||/_(WingL|WingR|Tail)$/.test(branch.name)){
           part=branch.name.split('_').at(-1);pivot.setFromMatrixPosition(branch.matrixWorld);
         }
         branch=branch.parent;
@@ -73,25 +74,27 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     for(const s of squads){
       const heading=s.heading??(s.piece.s?Math.PI:0),cos=Math.cos(heading),sin=Math.sin(heading);
       if(s.near)detailed++;
-      const memberKey=s.piece.t+Number(s.piece.p);
-      if(s.memberKey!==memberKey){s.members=formation(s.piece.t,mobile,s.piece.p);s.memberKey=memberKey;s.contacts=[];}
+      const piece=s.renderPiece??s.piece,memberKey=piece.t+Number(piece.p),articulated=s.near||!!s.combat||!!s.defeat;
+      if(s.memberKey!==memberKey){s.members=formation(piece.t,mobile,piece.p);s.memberKey=memberKey;s.contacts=[];}
       for(let j=0;j<s.members.length;j++){
         const m=s.members[j],phase=time*10+j*1.3;
+        const pose=s.combat?attackPose(s.combat.style,m,j,s.combat.progress):null;
+        const fallen=s.defeat?defeatPose(m,j,s.defeat.progress,s.defeat.impact):null;
         // Followers start in sequence, then close ranks on arrival.
         const lag=s.moving?Math.sin(Math.PI*s.progress)*j*.14:0;
-        const mx=m.x+(s.moving?Math.sin(phase)*.035:0),mz=m.z+lag;
+        const mx=m.x+(s.moving?Math.sin(phase)*.035:0)+(pose?.side??0),mz=m.z+lag-(pose?.forward??0)+(fallen?.back??0);
         const x=s.x+mx*cos+mz*sin,z=s.z-mx*sin+mz*cos;
         const flying=m.type==='D';
-        const lift=flying?SQUADS.R.flightHeight+(m.altitudeOffset??0)+(reducedMotion?0:Math.sin(time*2.4+j*.9)*.16+(s.moving?Math.sin(Math.PI*s.progress)*.6:0)):s.moving?Math.abs(Math.sin(phase))*.065:0;
+        const lift=flying?(SQUADS.R.flightHeight+(m.altitudeOffset??0)+(pose?.lift??0)+(reducedMotion?0:Math.sin(time*2.4+j*.9)*.16+(s.moving?Math.sin(Math.PI*s.progress)*.6:0)))*(1-(fallen?.fall??0)):s.moving?Math.abs(Math.sin(phase))*.065:0;
         const y=h(x,z)+.025+lift;
-        s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying,model:m.type};
-        for(const spec of compile(m.type,s.piece.s,s.piece.p,s.near)){
+        s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying,model:m.type,unitId:s.id,generation:s.generation,ghost:!!s.ghost,side:piece.s,fall:fallen?.fall??0,pose};
+        memberRoot.position.set(x,y,z);memberRoot.rotation.set((pose?.lean??0)+(fallen?.lean??0),heading+(pose?.twist??0),fallen?.roll??0,'YXZ');
+        memberRoot.scale.setScalar((s.scale??1)*(fallen?.scale??1));memberRoot.updateMatrix();
+        for(const spec of compile(m.type,piece.s,piece.p,s.near,articulated)){
           const mesh=batch(spec),p=spec.pivot;
-          const size=s.scale??1;
-          unit.position.set(x+(p.x*cos+p.z*sin)*size,y+p.y*size,z+(-p.x*sin+p.z*cos)*size);
-          unit.rotation.set(0,heading,0);
+          unit.position.copy(p);unit.rotation.set(0,0,0);
           let swing=0,wing=0,tail=0;
-          if((s.near||flying)&&!reducedMotion){
+          if((articulated||flying)&&!reducedMotion){
             const sign=spec.part.endsWith('L')?1:-1;
             if(spec.part==='Cape')swing=Math.sin(time*2+j)*.08;
             else if(spec.part.startsWith('Wing'))wing=(Math.sin(time*(s.moving?7:5)+j*.9)*.62-.12)*sign;
@@ -99,10 +102,13 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
             else if(['R','N','D'].includes(m.type)&&spec.part.startsWith('Leg'))swing=0;
             else if(/^(Foreleg|Hindleg)/.test(spec.part))swing=flying?(spec.part.startsWith('Fore')?.32:-.28):s.moving?Math.sin(phase+(spec.part.startsWith('Hind')?Math.PI:0))*.48*sign:0;
             else if(spec.part!=='Body')swing=s.moving?Math.sin(phase)*.27*sign:Math.sin(time*1.8+j)*.015;
-            if(spec.part==='ArmR')swing-=s.attack||0;
+            if(spec.part==='ArmR'&&pose){swing=pose.armR;tail=pose.armRY;}
+            if(spec.part==='ArmL'&&pose){swing=pose.armL;tail=pose.armLY;}
+            if(fallen?.guard&&['ArmR','ArmL'].includes(spec.part))swing=-(spec.part==='ArmR'?1.15:.85)*fallen.guard;
           }
-          unit.rotateX(swing);unit.rotateZ(wing);unit.rotateY(tail);unit.scale.setScalar(s.scale??1);unit.updateMatrix();
-          mesh.userData.cells[mesh.count]=s.cell;mesh.setMatrixAt(mesh.count++,unit.matrix);mesh.visible=true;
+          unit.rotateX(swing);unit.rotateZ(wing);unit.rotateY(tail);unit.scale.setScalar(1);unit.updateMatrix();matrix.multiplyMatrices(memberRoot.matrix,unit.matrix);
+          // Moving models and defeated ghosts cannot select a stale physical location.
+          mesh.userData.cells[mesh.count]=s.ghost||s.motion?-1:s.cell;mesh.setMatrixAt(mesh.count++,matrix);mesh.visible=true;
         }
         represented++;
       }

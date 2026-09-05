@@ -41,6 +41,8 @@ npm run dev
 
 現在は、Blenderの部位階層をThree.jsから動かす方式です。近景での腕・マント・歩行、隊列の移動と再整列、捕獲時の攻撃・退場、持ち駒投入、成り時の旗・装飾・発光を実装しています。リグやGLBのアニメーションクリップはまだ使っていません。
 
+全兵種の戦闘は`dist/combat-motion.mjs`で姿勢と時間、`dist/combat-effects.js`で矢・札・炎・土煙を定義します。戦闘中は遠景のLODでも腕等の部位を分けて動かすため、LODの部位階層も保持してください。敵の転倒は兵士全体の変換で表現します。[戦闘演出の実装記録](../../docs/combat-implementation.md)。
+
 ## 参考
 
 - [Three.js r170 GLTFLoader](https://github.com/mrdoob/three.js/blob/r170/examples/jsm/loaders/GLTFLoader.js)

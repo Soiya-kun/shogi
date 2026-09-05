@@ -1,0 +1,250 @@
+{
+  "interval": 3002.9049999713898,
+  "history": [
+    {
+      "event": {
+        "gameId": "1820cbeb-4398-4dae-a480-a285ae3ab465",
+        "positionRevision": 1,
+        "eventId": "1820cbeb-4398-4dae-a480-a285ae3ab465:1",
+        "epoch": 1,
+        "actor": {
+          "id": 15,
+          "generation": 2,
+          "cell": 49,
+          "piece": {
+            "t": "P",
+            "s": 0,
+            "p": false
+          }
+        },
+        "target": {
+          "id": 6,
+          "generation": 1,
+          "cell": 40,
+          "piece": {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          "position": {
+            "x": 0,
+            "z": 0
+          }
+        },
+        "to": 40
+      },
+      "style": "P",
+      "started": 4498.835000038147,
+      "duration": 4200,
+      "status": "playing",
+      "progress": 0.6571481999932607,
+      "phase": "defeat",
+      "elapsed": 0.7185285714194888
+    },
+    {
+      "event": {
+        "gameId": "1820cbeb-4398-4dae-a480-a285ae3ab465",
+        "positionRevision": 2,
+        "eventId": "1820cbeb-4398-4dae-a480-a285ae3ab465:2",
+        "epoch": 1,
+        "actor": {
+          "id": 7,
+          "generation": 2,
+          "cell": 41,
+          "piece": {
+            "t": "P",
+            "s": 1,
+            "p": false
+          }
+        },
+        "target": {
+          "id": 16,
+          "generation": 1,
+          "cell": 50,
+          "piece": {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          "position": {
+            "x": 12,
+            "z": 12
+          }
+        },
+        "to": 50
+      },
+      "style": "P",
+      "started": 7501.740000009537,
+      "duration": 4200,
+      "status": "playing",
+      "progress": 0.005717416663010818,
+      "phase": "approach",
+      "elapsed": 0.0035511904739197625
+    }
+  ],
+  "ai": {
+    "gameId": "1820cbeb-4398-4dae-a480-a285ae3ab465",
+    "phase": "ai-thinking",
+    "animations": 2,
+    "tempo": "normal",
+    "minimumThinkMs": 3000,
+    "settings": [
+      {
+        "enabled": true,
+        "opening": "auto",
+        "order": "auto"
+      },
+      {
+        "enabled": true,
+        "opening": "auto",
+        "order": "auto"
+      }
+    ],
+    "errors": [
+      null,
+      null
+    ],
+    "notices": [
+      "作戦に合わせて判断します",
+      "おまかせで判断"
+    ],
+    "activeRequest": {
+      "gameId": "1820cbeb-4398-4dae-a480-a285ae3ab465",
+      "positionRevision": 2,
+      "policyRevision": 2,
+      "requestId": "1820cbeb-4398-4dae-a480-a285ae3ab465:4",
+      "side": 0,
+      "opening": "auto",
+      "order": "auto",
+      "limits": {
+        "nodes": 50000,
+        "timeMs": 1500
+      },
+      "position": "position sfen 4k4/9/9/9/ppppppppp/PPPPPPPPP/9/9/4K4 b - 1 moves 5f5e 4e4f",
+      "legalCount": 20,
+      "openingMoves": []
+    },
+    "engine": {
+      "name": "YaneuraOu NNUE KP256 7.63 32WASM TOURNAMENT",
+      "threads": 1,
+      "hashMiB": 16,
+      "options": [
+        "Threads",
+        "USI_Hash",
+        "USI_Ponder",
+        "Stochastic_Ponder",
+        "MultiPV",
+        "NetworkDelay",
+        "NetworkDelay2",
+        "MinimumThinkingTime",
+        "SlowMover",
+        "MaxMovesToDraw",
+        "DepthLimit",
+        "NodesLimit",
+        "EvalDir",
+        "EvalFile",
+        "WriteDebugLog",
+        "GenerateAllLegalMoves",
+        "EnteringKingRule",
+        "USI_OwnBook",
+        "NarrowBook",
+        "BookMoves",
+        "BookIgnoreRate",
+        "BookFile",
+        "BookDir",
+        "BookEvalDiff",
+        "BookEvalBlackLimit",
+        "BookEvalWhiteLimit",
+        "BookDepthLimit",
+        "BookOnTheFly",
+        "ConsiderBookMoveCount",
+        "BookPvMoves",
+        "IgnoreBookPly",
+        "SkillLevel",
+        "DrawValueBlack",
+        "DrawValueWhite",
+        "PvInterval",
+        "ResignValue",
+        "ConsiderationMode",
+        "OutputFailLHPV",
+        "FV_SCALE"
+      ]
+    },
+    "positionRevision": 2,
+    "policyRevision": 2,
+    "lastDecision": {
+      "side": 1,
+      "policy": {
+        "enabled": true,
+        "opening": "auto",
+        "order": "auto"
+      },
+      "plan": {
+        "state": "auto",
+        "moves": [],
+        "message": "作戦に合わせて判断します"
+      },
+      "choice": {
+        "m": {
+          "from": 41,
+          "to": 50,
+          "promote": false
+        },
+        "selected": {
+          "depth": 5,
+          "rank": 1,
+          "score": {
+            "type": "cp",
+            "value": 527,
+            "bound": null
+          },
+          "pv": [
+            "4e4f",
+            "5i5h",
+            "2e2f",
+            "5h5g",
+            "1e1f"
+          ],
+          "usi": "4e4f"
+        },
+        "reason": "おまかせで判断"
+      },
+      "requestId": "1820cbeb-4398-4dae-a480-a285ae3ab465:3"
+    }
+  },
+  "view": {
+    "units": 18,
+    "ghosts": 2,
+    "activeMotions": 2,
+    "activeBattles": 2,
+    "particles": 26,
+    "particleBatches": 2,
+    "audioVoices": 0,
+    "soundEnabled": false,
+    "soldiers": 232,
+    "representedSoldiers": 232,
+    "flyingRiders": 0,
+    "detailedSquads": 0,
+    "instanceBatches": 16,
+    "fieldWidth": 108,
+    "quality": "full",
+    "zoom": 185,
+    "cameraPosition": [
+      11.041504672274261,
+      148.2996890634988,
+      110.04675096631308
+    ],
+    "cameraTarget": [
+      0,
+      0,
+      0
+    ],
+    "drawCalls": 144,
+    "triangles": 455665,
+    "geometries": 52,
+    "textures": 34,
+    "averageRenderMs": 2.5419978662433786,
+    "busy": true,
+    "lastTime": 7516.655
+  }
+}

@@ -47,10 +47,11 @@ test('actual WASM: lazy load, rapid instructions, stop, both sides, restore and 
 
 test('AI versus AI remains legal with live strategy changes, 3D rendering and pause on undo',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/?debug');await ready(page);
+  await page.locator('#ai-tempo').selectOption('fast');
   await page.locator('#ai-opening-0').selectOption('fourth');await page.locator('#ai-order-0').selectOption('attack');
   await page.locator('#ai-opening-1').selectOption('central');await page.locator('#ai-order-1').selectOption('counter');
   await page.locator('#ai-toggle-0').click();await page.locator('#ai-toggle-1').click();
-  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().activeMotions),{timeout:20000}).toBeGreaterThanOrEqual(2);await ply(page,4);
+  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().activeMotions),{timeout:20000,intervals:[50]}).toBeGreaterThanOrEqual(2);await ply(page,4);
   await page.locator('#ai-order-0').selectOption('defend');await page.locator('#ai-opening-1').selectOption('static');await ply(page,8);
   const perf=await page.evaluate(async()=>{const intervals=[];await new Promise(resolve=>{let last=performance.now();function step(now){intervals.push(now-last);last=now;if(intervals.length<90)requestAnimationFrame(step);else resolve();}requestAnimationFrame(step);});return {meanFrameMs:intervals.reduce((a,b)=>a+b,0)/90,p95FrameMs:intervals.sort((a,b)=>a-b)[85],...window.__aether.diagnostics(),ai:window.__aether.ai()};});
   await page.locator('#ai-stop-all').click();await settled(page);const state=await page.evaluate(()=>window.__aether.state());

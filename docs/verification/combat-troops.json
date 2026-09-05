@@ -1,0 +1,123 @@
+[
+  {
+    "type": "P",
+    "promoted": false,
+    "side": 0,
+    "style": "P",
+    "attackProgress": 0.3847555833484968,
+    "duration": 4200,
+    "drawCalls": 63,
+    "triangles": 393801,
+    "particles": 0
+  },
+  {
+    "type": "L",
+    "promoted": false,
+    "side": 1,
+    "style": "L",
+    "attackProgress": 0.38269123334681193,
+    "duration": 4200,
+    "drawCalls": 72,
+    "triangles": 391005,
+    "particles": 8
+  },
+  {
+    "type": "N",
+    "promoted": false,
+    "side": 0,
+    "style": "N",
+    "attackProgress": 0.3819854499991576,
+    "duration": 4200,
+    "drawCalls": 71,
+    "triangles": 386364,
+    "particles": 3
+  },
+  {
+    "type": "S",
+    "promoted": false,
+    "side": 1,
+    "style": "S",
+    "attackProgress": 0.3817372333425999,
+    "duration": 4200,
+    "drawCalls": 71,
+    "triangles": 393529,
+    "particles": 0
+  },
+  {
+    "type": "G",
+    "promoted": false,
+    "side": 0,
+    "style": "G",
+    "attackProgress": 0.3816957166666667,
+    "duration": 4200,
+    "drawCalls": 58,
+    "triangles": 393438,
+    "particles": 0
+  },
+  {
+    "type": "B",
+    "promoted": false,
+    "side": 1,
+    "style": "B",
+    "attackProgress": 0.38011720001516347,
+    "duration": 4200,
+    "drawCalls": 77,
+    "triangles": 386095,
+    "particles": 5
+  },
+  {
+    "type": "R",
+    "promoted": false,
+    "side": 0,
+    "style": "R",
+    "attackProgress": 0.3816515500117938,
+    "duration": 4200,
+    "drawCalls": 70,
+    "triangles": 412193,
+    "particles": 8
+  },
+  {
+    "type": "R",
+    "promoted": true,
+    "side": 1,
+    "style": "D",
+    "attackProgress": 0.38131146664644877,
+    "duration": 4200,
+    "drawCalls": 78,
+    "triangles": 438321,
+    "particles": 36
+  },
+  {
+    "type": "K",
+    "promoted": false,
+    "side": 0,
+    "style": "K",
+    "attackProgress": 0.38154113332238204,
+    "duration": 4200,
+    "drawCalls": 58,
+    "triangles": 373089,
+    "particles": 0
+  },
+  {
+    "type": "N",
+    "promoted": true,
+    "side": 1,
+    "style": "N",
+    "attackProgress": 0.38252693332575166,
+    "duration": 4200,
+    "drawCalls": 78,
+    "triangles": 386774,
+    "particles": 3
+  },
+  {
+    "type": "B",
+    "promoted": true,
+    "side": 0,
+    "style": "B",
+    "attackProgress": 0.3804970333468119,
+    "duration": 4200,
+    "drawCalls": 69,
+    "triangles": 386475,
+    "particles": 5
+  }
+]

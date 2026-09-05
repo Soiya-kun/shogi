@@ -4,9 +4,11 @@ import {positionCommand} from './ai/usi-codec.mjs';
 import {defaultPolicy,sanitizePolicy,openingPlan,chooseMove} from './ai/strategy-policy.mjs';
 
 const copy=value=>structuredClone(value),ids=['gameId','positionRevision','policyRevision','requestId','side'];
+export const AI_TEMPOS=Object.freeze({fast:{minimum:1000,nodes:12000,timeMs:350},normal:{minimum:3000,nodes:50000,timeMs:1500},slow:{minimum:5000,nodes:80000,timeMs:2200}});
 export class GameController {
-  constructor({saved,engine=new EngineClient(),animate=async()=>{},onChange=()=>{},onNotice=()=>{},minimumThinkMs=450}={}){
+  constructor({saved,engine=new EngineClient(),animate=async()=>{},onChange=()=>{},onNotice=()=>{},minimumThinkMs=AI_TEMPOS.normal.minimum}={}){
     this.match=new Match(saved);this.engine=engine;this.animate=animate;this.onChange=onChange;this.onNotice=onNotice;this.minimumThinkMs=minimumThinkMs;
+    this.tempo='normal';this.searchLimits={nodes:AI_TEMPOS.normal.nodes,timeMs:AI_TEMPOS.normal.timeMs};
     const ai=this.match.g===saved?.g&&saved?.version===2?saved.ai:null;
     this.settings=[0,1].map(s=>sanitizePolicy(ai?.settings?.[s]??defaultPolicy()));
     this.baseline=[0,1].map(s=>sanitizePolicy(ai?.baseline?.[s]??this.settings[s]));
@@ -19,6 +21,7 @@ export class GameController {
   get animating(){return this.animations.size>0;}
   get canPlay(){return this.ready&&!this.match.end&&!this.settings[this.match.g.turn].enabled&&!this.disposed;}
   start(){this.ready=true;this.changed();this.schedule();}
+  setTempo(tempo){const value=AI_TEMPOS[tempo];if(!value)return;this.tempo=tempo;this.minimumThinkMs=value.minimum;this.searchLimits={nodes:value.nodes,timeMs:value.timeMs};this.changed();}
   changed(){this.onChange(this);}
   invalidate(){this.activeRequest=null;this.engine.stop();}
   updateSide(side,patch){
@@ -37,7 +40,7 @@ export class GameController {
     const side=this.match.g.turn;
     if(!this.ready||this.disposed||this.match.end||this.activeRequest||!this.settings[side].enabled||this.errors[side])return;
     const snapshot=copy(this.match.serialize()),policy=copy(this.settings[side]);
-    const request={gameId:this.gameId,positionRevision:this.positionRevision,policyRevision:this.policyRevision,requestId:`${this.gameId}:${++this.requestSequence}`,side,opening:policy.opening,order:policy.order,limits:{nodes:50000,timeMs:1500}};
+    const request={gameId:this.gameId,positionRevision:this.positionRevision,policyRevision:this.policyRevision,requestId:`${this.gameId}:${++this.requestSequence}`,side,opening:policy.opening,order:policy.order,limits:{...this.searchLimits}};
     this.activeRequest=request;const started=performance.now();this.changed();
     try{
       const legalCount=this.match.moves.length;if(!legalCount)throw new Error('AIが指せる合法手がありません');
@@ -91,6 +94,6 @@ export class GameController {
     this.notices=['手動で操作できます','手動で操作できます'];this.changed();
   }
   serialize(){return {...this.match.serialize(),version:2,ai:{settings:copy(this.settings),baseline:copy(this.baseline),history:copy(this.history)}};}
-  diagnostics(){return {phase:this.phase,animations:this.animations.size,settings:copy(this.settings),errors:[...this.errors],notices:[...this.notices],activeRequest:this.activeRequest?copy(this.activeRequest):null,engine:this.engine.metadata??null,positionRevision:this.positionRevision,policyRevision:this.policyRevision,lastDecision:this.lastDecision?copy(this.lastDecision):null};}
+  diagnostics(){return {gameId:this.gameId,phase:this.phase,animations:this.animations.size,tempo:this.tempo,minimumThinkMs:this.minimumThinkMs,settings:copy(this.settings),errors:[...this.errors],notices:[...this.notices],activeRequest:this.activeRequest?copy(this.activeRequest):null,engine:this.engine.metadata??null,positionRevision:this.positionRevision,policyRevision:this.policyRevision,lastDecision:this.lastDecision?copy(this.lastDecision):null};}
   destroy(){this.disposed=true;this.animations.clear();this.invalidate();this.engine.destroy();}
 }

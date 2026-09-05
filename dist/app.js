@@ -6,8 +6,12 @@ import {squadSpec} from './formations.mjs';
 
 const $=s=>document.querySelector(s), storageKey='aether-shogi-v1';
 let saved;try{saved=JSON.parse(localStorage.getItem(storageKey));}catch{}
+const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
+let preferences={effects:!reducedMotion,sound:false,tempo:'normal'};
+try{const p=JSON.parse(localStorage.getItem('aether-presentation-v1'));if(p)preferences={effects:p.effects!==false,sound:p.sound===true,tempo:['fast','normal','slow'].includes(p.tempo)?p.tempo:'normal'};}catch{}
+function savePreferences(){try{localStorage.setItem('aether-presentation-v1',JSON.stringify(preferences));}catch{}}
 let view,selected=null,moves=[];
-const controller=new GameController({saved,animate:async({before,after,m,event})=>{try{await view.transition(before,after,m,event);}catch(error){view.draw(controller.match.g.b);throw error;}},onChange:()=>{if(!controller.canPlay){selected=null;moves=[];if(promotion.open)promotion.close();showUnit(null);}refresh();save();},onNotice:toast});
+const controller=new GameController({saved,animate:async({before,after,m,event})=>{try{await view.transition(before,after,m,event);}catch(error){if(controller.animations.has(event))view.draw(controller.match.g.b,controller.diagnostics());throw error;}},onChange:()=>{if(!controller.canPlay){selected=null;moves=[];if(promotion.open)promotion.close();showUnit(null);}refresh();save();},onNotice:toast});
 const match=controller.match;
 const promotion=$('#promotion');
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
@@ -50,8 +54,8 @@ $('#closeView').onclick=()=>view?.close();$('#overview').onclick=()=>view?.overv
 $('#rotate').onclick=()=>view?.rotate();$('#top').onclick=()=>view?.top();
 $('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));}};
 $('#design').onclick=()=>$('#architecture').showModal();$('.close').onclick=()=>$('#architecture').close();
-$('#undo').onclick=()=>{if(!view)return;controller.undo();selected=null;moves=[];view.draw(match.g.b);showUnit(null);refresh();save();};
-$('#reset').onclick=()=>{if(!view||!confirm('対局を最初から始めますか？'))return;controller.reset();selected=null;moves=[];view.draw(match.g.b);showUnit(null);refresh();save();};
+$('#undo').onclick=()=>{if(!view)return;controller.undo();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
+$('#reset').onclick=()=>{if(!view||!confirm('対局を最初から始めますか？'))return;controller.reset();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 function refreshAI(){
   for(const side of [0,1]){
     const policy=controller.settings[side],toggle=$('#ai-toggle-'+side),error=controller.errors[side];
@@ -71,11 +75,20 @@ for(const side of [0,1]){
   $('#ai-retry-'+side).onclick=()=>controller.retry(side);
 }
 $('#ai-stop-all').onclick=()=>{controller.updateSide(0,{enabled:false});controller.updateSide(1,{enabled:false});};
+$('#ai-tempo').value=preferences.tempo;
+$('#ai-tempo').onchange=()=>{preferences.tempo=$('#ai-tempo').value;controller.setTempo(preferences.tempo);savePreferences();};
+$('#battle-effects').checked=preferences.effects&&!reducedMotion;$('#battle-effects').disabled=reducedMotion;
+if(reducedMotion)$('#battle-effects').title='端末の「動きを減らす」設定を適用しています';
+$('#battle-effects').onchange=()=>{preferences.effects=$('#battle-effects').checked;view?.setPresentation(preferences.effects);savePreferences();};
+$('#battle-sound').checked=preferences.sound;
+$('#battle-sound').onchange=()=>{preferences.sound=$('#battle-sound').checked;view?.setSound(preferences.sound);savePreferences();};
+document.addEventListener('pointerdown',()=>{if(preferences.sound)view?.setSound(true);});
 addEventListener('pagehide',()=>controller.destroy());
+controller.setTempo(preferences.tempo);
 refresh();
 try {
-  view=await createBattlefield($('#scene'),pick);view.draw(match.g.b);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';controller.start();
-  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,state:()=>structuredClone(controller.serialize()),ai:()=>controller.diagnostics()};
+  view=await createBattlefield($('#scene'),pick);view.draw(match.g.b,controller.diagnostics());view.setPresentation(preferences.effects);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';controller.start();
+  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,presentation:view.presentation,projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,state:()=>structuredClone(controller.serialize()),ai:()=>controller.diagnostics()};
 } catch(error) {
   console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);
 }

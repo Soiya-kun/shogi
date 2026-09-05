@@ -1,0 +1,4385 @@
+{
+  "overlap": {
+    "samples": [
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.009148250001827835
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.014248500001827947
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.019377500001827815
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.024489250001827827
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.029591416668494474
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.03471275000182786
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.03982833333516129
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.04494583333516125
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.05005566666849456
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.05517508333516123
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.060271500001827925
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.0653890000018279
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.07050266666849461
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.07561633333516116
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.08072616666849447
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.08587816666849449
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.0909515833351612
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.09606525000182795
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.10119233333516126
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.10629066666849449
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.11140816666849462
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.11652183333516118
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.12162975000182796
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.12676450000182796
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.13185708333516122
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.13697075000182796
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.1420901666684946
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.1471980833351612
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.1523040833351613
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.15742350000182795
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.16254291666849463
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.1676450833351613
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.17276450000182794
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.17787050000182783
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.18300908333516125
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.18809975000182783
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.19319808333516122
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.19833475000182793
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2034522500018279
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.20854483333516116
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.21365083333516124
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.21876833333516119
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.22387433333516127
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2289918333351612
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.23188856666750912
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.23425148333417578
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.23660468333417572
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.23896671666750913
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.24131815000084245
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2436775333341758
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.24603515000084242
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.24839011666750907
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.25075126666750913
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.25310005000084246
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.25546031666750907
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.25781528333417575
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2601755500008424
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2625287500008424
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2648837166675091
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2672422166675091
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.26959630000084245
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2719521500008424
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.27431153333417574
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2766656166675091
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2790232333341757
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2813764333341758
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.28373228333417577
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.28609078333417576
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.28844928333417574
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2908060166675091
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.2931592166675091
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.29551771666750914
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.29787533333417576
+          }
+        ]
+      },
+      {
+        "ply": 1,
+        "searchRevision": 1,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.30022941666750913
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.30258968333417574
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.000024916648387860126
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3049437666675091
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.0051328333150546315
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3072978500008424
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.010240749981721229
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.30966165000084245
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.01536974998172127
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.31201926666750907
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.020485333315054526
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3143707000008424
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.025587499981721173
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.31672478333417575
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.030695416648387944
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3190806333341758
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.03580716664838796
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3214382500008424
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.04092274998172121
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3237941000008424
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.046034499981721225
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3261464166675091
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.05113858331505459
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.32851198333417575
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.05627141664838787
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.33086518333417575
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.06137741664838793
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3332228000008424
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.0664929999817212
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.33557776666750905
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.07160283331505449
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3379442166675092
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.07673758331505466
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.34029476666750913
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.0818378333150546
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3426453166675091
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.08693808331505454
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3450011666675091
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.09204983331505455
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3473614333341758
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.09717116664838793
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3497084500008424
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.10226374998172122
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.35207048333417573
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.10738891664838784
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3544263333341757
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.11250066664838786
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.35678041666750915
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.11760858331505464
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.35914156666750907
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.12273183331505455
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.36150006666750906
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.12784933331505452
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.36384885000084244
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.1329457499817212
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.36620735000084237
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.13806324998172118
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3685649666675091
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.1431788333150546
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3709199333341757
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.14828866664838788
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3732775500008425
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.15340424998172134
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.37563516666750907
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.1585198333150546
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3779883666675091
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.16362583331505468
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.38034775000084237
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.16874524998172116
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3827009500008425
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.17385124998172138
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3850550333341758
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.17895916664838799
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.38741618333417577
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.1840824166483879
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3897640833341758
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.18917691664838787
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3921252333341757
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.1943001666483878
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.39448196666750907
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.19941383331505452
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3968369333341757
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.20452366664838784
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.3991954333341758
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.20964116664838797
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.40155216666750915
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.2147548333150547
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.4039080166675092
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.2198665833150547
+          }
+        ]
+      },
+      {
+        "ply": 2,
+        "searchRevision": 2,
+        "battles": [
+          {
+            "revision": 1,
+            "actor": 16,
+            "progress": 0.40626386666750913
+          },
+          {
+            "revision": 2,
+            "actor": 6,
+            "progress": 0.22497833331505473
+          }
+        ]
+      }
+    ],
+    "maxBattles": 3,
+    "maxMotions": 4,
+    "maxParticles": 52,
+    "maxDrawCalls": 145,
+    "maxTriangles": 461413,
+    "maxAudio": 1,
+    "stopped": true
+  },
+  "state": {
+    "g": {
+      "b": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        {
+          "t": "K",
+          "s": 1,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        null,
+        null,
+        null,
+        null,
+        {
+          "t": "P",
+          "s": 1,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 1,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        null,
+        null,
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 1,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 1,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 1,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        null,
+        {
+          "t": "P",
+          "s": 1,
+          "p": false
+        },
+        null,
+        {
+          "t": "K",
+          "s": 0,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        {
+          "t": "P",
+          "s": 0,
+          "p": false
+        },
+        null,
+        null,
+        null,
+        null,
+        {
+          "t": "P",
+          "s": 1,
+          "p": true
+        },
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "h": [
+        {
+          "P": 1
+        },
+        {
+          "P": 2
+        }
+      ],
+      "turn": 0,
+      "ply": 12
+    },
+    "past": [
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {},
+          {}
+        ],
+        "turn": 0,
+        "ply": 0
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 1
+          },
+          {}
+        ],
+        "turn": 1,
+        "ply": 1
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 1
+          },
+          {
+            "P": 1
+          }
+        ],
+        "turn": 0,
+        "ply": 2
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 1
+          },
+          {
+            "P": 1
+          }
+        ],
+        "turn": 1,
+        "ply": 3
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 1
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 0,
+        "ply": 4
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 0
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 1,
+        "ply": 5
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 0
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 0,
+        "ply": 6
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 0
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 1,
+        "ply": 7
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 0
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 0,
+        "ply": 8
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 0
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 1,
+        "ply": 9
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": true
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 0
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 0,
+        "ply": 10
+      },
+      {
+        "b": [
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "K",
+            "s": 1,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          null,
+          {
+            "t": "K",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          null,
+          null,
+          null,
+          null,
+          {
+            "t": "P",
+            "s": 1,
+            "p": true
+          },
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null,
+          null
+        ],
+        "h": [
+          {
+            "P": 1
+          },
+          {
+            "P": 2
+          }
+        ],
+        "turn": 1,
+        "ply": 11
+      }
+    ],
+    "records": [
+      {
+        "m": {
+          "from": 50,
+          "to": 41,
+          "promote": false
+        },
+        "text": "▲ 4五 歩",
+        "mover": 0,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 40,
+          "to": 49,
+          "promote": false
+        },
+        "text": "△ 5六 歩",
+        "mover": 1,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 76,
+          "to": 67,
+          "promote": false
+        },
+        "text": "▲ 5八 王",
+        "mover": 0,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 39,
+          "to": 48,
+          "promote": false
+        },
+        "text": "△ 6六 歩",
+        "mover": 1,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "drop": "P",
+          "to": 31
+        },
+        "text": "▲ 5四 歩 打",
+        "mover": 0,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 4,
+          "to": 12,
+          "promote": false
+        },
+        "text": "△ 6二 王",
+        "mover": 1,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 67,
+          "to": 59,
+          "promote": false
+        },
+        "text": "▲ 4七 王",
+        "mover": 0,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 12,
+          "to": 21,
+          "promote": false
+        },
+        "text": "△ 6三 王",
+        "mover": 1,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 59,
+          "to": 50,
+          "promote": false
+        },
+        "text": "▲ 4六 王",
+        "mover": 0,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 49,
+          "to": 58,
+          "promote": true
+        },
+        "text": "△ 5七 歩 成",
+        "mover": 1,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 47,
+          "to": 38,
+          "promote": false
+        },
+        "text": "▲ 7五 歩",
+        "mover": 0,
+        "check": false,
+        "actor": "ai"
+      },
+      {
+        "m": {
+          "from": 21,
+          "to": 30,
+          "promote": false
+        },
+        "text": "△ 6四 王",
+        "mover": 1,
+        "check": false,
+        "actor": "ai"
+      }
+    ],
+    "end": "",
+    "resignation": null,
+    "version": 2,
+    "ai": {
+      "settings": [
+        {
+          "enabled": false,
+          "opening": "auto",
+          "order": "auto"
+        },
+        {
+          "enabled": false,
+          "opening": "auto",
+          "order": "auto"
+        }
+      ],
+      "baseline": [
+        {
+          "enabled": false,
+          "opening": "auto",
+          "order": "auto"
+        },
+        {
+          "enabled": false,
+          "opening": "auto",
+          "order": "auto"
+        }
+      ],
+      "history": [
+        {
+          "sequence": 1,
+          "at": 0,
+          "side": 0,
+          "before": {
+            "enabled": false,
+            "opening": "auto",
+            "order": "auto"
+          },
+          "after": {
+            "enabled": true,
+            "opening": "auto",
+            "order": "auto"
+          }
+        },
+        {
+          "sequence": 2,
+          "at": 0,
+          "side": 1,
+          "before": {
+            "enabled": false,
+            "opening": "auto",
+            "order": "auto"
+          },
+          "after": {
+            "enabled": true,
+            "opening": "auto",
+            "order": "auto"
+          }
+        },
+        {
+          "sequence": 3,
+          "at": 12,
+          "side": 0,
+          "before": {
+            "enabled": true,
+            "opening": "auto",
+            "order": "auto"
+          },
+          "after": {
+            "enabled": false,
+            "opening": "auto",
+            "order": "auto"
+          }
+        },
+        {
+          "sequence": 4,
+          "at": 12,
+          "side": 1,
+          "before": {
+            "enabled": true,
+            "opening": "auto",
+            "order": "auto"
+          },
+          "after": {
+            "enabled": false,
+            "opening": "auto",
+            "order": "auto"
+          }
+        }
+      ]
+    }
+  },
+  "engine": {
+    "name": "YaneuraOu NNUE KP256 7.63 32WASM TOURNAMENT",
+    "threads": 1,
+    "hashMiB": 16,
+    "options": [
+      "Threads",
+      "USI_Hash",
+      "USI_Ponder",
+      "Stochastic_Ponder",
+      "MultiPV",
+      "NetworkDelay",
+      "NetworkDelay2",
+      "MinimumThinkingTime",
+      "SlowMover",
+      "MaxMovesToDraw",
+      "DepthLimit",
+      "NodesLimit",
+      "EvalDir",
+      "EvalFile",
+      "WriteDebugLog",
+      "GenerateAllLegalMoves",
+      "EnteringKingRule",
+      "USI_OwnBook",
+      "NarrowBook",
+      "BookMoves",
+      "BookIgnoreRate",
+      "BookFile",
+      "BookDir",
+      "BookEvalDiff",
+      "BookEvalBlackLimit",
+      "BookEvalWhiteLimit",
+      "BookDepthLimit",
+      "BookOnTheFly",
+      "ConsiderBookMoveCount",
+      "BookPvMoves",
+      "IgnoreBookPly",
+      "SkillLevel",
+      "DrawValueBlack",
+      "DrawValueWhite",
+      "PvInterval",
+      "ResignValue",
+      "ConsiderationMode",
+      "OutputFailLHPV",
+      "FV_SCALE"
+    ]
+  },
+  "history": [
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 1,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:1",
+        "epoch": 1,
+        "actor": {
+          "id": 16,
+          "generation": 2,
+          "cell": 50,
+          "piece": {
+            "t": "P",
+            "s": 0,
+            "p": false
+          }
+        },
+        "target": {
+          "id": 7,
+          "generation": 1,
+          "cell": 41,
+          "piece": {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          "position": {
+            "x": 12,
+            "z": 0
+          }
+        },
+        "to": 41
+      },
+      "style": "P",
+      "started": 2660.6299999952316,
+      "duration": 4200,
+      "status": "complete",
+      "progress": 1,
+      "phase": "settle",
+      "elapsed": 1,
+      "ended": 6872.820000052452
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 2,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:2",
+        "epoch": 1,
+        "actor": {
+          "id": 6,
+          "generation": 2,
+          "cell": 40,
+          "piece": {
+            "t": "P",
+            "s": 1,
+            "p": false
+          }
+        },
+        "target": {
+          "id": 15,
+          "generation": 1,
+          "cell": 49,
+          "piece": {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          "position": {
+            "x": 0,
+            "z": 12
+          }
+        },
+        "to": 49
+      },
+      "style": "P",
+      "started": 3671.4500000476837,
+      "duration": 4200,
+      "status": "complete",
+      "progress": 1,
+      "phase": "settle",
+      "elapsed": 1,
+      "ended": 7873.205000042915
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 3,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:3",
+        "epoch": 1,
+        "actor": {
+          "id": 20,
+          "generation": 2,
+          "cell": 76,
+          "piece": {
+            "t": "K",
+            "s": 0,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 67
+      },
+      "style": null,
+      "started": 4782.055000066757,
+      "duration": 1150,
+      "status": "complete",
+      "progress": 1,
+      "phase": "move",
+      "elapsed": 1,
+      "ended": 5939.460000038147
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 4,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:4",
+        "epoch": 1,
+        "actor": {
+          "id": 5,
+          "generation": 2,
+          "cell": 39,
+          "piece": {
+            "t": "P",
+            "s": 1,
+            "p": false
+          }
+        },
+        "target": {
+          "id": 14,
+          "generation": 1,
+          "cell": 48,
+          "piece": {
+            "t": "P",
+            "s": 0,
+            "p": false
+          },
+          "position": {
+            "x": -12,
+            "z": 12
+          }
+        },
+        "to": 48
+      },
+      "style": "P",
+      "started": 5787.3150000572205,
+      "duration": 4200,
+      "status": "complete",
+      "progress": 1,
+      "phase": "settle",
+      "elapsed": 1,
+      "ended": 9993.875
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 5,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:5",
+        "epoch": 1,
+        "actor": {
+          "id": 7,
+          "generation": 3,
+          "cell": 31,
+          "piece": {
+            "t": "P",
+            "s": 0,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 31
+      },
+      "style": null,
+      "started": 6793.665000081062,
+      "duration": 700,
+      "status": "complete",
+      "progress": 1,
+      "phase": "move",
+      "elapsed": 1,
+      "ended": 7499.775000095367
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 6,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:6",
+        "epoch": 1,
+        "actor": {
+          "id": 1,
+          "generation": 2,
+          "cell": 4,
+          "piece": {
+            "t": "K",
+            "s": 1,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 12
+      },
+      "style": null,
+      "started": 7798.925000071526,
+      "duration": 1150,
+      "status": "complete",
+      "progress": 1,
+      "phase": "move",
+      "elapsed": 1,
+      "ended": 8953.515000104904
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 7,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:7",
+        "epoch": 1,
+        "actor": {
+          "id": 20,
+          "generation": 3,
+          "cell": 67,
+          "piece": {
+            "t": "K",
+            "s": 0,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 59
+      },
+      "style": null,
+      "started": 8806.215000033379,
+      "duration": 1150,
+      "status": "complete",
+      "progress": 1,
+      "phase": "move",
+      "elapsed": 1,
+      "ended": 9967.230000019073
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 8,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:8",
+        "epoch": 1,
+        "actor": {
+          "id": 1,
+          "generation": 3,
+          "cell": 12,
+          "piece": {
+            "t": "K",
+            "s": 1,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 21
+      },
+      "style": null,
+      "started": 9812.504999995232,
+      "duration": 1150,
+      "status": "complete",
+      "progress": 1,
+      "phase": "move",
+      "elapsed": 1,
+      "ended": 10967.685000061989
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 9,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:9",
+        "epoch": 1,
+        "actor": {
+          "id": 20,
+          "generation": 4,
+          "cell": 59,
+          "piece": {
+            "t": "K",
+            "s": 0,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 50
+      },
+      "style": null,
+      "started": 10813.5,
+      "duration": 1150,
+      "status": "complete",
+      "progress": 1,
+      "phase": "move",
+      "elapsed": 1,
+      "ended": 11967.875
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 10,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:10",
+        "epoch": 1,
+        "actor": {
+          "id": 6,
+          "generation": 3,
+          "cell": 49,
+          "piece": {
+            "t": "P",
+            "s": 1,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 58
+      },
+      "style": null,
+      "started": 11814.070000052452,
+      "duration": 1150,
+      "status": "complete",
+      "progress": 1,
+      "phase": "move",
+      "elapsed": 1,
+      "ended": 12968.225000023842
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 11,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:11",
+        "epoch": 1,
+        "actor": {
+          "id": 13,
+          "generation": 2,
+          "cell": 47,
+          "piece": {
+            "t": "P",
+            "s": 0,
+            "p": false
+          }
+        },
+        "target": {
+          "id": 4,
+          "generation": 1,
+          "cell": 38,
+          "piece": {
+            "t": "P",
+            "s": 1,
+            "p": false
+          },
+          "position": {
+            "x": -24,
+            "z": 0
+          }
+        },
+        "to": 38
+      },
+      "style": "P",
+      "started": 12817.110000014305,
+      "duration": 4200,
+      "status": "playing",
+      "progress": 0.3202969833308062,
+      "phase": "attack",
+      "elapsed": 0.2645511904727846
+    },
+    {
+      "event": {
+        "gameId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c",
+        "positionRevision": 12,
+        "eventId": "187998a6-8a2e-4156-b4ee-b5d455d0d42c:12",
+        "epoch": 1,
+        "actor": {
+          "id": 1,
+          "generation": 4,
+          "cell": 21,
+          "piece": {
+            "t": "K",
+            "s": 1,
+            "p": false
+          }
+        },
+        "target": null,
+        "to": 30
+      },
+      "style": null,
+      "started": 13829.405000090599,
+      "duration": 1150,
+      "status": "playing",
+      "progress": 0.08593043470382722,
+      "phase": "move",
+      "elapsed": 0.08593043470382722
+    }
+  ]
+}
