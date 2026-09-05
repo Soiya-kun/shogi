@@ -2,7 +2,7 @@
 export const SQUADS={
   P:{name:'歩兵隊',count:12,formation:'密集隊形',kind:'block',cols:4,spacing:2.7,rowSpacing:3.4},
   L:{name:'長槍隊',count:10,formation:'二列横隊',kind:'block',cols:5,spacing:2.1,rowSpacing:5.8},
-  N:{name:'騎兵隊',count:6,formation:'楔形隊形',kind:'wedge',spacing:3.8,rowSpacing:3.5,bannerOffsetX:1.3},
+  N:{name:'弓兵隊',count:6,formation:'騎馬隊長1人＋弓兵5人',kind:'wedge',spacing:3.8,rowSpacing:3.5,bannerOffsetX:1.3},
   S:{name:'剣士隊',count:8,formation:'散開隊形',kind:'block',cols:4,spacing:2.75,rowSpacing:6.0},
   G:{name:'近衛隊',count:9,formation:'方陣',kind:'block',cols:3,spacing:3.65,rowSpacing:3.4,bannerOffsetX:1.3},
   R:{name:'竜騎士隊',count:8,unit:'騎',formation:'飛行隊形',kind:'flight',spacing:3.8,flightHeight:3.5},
@@ -18,7 +18,7 @@ export function formation(type, compact=false) {
       for(let col=0;col<n;col++)out.push({x:(col-(n-1)/2)*spec.spacing,z:(row-1)*3.1,altitudeOffset:row===1?1.3:0,type});
     }
   } else if(spec.kind==='wedge') {
-    for(let row=0;row<3;row++)for(let col=0;col<=row;col++)out.push({x:(col-row/2)*spec.spacing,z:(row-1)*spec.rowSpacing,type});
+    for(let row=0;row<3;row++)for(let col=0;col<=row;col++)out.push({x:(col-row/2)*spec.spacing,z:(row-1)*spec.rowSpacing,type:row===0?type:'A'});
   } else if(spec.kind==='guard') {
     out.push({x:0,z:0,type});
     const n=spec.count-1;

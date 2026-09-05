@@ -1,0 +1,28 @@
+{
+  "units": 4,
+  "soldiers": 34,
+  "representedSoldiers": 34,
+  "flyingRiders": 0,
+  "detailedSquads": 4,
+  "instanceBatches": 40,
+  "fieldWidth": 108,
+  "quality": "full",
+  "zoom": 22.003488542650732,
+  "cameraPosition": [
+    8.617962340569171,
+    12.30857547961523,
+    -17.840538178745888
+  ],
+  "cameraTarget": [
+    0,
+    2.737816333350821,
+    0
+  ],
+  "drawCalls": 80,
+  "triangles": 385591,
+  "geometries": 79,
+  "textures": 32,
+  "averageRenderMs": 2.4801418476916375,
+  "busy": false,
+  "lastTime": 2676.1
+}

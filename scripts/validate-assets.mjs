@@ -3,7 +3,7 @@ import {readFile,stat} from 'node:fs/promises';
 import {GLTFLoader} from '../dist/vendor/loaders/GLTFLoader.js';
 import {terrainSampler,cellXZ} from '../dist/terrain.mjs';
 import {Box3} from 'three';
-import {formation} from '../dist/formations.mjs';
+import {formation,SQUADS} from '../dist/formations.mjs';
 
 // Three imports resolve through the installed dev dependency during offline QA.
 export function parseGLB(buffer) {
@@ -17,7 +17,7 @@ for(const name of ['meadow','army']) {
   const data=parseGLB(bytes);
   assert(data.buffers.every(b=>!b.uri),'GLB must be self-contained');
   assert(!data.images?.length,'Current artwork uses portable vertex colors');
-  const required=name==='army'?['P','L','N','S','G','B','R','K'].flatMap(t=>['Unit_'+t,'LOD_'+t]):['Terrain'];
+  const required=name==='army'?['P','L','N','S','G','B','R','K','A'].flatMap(t=>['Unit_'+t,'LOD_'+t]):['Terrain'];
   for(const n of required)assert(data.nodes.some(o=>o.name===n),`Missing ${n}`);
   const triangles=data.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+data.accessors[p.indices].count/3,0);
   reports[name]={bytes:bytes.length,triangles,meshes:data.meshes.length};
@@ -25,6 +25,18 @@ for(const name of ['meadow','army']) {
     const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length),'');
     gltf.scene.updateMatrixWorld(true);
     for(const prefix of ['Unit_','LOD_']){
+      const commander=gltf.scene.getObjectByName(prefix+'N');assert.equal(commander.userData.mount,'horse');
+      const archer=gltf.scene.getObjectByName(prefix+'A');assert.equal(archer.userData.weapon,'bow');
+      for(const part of ['Bow','Bowstring','Quiver','Arrows','Promotion']){
+        let found=false;archer.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Archer missing ${prefix}${part}`);
+      }
+      // Mixed squads must resolve each member's model and fit with its equipment.
+      for(const type of Object.keys(SQUADS))for(const compact of [false,true])for(const m of formation(type,compact)){
+        const model=gltf.scene.getObjectByName(prefix+m.type);assert(model,`Missing squad member ${prefix}${m.type}`);
+        const bounds=new Box3().setFromObject(model);
+        for(const x of [bounds.min.x,bounds.max.x])assert(Math.abs(m.x+x*1.25)<6,`${type}/${m.type} equipment exceeds cell width`);
+        for(const z of [bounds.min.z,bounds.max.z])assert(Math.abs(m.z+z*1.25)<6,`${type}/${m.type} equipment exceeds cell depth`);
+      }
       const root=gltf.scene.getObjectByName(prefix+'R');assert.equal(root.userData.mount,'dragon');
       for(const part of ['WingL','WingR','Tail','ForelegL','ForelegR','HindlegL','HindlegR','Promotion']){
         let found=false;root.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Dragon missing ${part}`);

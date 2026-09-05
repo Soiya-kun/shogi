@@ -18,6 +18,8 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   const contacts=await page.evaluate(()=>window.__aether.contacts());
   expect(contacts).toHaveLength(392);
   expect(contacts.filter(p=>p.airborne)).toHaveLength(16);
+  expect(contacts.filter(p=>p.model==='N')).toHaveLength(4);
+  expect(contacts.filter(p=>p.model==='A')).toHaveLength(20);
   expect(contacts.every(p=>p.airborne?p.y-p.ground>3:Math.abs(p.y-p.ground-.025)<.0001)).toBe(true);
   await cell(page,54);await expect(page.locator('#unitname')).toHaveText('歩兵隊');
   await page.screenshot({path:'docs/verification/desktop-selected.png'});
@@ -74,6 +76,8 @@ test('mobile portrait: whole field, touch move and no horizontal overflow',async
   const page=await context.newPage();await page.goto('http://127.0.0.1:5174/?debug');await ready(page);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
   expect(await page.evaluate(()=>window.__aether.diagnostics())).toMatchObject({soldiers:392,representedSoldiers:240,quality:'compact'});
+  const archers=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='N'||p.model==='A'));
+  expect(archers.filter(p=>p.model==='N')).toHaveLength(4);expect(archers.filter(p=>p.model==='A')).toHaveLength(20);
   for(const i of [54,45]){const p=await page.evaluate(i=>window.__aether.projectCell(i),i);await page.touchscreen.tap(p.x,p.y);}
   await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
   await page.screenshot({path:'docs/verification/mobile.png',fullPage:true});

@@ -1,0 +1,70 @@
+"""Update the mounted commander and add foot archers, preserving other artwork.
+
+blender --background assets/blender/aether-assets.blend --python scripts/update_knight.py
+"""
+import bpy,json,sys,hashlib,struct
+from pathlib import Path
+
+ROOT=Path(__file__).resolve().parents[1]
+sys.path.insert(0,str(ROOT/'scripts'))
+from build_assets import soldiers,make_lods,export
+
+army=bpy.data.scenes['Aether_Army'];field=bpy.data.scenes['Aether_Meadow']
+
+
+def preserved_meshes():
+    result={}
+    for scene in [field,army]:
+        for obj in scene.objects:
+            root=obj
+            while root.parent:root=root.parent
+            if root.name.split('.')[0] in ['Unit_N','LOD_N','Unit_A','LOD_A'] or obj.type!='MESH':continue
+            digest=hashlib.sha256()
+            for vertex in obj.data.vertices:digest.update(struct.pack('fff',*vertex.co))
+            for face in obj.data.polygons:
+                for index in face.vertices:digest.update(struct.pack('I',index))
+            result[scene.name+'/'+obj.name]=digest.hexdigest()
+    return result
+
+
+def remove_tree(root):
+    for child in list(root.children):remove_tree(child)
+    bpy.data.objects.remove(root,do_unlink=True)
+
+
+preserved=preserved_meshes()
+sample_transforms={}
+for role in ['N','A']:
+    samples=[o for o in field.objects if not o.parent and o.name.split('.')[0]=='Unit_'+role]
+    sample_transforms[role]=[o.matrix_world.copy() for o in samples]
+    for obj in samples:remove_tree(obj)
+    if army.objects.get('Unit_'+role):remove_tree(army.objects['Unit_'+role])
+
+temporary=soldiers(['N','A'],write_assets=False)
+for obj in list(temporary.objects):
+    army.collection.objects.link(obj);temporary.collection.objects.unlink(obj)
+bpy.context.window.scene=army;bpy.data.scenes.remove(temporary)
+make_lods(army,['N','A']);export(army,'army.glb')
+
+
+def copy_tree(obj,parent=None):
+    node=obj.copy();field.collection.objects.link(node);node.parent=parent
+    for child in obj.children:copy_tree(child,node)
+    return node
+
+
+if not sample_transforms['A'] and sample_transforms['N']:
+    transform=sample_transforms['N'][0].copy();transform.translation.x+=3
+    sample_transforms['A'].append(transform)
+for role,transforms in sample_transforms.items():
+    for transform in transforms:
+        sample=copy_tree(army.objects['Unit_'+role]);sample.matrix_world=transform
+        for child in sample.children:
+            if child.name.split('.')[0].endswith('_Promotion'):child.hide_render=True;child.hide_viewport=True
+
+bpy.context.window.scene=field
+assert preserved_meshes()==preserved,'Knight update must preserve all unrelated geometry, including LODs'
+bpy.ops.wm.save_as_mainfile(filepath=str(ROOT/'assets/blender/aether-assets.blend'),compress=True)
+out=ROOT/'dist/assets'
+(out/'manifest.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string,'cellSize':12,'assets':{p.name:{'bytes':p.stat().st_size} for p in out.glob('*.glb')}},indent=2))
+print('KNIGHT_ARCHERS_COMPLETE')

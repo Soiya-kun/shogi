@@ -1,30 +1,30 @@
 {
-  "meanFrameMs": 13.192222222222224,
+  "meanFrameMs": 13.27777777698305,
   "p95FrameMs": 13.5,
   "units": 40,
   "soldiers": 392,
   "representedSoldiers": 392,
   "flyingRiders": 16,
-  "detailedSquads": 26,
-  "instanceBatches": 99,
+  "detailedSquads": 25,
+  "instanceBatches": 113,
   "fieldWidth": 108,
   "quality": "full",
   "zoom": 48,
   "cameraPosition": [
-    69.49935053500327,
-    17.770545165215445,
-    6.068850463731312
+    69.49935057404315,
+    17.770545166149564,
+    6.068850502771195
   ],
   "cameraTarget": [
-    35.99999984014218,
-    0.8613819680111279,
-    35.99999984014218
+    35.99999987918206,
+    0.8613819689452459,
+    35.99999987918206
   ],
-  "drawCalls": 194,
-  "triangles": 859535,
-  "geometries": 149,
+  "drawCalls": 208,
+  "triangles": 851285,
+  "geometries": 163,
   "textures": 44,
-  "averageRenderMs": 4.191525418374498,
+  "averageRenderMs": 2.3831223636739867,
   "busy": false,
-  "lastTime": 5258.3
+  "lastTime": 4531.8
 }

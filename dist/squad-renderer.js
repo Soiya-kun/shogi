@@ -82,7 +82,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
         const flying=m.type==='R';
         const lift=flying?SQUADS.R.flightHeight+(m.altitudeOffset??0)+(reducedMotion?0:Math.sin(time*2.4+j*.9)*.16+(s.moving?Math.sin(Math.PI*s.progress)*.6:0)):s.moving?Math.abs(Math.sin(phase))*.065:0;
         const y=h(x,z)+.025+lift;
-        s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying};
+        s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying,model:m.type};
         for(const spec of compile(m.type,s.piece.s,s.piece.p,s.near)){
           const mesh=batch(spec),p=spec.pivot;
           const size=s.scale??1;
@@ -94,7 +94,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
             if(spec.part==='Cape')swing=Math.sin(time*2+j)*.08;
             else if(spec.part.startsWith('Wing'))wing=(Math.sin(time*(s.moving?7:5)+j*.9)*.62-.12)*sign;
             else if(spec.part==='Tail')tail=Math.sin(time*2+j)*.09;
-            else if(m.type==='R'&&spec.part.startsWith('Leg'))swing=0;
+            else if((m.type==='R'||m.type==='N')&&spec.part.startsWith('Leg'))swing=0;
             else if(/^(Foreleg|Hindleg)/.test(spec.part))swing=spec.part.startsWith('Fore')?.55:-.55;
             else if(spec.part!=='Body')swing=s.moving?Math.sin(phase)*.27*sign:Math.sin(time*1.8+j)*.015;
             if(spec.part==='ArmR')swing-=s.attack||0;

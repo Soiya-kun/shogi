@@ -88,13 +88,18 @@ def field():
     return create_field()
 
 SILVER=(.43,.53,.57); TRIM=(.61,.39,.10); DARK=(.055,.069,.08); LEATHER=(.13,.07,.032); SKIN=(.60,.34,.19); WHITE=(.71,.76,.71)
+ROLES=['P','L','N','S','G','B','R','K','A']
 
 def soldiers(roles=None,write_assets=True):
     s=new_scene('Aether_Army')
     hard=bpy.data.materials.get('Armor') or vertex_material('Armor',.62,.38)
     soft=bpy.data.materials.get('Details') or vertex_material('Details',.05,.8)
     team=bpy.data.materials.get('TeamCloth') or material('TeamCloth',(.04,.22,.46),0,.8)
-    for role in roles or ['P','L','N','S','G','B','R','K']:
+    for role in roles or ROLES:
+        if role=='A':
+            from archer import archer
+            archer(hard,soft,team)
+            continue
         root=empty('Unit_'+role)
         root['piece']=role
         body=empty(role+'_Body',root)
@@ -121,7 +126,7 @@ def soldiers(roles=None,write_assets=True):
             armor.ring(0,1.38,0,[(0,.15,.14),(.065,.15,.14)],TRIM,12)
             for i in range(7):
                 a=i*math.tau/7; armor.ring(.14*math.cos(a),1.44,.14*math.sin(a),[(0,.031,.031),(.12,.0,.0)],TRIM,5)
-        if role in ['G','S','L']:
+        if role in ['G','S','L','N']:
             cloth.orb(0,1.44+ride,.035,.045,.19,.11,WHITE,8,5)
         if role=='R':
             cloth.orb(0,1.46+ride,.045,.045,.20,.12,WHITE,8,5)
@@ -130,6 +135,7 @@ def soldiers(roles=None,write_assets=True):
             cloth.ring(0,1.36,0,[(0,.24,.22),(.04,.18,.16),(.38,.005,.005)],WHITE,10)
             armor.ring(0,1.39,0,[(0,.18,.17),(.045,.17,.16)],TRIM,10)
         if role=='N':
+            root['mount']='horse';root['unitRole']='commander'
             detail.orb(0,.55,0,.27,.30,.53,(.24,.11,.045),12,8)
             detail.rod((0,.62,-.30),(0,1.02,-.42),.17,(.24,.11,.045),10,.115)
             detail.orb(0,1.06,-.47,.13,.18,.23,(.30,.15,.06),10,6)
@@ -142,6 +148,16 @@ def soldiers(roles=None,write_assets=True):
                     detail.rod((xx,.05,zz),(xx,.51,zz),.058,(.24,.11,.045),7)
                     detail.box(xx,.065,zz-.025,.13,.13,.17,DARK)
             cloth.box(0,.70,.09,.57,.12,.5,WHITE)
+            # A raised leather saddle, reins, stirrups and a long horse tail.
+            detail.orb(0,.79,.04,.25,.065,.27,LEATHER,10,5)
+            detail.box(0,.86,.25,.39,.13,.07,LEATHER)
+            for side in [-1,1]:
+                detail.rod((side*.13,1.02,-.64),(side*.13,1.16,-.41),.016,LEATHER,6)
+                detail.rod((side*.13,1.12,-.46),(side*.30,.99,-.05),.012,LEATHER,6)
+                detail.rod((side*.28,.77,.05),(side*.38,.38,-.12),.018,LEATHER,6)
+                armor.box(side*.38,.36,-.12,.15,.025,.19,TRIM)
+                cloth.add([(side*.25,.73,-.17),(side*.31,.68,.32),(side*.30,.43,.32),(side*.29,.48,-.17)],[(0,1,2,3)],WHITE)
+            detail.rod((0,.71,.43),(0,.34,.67),.065,DARK,8,.025)
         armor.obj(role+'_Cuirass',hard,body); detail.obj(role+'_Details',soft,body); cloth.obj(role+'_Uniform',team,body)
         # Export named pivots; the Web scene animates these without a heavy skeleton.
         for side in [-1,1]:
@@ -173,6 +189,15 @@ def soldiers(roles=None,write_assets=True):
                 a.box(-.33,.79+ride,-.22,.17,.025,.024,TRIM)
             a.obj(role+'_ArmMesh'+str(side),hard,arm,pivot)
         for side in [-1,1]:
+            if role=='N':
+                pivot=(side*.19,.62+ride,.04);leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot);a=Builder()
+                knee=(side*.34,.64,-.19);boot=(side*.38,.42,-.13)
+                a.rod(pivot,knee,.078,DARK);a.rod(knee,boot,.065,SILVER)
+                a.orb(*knee,.09,.08,.075,SILVER,8,4)
+                a.box(side*.38,.42,-.19,.14,.13,.25,LEATHER)
+                a.box(side*.38,.46,-.25,.14,.06,.15,SILVER)
+                a.obj(role+'_LegMesh'+str(side),hard,leg,pivot)
+                continue
             if role=='R':
                 pivot=(side*.20,.62+ride,.04);leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot);a=Builder()
                 knee=(side*.43,1.17,-.21);boot=(side*.48,.91,-.16)
@@ -190,7 +215,7 @@ def soldiers(roles=None,write_assets=True):
             a.box(side*.12,.15+ride,-.14,.16,.06,.18,SILVER)
             a.obj(role+'_LegMesh'+str(side),hard,leg,pivot)
         cape=empty(role+'_Cape',body,(0,1.05+ride,.15)); a=Builder()
-        if role in ['K','G','S','B','R']:
+        if role in ['K','G','S','B','R','N']:
             vs=[((i/5-.5)*(.40+j*.09),1.05+ride-j*.15,.17+j*.045+.025*math.sin(i*1.5)) for j in range(5) for i in range(6)]
             a.add(vs,[(j*6+i,j*6+i+1,(j+1)*6+i+1,(j+1)*6+i) for j in range(4) for i in range(5)],WHITE)
             a.obj(role+'_Mantle',team,cape,(0,1.05+ride,.15))
@@ -208,18 +233,24 @@ def soldiers(roles=None,write_assets=True):
         export(s,'army.glb')
     return s
 
-def make_lods(scene):
+def make_lods(scene,roles=None):
     """Independent low detail trees; the editable originals keep all detail."""
     bpy.context.window.scene=scene
-    for obj in list(scene.objects):
-        if obj.name.startswith('LOD_'): bpy.data.objects.remove(obj,do_unlink=True)
-    for role in ['P','L','N','S','G','B','R','K']:
+    roles=roles or [role for role in ROLES if scene.objects.get('Unit_'+role)]
+    def remove_tree(obj):
+        for child in list(obj.children):remove_tree(child)
+        bpy.data.objects.remove(obj,do_unlink=True)
+    for role in roles:
+        old=scene.objects.get('LOD_'+role)
+        if old:remove_tree(old)
+    for role in roles:
         def copy_low(obj,parent=None):
             node=obj.copy(); node.name='LOD_'+obj.name
             scene.collection.objects.link(node); node.parent=parent
             if node.type=='MESH':
                 node.data=obj.data.copy()
-                mod=node.modifiers.new('Distant simplification','DECIMATE'); mod.ratio=.70 if 'WingMembrane' in obj.name else .23
+                mod=node.modifiers.new('Distant simplification','DECIMATE')
+                mod.ratio=1 if obj.name.endswith(('_Bowstring','_Arrows')) else .70 if 'WingMembrane' in obj.name or obj.name.endswith('_Bow') else .23
                 bpy.context.view_layer.objects.active=node
                 bpy.ops.object.modifier_apply(modifier=mod.name)
             for child in obj.children: copy_low(child,node)
@@ -244,7 +275,7 @@ if __name__=='__main__':
         stage(fs)
         if ars:
             # Put a single example on the field for a useful editable opening scene.
-            for role,x in zip(['P','L','N','S','G','B','R','K'],range(-4,4)):
+            for role,x in zip(ROLES,range(-4,5)):
                 original=ars.objects['Unit_'+role]
                 def copy_tree(o,parent=None):
                     n=o.copy(); fs.collection.objects.link(n); n.parent=parent
