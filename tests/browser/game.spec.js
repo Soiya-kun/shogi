@@ -111,8 +111,8 @@ test('dragon knights: eight mounted riders, close view, rook movement and dragon
   await page.waitForTimeout(1100);await page.screenshot({path:'docs/verification/dragon-knights.png'});
   const metrics=await measure(page);expect(metrics.drawCalls).toBeLessThan(500);expect(metrics.triangles).toBeLessThan(1100000);
   await writeFile('docs/verification/dragon-performance.json',JSON.stringify(metrics,null,2));
-  await page.locator('#scene').focus();await page.keyboard.press('ArrowDown');
-  for(let i=0;i<3;i++)await page.keyboard.press('ArrowLeft');await page.keyboard.press('Enter');
+  // Select another visible squad without moving the camera away from the dragon.
+  const kingBanner=await page.evaluate(()=>window.__aether.projectBanner(76));await page.mouse.click(kingBanner.x,kingBanner.y);
   await expect(page.locator('#unitname')).toHaveText('本陣');
   const flyingPoint=await page.evaluate(i=>window.__aether.projectFlying(i),rook);await page.mouse.click(flyingPoint.x,flyingPoint.y);
   await expect(page.locator('#unitname')).toHaveText('竜騎士隊');

@@ -1,6 +1,6 @@
 {
-  "meanFrameMs": 13.284444445239176,
-  "p95FrameMs": 13.400000000000091,
+  "meanFrameMs": 13.26777777724796,
+  "p95FrameMs": 13.400000000000546,
   "units": 40,
   "soldiers": 392,
   "representedSoldiers": 392,
@@ -9,11 +9,22 @@
   "instanceBatches": 22,
   "fieldWidth": 108,
   "quality": "full",
+  "zoom": 185,
+  "cameraPosition": [
+    11.041504672274193,
+    148.2996890634988,
+    110.04675096631308
+  ],
+  "cameraTarget": [
+    0,
+    0,
+    0
+  ],
   "drawCalls": 186,
   "triangles": 554891,
   "geometries": 55,
   "textures": 44,
-  "averageRenderMs": 1.8451957342039225,
+  "averageRenderMs": 2.0706713755644675,
   "busy": false,
-  "lastTime": 4486.3
+  "lastTime": 4577.3
 }

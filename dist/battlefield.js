@@ -165,7 +165,7 @@ export async function createBattlefield(canvas,onPick) {
     camera.lookAt(target);
     for(const fx of [...effects]){const f=Math.min(1,(t-fx.start)/fx.duration);fx.update(f);if(f===1){effects.splice(effects.indexOf(fx),1);fx.done();}}
     const changed=armyView.update(time,camera,busy);
-    for(const s of instances){s.banner.position.set(s.x,h(s.x,s.z),s.z+3.6);s.banner.scale.setScalar(s.scale??1);s.flag.rotation.y=reducedMotion?0:Math.sin(time*2+s.cell)*.10;const badgeScale=(mobile?1.5:1)*Math.min(1,camera.position.distanceTo(s.banner.position)/140);s.badge.scale.set(3.4*badgeScale,4.25*badgeScale,1);}
+    for(const s of instances){const flagX=s.x+(SQUADS[s.piece.t].bannerOffsetX??0);s.banner.position.set(flagX,h(flagX,s.z+3.6),s.z+3.6);s.banner.scale.setScalar(s.scale??1);s.flag.rotation.y=reducedMotion?0:Math.sin(time*2+s.cell)*.10;const badgeScale=(mobile?1.5:1)*Math.min(1,camera.position.distanceTo(s.banner.position)/140);s.badge.scale.set(3.4*badgeScale,4.25*badgeScale,1);}
     if(changed&&frames%3===0)renderer.shadowMap.needsUpdate=true;
     const a=performance.now();renderer.render(scene,camera);renderMs+=performance.now()-a;frames++;lastTime=t;
   }
