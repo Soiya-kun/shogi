@@ -42,16 +42,19 @@ export async function createBattlefield(canvas,onPick) {
   const armyView=createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),labelMaterials=new Map();
   const combatEffects=createCombatEffects(scene,h),combatAudio=createCombatAudio();
   addEventListener('pagehide',()=>combatAudio.clear());
-  function label(text,color,count='') {
-    const key=text+color+count;
+  function label(text,color,count='',background='#13241eef') {
+    const key=text+color+count+background;
     if(!labelMaterials.has(key)) {
       const c=document.createElement('canvas');c.width=128;c.height=160;
-      const ctx=c.getContext('2d');ctx.fillStyle='#13241eef';ctx.beginPath();ctx.roundRect(10,6,108,146,10);ctx.fill();
+      const ctx=c.getContext('2d');ctx.fillStyle=background;ctx.beginPath();ctx.roundRect(10,6,108,146,10);ctx.fill();
       ctx.strokeStyle=color;ctx.lineWidth=3;ctx.stroke();ctx.fillStyle=color;ctx.font='bold 78px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,64,count?62:80);
       if(count){ctx.font='bold 27px sans-serif';ctx.fillText(count,64,126);}
       labelMaterials.set(key,new T.SpriteMaterial({map:new T.CanvasTexture(c),depthTest:true,transparent:true}));
     }
     const sprite=new T.Sprite(labelMaterials.get(key));sprite.scale.set(3.4,4.25,1);return sprite;
+  }
+  function squadLabel(piece){
+    return label(piece.p?symbols[piece.t]||names[piece.t]:names[piece.t],piece.p?'#ffe49a':piece.s?'#ffc2b3':'#c9edff',String(SQUADS[piece.t].count),piece.s?'#8c2028f5':'#153c62f5');
   }
   function line(points,color,opacity=1) {
     const geo=new T.BufferGeometry().setFromPoints(points.map(([x,z])=>new T.Vector3(x,h(x,z)+.10,z)));
@@ -99,7 +102,7 @@ export async function createBattlefield(canvas,onPick) {
     const [x,z]=cellXZ(cell),banner=new T.Group(),pole=new T.Mesh(poleGeometry,poleMaterial);pole.position.y=2.1;banner.add(pole);
     const flag=new T.Mesh(flagGeometry,piece.p?promotedFlag:flagMaterials[piece.s]);flag.position.set(.575,2.75,0);banner.add(flag);
     const crossbar=new T.Mesh(crossbarGeometry,poleMaterial);crossbar.rotation.z=Math.PI/2;crossbar.position.set(.58,3.99,0);banner.add(crossbar);
-    const badge=label(piece.p?symbols[piece.t]||names[piece.t]:names[piece.t],piece.p?'#ffe49a':piece.s?'#ffc2b3':'#c9edff',String(SQUADS[piece.t].count));
+    const badge=squadLabel(piece);
     badge.position.set(0,5.3,0);badge.visible=labels;banner.add(badge);scene.add(banner);
     for(const child of banner.children)child.userData.cell=cell;
     return {id:identity?.id??++squadSequence,generation:identity?.generation??1,cell,piece:{...piece},x,z,banner,badge,flag,heading:piece.s?Math.PI:0,progress:0};
@@ -134,7 +137,7 @@ export async function createBattlefield(canvas,onPick) {
     arriving.generation++;arriving.piece={...after.b[m.to]};arriving.renderPiece=attackerPiece;
     arriving.cell=m.to;for(const child of arriving.banner.children)child.userData.cell=m.to;
     arriving.flag.material=arriving.piece.p?promotedFlag:flagMaterials[arriving.piece.s];
-    arriving.badge.material=label(arriving.piece.p?symbols[arriving.piece.t]||names[arriving.piece.t]:names[arriving.piece.t],arriving.piece.p?'#ffe49a':arriving.piece.s?'#ffc2b3':'#c9edff',String(SQUADS[arriving.piece.t].count)).material;
+    arriving.badge.material=squadLabel(arriving.piece);
     if(victim){
       const key=`${arriving.piece.s}:${victim.piece.t}`;if(!handIdentities.has(key))handIdentities.set(key,[]);
       handIdentities.get(key).push({id:victim.id,generation:victim.generation+1});
