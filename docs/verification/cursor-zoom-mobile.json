@@ -13,9 +13,9 @@
   "activeMotions": 0,
   "soldiers": 392,
   "representedSoldiers": 240,
-  "flyingRiders": 12,
+  "flyingRiders": 0,
   "detailedSquads": 0,
-  "instanceBatches": 26,
+  "instanceBatches": 22,
   "fieldWidth": 108,
   "quality": "compact",
   "zoom": 123.33333333333333,
@@ -29,11 +29,11 @@
     0.8563658798654785,
     -0.006240342757706685
   ],
-  "drawCalls": 211,
-  "triangles": 503577,
-  "geometries": 105,
+  "drawCalls": 207,
+  "triangles": 500877,
+  "geometries": 100,
   "textures": 46,
-  "averageRenderMs": 5.9402941091387875,
+  "averageRenderMs": 5.95940000295639,
   "busy": false,
-  "lastTime": 2266.09
+  "lastTime": 2430.355
 }

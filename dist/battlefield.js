@@ -160,10 +160,10 @@ export async function createBattlefield(canvas,onPick) {
     else{const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom,anchor:zoomAnchor((a.x+b.x)/2,(a.y+b.y)/2)};drag=true;}
   });
   function focusPosition(i){
-    const p=position(i),type=instances.find(s=>s.cell===i)?.piece.t;
+    const p=position(i),piece=instances.find(s=>s.cell===i)?.piece,type=piece?.t;
     // At close range, frame the soldiers or airborne dragons above their cell.
     const detail=1-T.MathUtils.smoothstep(zoom,12,42);
-    p.y+=detail*(type==='R'?SQUADS.R.flightHeight+1.4:type==='N'?1.4:1);
+    p.y+=detail*(type==='R'&&piece.p?SQUADS.R.flightHeight+1.4:['N','R'].includes(type)?1.4:1);
     return p;
   }
   function cameraFloor(p){

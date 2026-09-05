@@ -1,6 +1,6 @@
 """Original Sengoku-inspired fantasy soldiers, in (x, height, z) metres.
 
-Shared armor construction keeps all ten visual roles in one art style.
+Shared armor construction keeps all eleven visual roles in one art style.
 This is stylized game artwork, not a reconstruction of a particular clan.
 """
 import math
@@ -89,9 +89,9 @@ def horse(root,soft,hard,team):
 def samurai(role,hard,soft,team):
     from build_assets import Builder,empty
     light=role in ['P','L','A'];heavy=role=='H';mage=role=='B'
-    noble=role in ['N','G','R','K','H'];ride=.83 if role=='R' else .34 if role=='N' else 0
+    noble=role in ['N','G','R','D','K','H'];ride=.83 if role=='D' else .55 if role=='R' else .34 if role=='N' else 0
     scale=1.18 if heavy else 1;belt=.69*scale+ride;shoulder=1.04*scale+ride;head=1.22*scale+ride
-    root=empty('Unit_'+role);root['style']='sengoku_fantasy';root['unitRole']={'P':'ashigaru','L':'yari_ashigaru','A':'yumi_ashigaru','N':'mounted_samurai','H':'armored_samurai','S':'samurai','G':'hatamoto','B':'onmyoji','K':'daimyo','R':'dragon_samurai'}[role]
+    root=empty('Unit_'+role);root['style']='sengoku_fantasy';root['unitRole']={'P':'ashigaru','L':'yari_ashigaru','A':'yumi_ashigaru','N':'mounted_samurai','H':'armored_samurai','S':'samurai','G':'hatamoto','B':'onmyoji','K':'daimyo','R':'cavalry_samurai','D':'ryuu_samurai'}[role]
     if role=='H':root['armor']='o_yoroi'
     body=empty(role+'_Body',root)
     armor=Builder();details=Builder();cloth=Builder();laces=Builder()
@@ -145,13 +145,13 @@ def samurai(role,hard,soft,team):
             cord.rod((side*.145,hh,0),(side*.04,head-.13,-.10),.011,CORD,5)
         headgear.obj(role+'_Kabuto',hard,body)
         maedate=Builder()
-        if role in ['K','H','N']:
+        if role in ['K','H','N','R','D']:
             for side in [-1,1]:
                 maedate.add([(side*.02,hh+.12,-.224),(side*.11,hh+.14,-.224),(side*.29*scale,hh+.39*scale,-.21),(side*.19*scale,hh+.28*scale,-.217)],[(0,1,2,3)],GOLD)
         else:
             maedate.add([(-.08,hh+.12,-.222),(.08,hh+.12,-.222),(.12,hh+.24,-.218),(0,hh+.36,-.21),(-.12,hh+.24,-.218)],[(0,1,2,3,4)],GOLD)
         maedate.obj(role+'_Maedate',hard,body)
-        if heavy or role=='R':
+        if heavy or role in ['R','D']:
             mask=Builder();mask.orb(0,head-.085,-.084,.13*scale,.078*scale,.09,IRON,10,4)
             mask.box(0,head-.07,-.177,.13,.02,.01,INK)
             mask.obj(role+'_Menpo',hard,body)
@@ -171,8 +171,8 @@ def samurai(role,hard,soft,team):
         sleeve.obj(role+'_Sleeve'+str(side),soft if mage else team,arm,pivot)
         plate.obj(role+('_SodeL' if side<0 else '_SodeR'),hard,arm,pivot)
         ties.obj(role+'_ArmLacing'+str(side),team,arm,pivot);hand.obj(role+'_Hand'+str(side),soft,arm,pivot)
-        if side==1 and role in ['P','L','G','R']:
-            spear=Builder();top=2.48 if role=='L' else 1.92 if role in ['G','R'] else 1.72
+        if side==1 and role in ['P','L','G','R','D']:
+            spear=Builder();top=2.48 if role=='L' else 1.92 if role in ['G','R','D'] else 1.72
             x=wrist[0]+.01;z=-.10
             spear.rod((x,.15+ride,z),(x,top+ride,z),.019,WOOD,7)
             spear.rod((x,top-.12+ride,z),(x,top+ride,z),.024,INK,7)
@@ -205,9 +205,9 @@ def samurai(role,hard,soft,team):
     for side in [-1,1]:
         pivot=(side*(.18 if heavy else .12),belt-.055,0);leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot)
         trousers=Builder();armor=Builder();feet=Builder()
-        if role in ['N','R']:
-            knee=(side*(.43 if role=='R' else .34),1.17 if role=='R' else .64,-.19)
-            boot=(side*(.48 if role=='R' else .38),.91 if role=='R' else .42,-.13)
+        if role in ['N','R','D']:
+            knee=(side*(.43 if role=='D' else .40 if role=='R' else .34),1.17 if role=='D' else .85 if role=='R' else .64,-.19)
+            boot=(side*(.48 if role=='D' else .44 if role=='R' else .38),.91 if role=='D' else .56 if role=='R' else .42,-.13)
             trousers.rod(pivot,knee,.12,IVORY,8);armor.rod(knee,boot,.08,INK,8)
             feet.box(boot[0],boot[1],boot[2]-.05,.16,.11,.25,WOOD)
         else:
@@ -223,7 +223,7 @@ def samurai(role,hard,soft,team):
     if mage:
         robe=Builder();robe.ring(0,.18,0,[(0,.30,.24),(.42,.24,.19),(.72,.23,.16)],IVORY,10)
         robe.obj('B_Kariginu',soft,body)
-    if role in ['K','N']:
+    if role in ['K','N','R','D']:
         cape=empty(role+'_Cape',body,(0,shoulder,.17));coat=Builder()
         coat.add([(-.25,shoulder,.19),(.25,shoulder,.19),(.35,belt-.27,.26),(-.35,belt-.27,.26)],[(0,1,2,3)],IVORY)
         for side in [-1,1]:coat.add([(side*.17,shoulder,-.12),(side*.27,shoulder-.12,-.17),(side*.30,belt-.24,-.19),(side*.17,belt-.24,-.20)],[(0,1,2,3)],IVORY)
@@ -252,6 +252,9 @@ def samurai(role,hard,soft,team):
     gold.obj(role+'_AscendedMon',hard,promotion)
     if role=='N':horse(root,soft,hard,team)
     if role=='R':
-        from dragon import dragon
+        from warhorse import warhorse
+        warhorse(root,soft,hard,team)
+    if role=='D':
+        from eastern_dragon import dragon
         dragon(root,soft,hard,team,promotion)
     return root

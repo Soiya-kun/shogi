@@ -17,7 +17,8 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   expect(await page.evaluate(()=>window.__aether.diagnostics())).toMatchObject({soldiers:392,representedSoldiers:392,fieldWidth:108,detailedSquads:0});
   const contacts=await page.evaluate(()=>window.__aether.contacts());
   expect(contacts).toHaveLength(392);
-  expect(contacts.filter(p=>p.airborne)).toHaveLength(16);
+  expect(contacts.filter(p=>p.airborne)).toHaveLength(0);
+  expect(contacts.filter(p=>p.model==='R')).toHaveLength(16);
   expect(contacts.filter(p=>p.model==='N')).toHaveLength(4);
   expect(contacts.filter(p=>p.model==='A')).toHaveLength(20);
   expect(contacts.filter(p=>p.model==='H')).toHaveLength(32);
@@ -100,46 +101,57 @@ test('missing GLB shows retry instead of silently leaving a broken board',async(
   await expect(page.locator('body')).not.toHaveAttribute('data-ready','true');
 });
 
-test('dragon knights: eight mounted riders, close view, rook movement and dragon-king promotion',async({page})=>{
+test('rook cavalry changes to Eastern dragons on promotion, returns to horses on capture and restores correctly',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto('/?debug');await ready(page);
   const rook=await page.evaluate(()=>window.__aether.state().g.b.findIndex(p=>p?.t==='R'&&p.s===0));
-  await cell(page,rook);await expect(page.locator('#unitname')).toHaveText('竜武者隊');
-  await expect(page.locator('#unitdesc')).toHaveText('8騎 · 飛行隊形');
-  const first=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
-  expect(first).toHaveLength(16);expect(first.every(p=>p.y-p.ground>3)).toBe(true);
-  await page.waitForTimeout(200);
-  const second=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
-  expect(second.some((p,i)=>Math.abs(p.y-first[i].y)>.005)).toBe(true);
+  await cell(page,rook);await expect(page.locator('#unitname')).toHaveText('騎馬武者隊');
+  await expect(page.locator('#unitdesc')).toHaveText('8騎 · 騎馬隊形');
+  const first=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='R'));
+  expect(first).toHaveLength(16);expect(first.every(p=>!p.airborne&&Math.abs(p.y-p.ground-.025)<.0001)).toBe(true);
   await page.locator('#closeView').click();
   await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBeGreaterThan(0);
-  // Turn around the selected squad so the dragons' heads and riders are visible.
+  // View the horse and Japanese rider from the front quarter.
   await page.mouse.move(760,440);await page.mouse.down();await page.mouse.move(320,440,{steps:12});await page.mouse.up();
-  await page.waitForTimeout(1100);await page.screenshot({path:'docs/verification/dragon-knights.png'});
+  await page.waitForTimeout(1100);await page.screenshot({path:'docs/verification/rook-cavalry.png'});
   const metrics=await measure(page);expect(metrics.drawCalls).toBeLessThan(500);expect(metrics.triangles).toBeLessThan(1100000);
-  await writeFile('docs/verification/dragon-performance.json',JSON.stringify(metrics,null,2));
-  // Select another visible squad without moving the camera away from the dragon.
-  const kingBanner=await page.evaluate(()=>window.__aether.projectBanner(76));await page.mouse.click(kingBanner.x,kingBanner.y);
-  await expect(page.locator('#unitname')).toHaveText('本陣');
-  const flyingPoint=await page.evaluate(i=>window.__aether.projectFlying(i),rook);await page.mouse.click(flyingPoint.x,flyingPoint.y);
-  await expect(page.locator('#unitname')).toHaveText('竜武者隊');
-  let g=blank();g.b[40]={t:'R',s:0,p:false};await fixture(page,g);
-  await cell(page,40);await cell(page,22);await expect(page.locator('#promotion')).toBeVisible();
-  await page.getByRole('button',{name:'成る',exact:true}).click();
-  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().busy)).toBe(true);
-  await page.waitForTimeout(220);
-  const airborneMove=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
-  expect(airborneMove).toHaveLength(8);expect(airborneMove.every(p=>p.y-p.ground>3)).toBe(true);
-  expect(airborneMove.reduce((z,p)=>z+p.z,0)/8).toBeLessThan(-1);
-  await settle(page);
-  expect(await page.evaluate(()=>window.__aether.state().g.b[22])).toEqual({t:'R',s:0,p:true});
-  await cell(page,22);await page.locator('#closeView').click();await page.waitForTimeout(1100);
-  await page.screenshot({path:'docs/verification/dragon-promoted.png'});
-  await page.reload();await ready(page);expect(await page.evaluate(()=>window.__aether.state().g.b[22].p)).toBe(true);
-  await page.locator('#undo').click();expect(await page.evaluate(()=>window.__aether.state().g.b[40])).toEqual({t:'R',s:0,p:false});
-  await page.emulateMedia({reducedMotion:'reduce'});await page.reload();await ready(page);
+  await writeFile('docs/verification/rook-cavalry-performance.json',JSON.stringify(metrics,null,2));
+  for(const side of [0,1]){
+    const g=blank(),destination=side?58:22;g.turn=side;g.b[40]={t:'R',s:side,p:false};await fixture(page,g);
+    await cell(page,40);await cell(page,destination);await expect(page.locator('#promotion')).toBeVisible();
+    await page.getByRole('button',{name:'成る',exact:true}).click();await settle(page);
+    expect(await page.evaluate(i=>window.__aether.state().g.b[i],destination)).toEqual({t:'R',s:side,p:true});
+    const flying=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
+    expect(flying).toHaveLength(8);expect(flying.every(p=>p.model==='D'&&p.y-p.ground>3)).toBe(true);
+    await page.waitForTimeout(200);const later=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));expect(later.some((p,i)=>Math.abs(p.y-flying[i].y)>.005)).toBe(true);
+    const point=await page.evaluate(i=>window.__aether.projectFlying(i),destination);await page.mouse.click(point.x,point.y);
+    await page.locator('#closeView').click();await page.waitForTimeout(1100);
+    if(side===0){
+      // Inspect it on its own turn so the selected unit information is visible.
+      await cell(page,4);await cell(page,3);await settle(page);await cell(page,destination);
+      await expect(page.locator('#unitname')).toHaveText('昇格 龍武者隊');
+      await page.mouse.move(760,440);await page.mouse.down();await page.mouse.move(320,440,{steps:12});await page.mouse.up();await page.waitForTimeout(400);
+      await page.screenshot({path:'docs/verification/rook-eastern-dragon.png'});
+      await writeFile('docs/verification/rook-eastern-dragon-performance.json',JSON.stringify(await measure(page),null,2));
+      await page.locator('#undo').click(); // Undo the king reply, then undo promotion.
+    }
+    await page.reload();await ready(page);expect(await page.evaluate(i=>window.__aether.state().g.b[i].p,destination)).toBe(true);
+    expect(await page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='D').length)).toBe(8);
+    await page.locator('#undo').click();expect(await page.evaluate(()=>window.__aether.state().g.b[40])).toEqual({t:'R',s:side,p:false});
+    await expect.poll(()=>page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='R').length)).toBe(8);
+    expect(await page.evaluate(()=>window.__aether.contacts().some(p=>p.airborne))).toBe(false);
+  }
+  // A captured promoted rook is deployed as a ground-based horse squad.
+  const capture=blank();capture.turn=1;capture.b[40]={t:'R',s:0,p:true};capture.b[13]={t:'R',s:1,p:false};await fixture(page,capture);
+  await cell(page,13);await cell(page,40);await settle(page);await cell(page,76);await cell(page,75);await settle(page);
+  await page.getByRole('button',{name:'飛 ×1'}).click();await cell(page,30);await settle(page);
+  expect(await page.evaluate(()=>window.__aether.state().g.b[30])).toEqual({t:'R',s:1,p:false});
+  expect(await page.evaluate(()=>window.__aether.contacts().some(p=>p.airborne))).toBe(false);
+  const promoted=blank();promoted.b[40]={t:'R',s:0,p:true};await page.emulateMedia({reducedMotion:'reduce'});await fixture(page,promoted);
   const still=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
-  expect(still.every(p=>p.y-p.ground>3)).toBe(true);await page.waitForTimeout(220);
+  expect(still).toHaveLength(8);expect(still.every(p=>p.y-p.ground>3)).toBe(true);await page.waitForTimeout(220);
   expect(await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne))).toEqual(still);
+  await page.setViewportSize({width:390,height:844});await page.reload();await ready(page);
+  expect(await page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='D').length)).toBe(6);
   expect(errors).toEqual([]);
 });

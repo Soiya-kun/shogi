@@ -48,6 +48,8 @@ test('wheel zoom stays under the pointer across selection, rotation, limits and 
   for(let i=0;i<4;i++){await page.mouse.wheel(0,800);await page.waitForTimeout(60);}
   expect(await page.evaluate(()=>window.__aether.diagnostics().zoom)).toBeCloseTo(240,5);await anchored(page,anchor,centre);
   await page.locator('#overview').click();await page.waitForTimeout(100);
+  // The rook flies only after promotion. Keep the airborne cursor case explicit.
+  await page.evaluate(()=>{const s=window.__aether.state();s.g.b[70].p=true;localStorage.setItem('aether-shogi-v1',JSON.stringify(s));});await page.reload();await ready(page);
   const rook=await page.evaluate(()=>window.__aether.projectCell(70));await page.mouse.click(rook.x,rook.y);await page.locator('#closeView').click();await page.waitForTimeout(100);
   const flying=await page.evaluate(()=>window.__aether.projectFlying(70)),surface=await anchorAt(page,flying);
   expect(await page.evaluate(p=>p[1]-window.__aether.height(p[0],p[2]),surface)).toBeGreaterThan(2.5);

@@ -7,7 +7,7 @@
 1. `aether-assets.blend`をBlender 5.2で開きます。
 2. 地形は`Aether_Meadow`シーン、兵士の原型は`Aether_Army`シーンで編集します。
 3. `Terrain`の名前を保持してください。丘の形を変えても、Web側はこのメッシュの実際の三角形から高さを取得します。
-4. 兵士は`Unit_P/L/N/S/G/B/R/K/A/H`のルート名と、`_ArmL`、`_ArmR`、`_LegL`、`_LegR`、`_Cape`、`_Promotion`の末尾名を保持してください。Webが部位を特定して動かします。`TeamCloth`材質を陣営色に差し替えます。
+4. 兵士は`Unit_P/L/N/S/G/B/R/K/A/H/D`のルート名と、`_ArmL`、`_ArmR`、`_LegL`、`_LegR`、`_Cape`、`_Promotion`の末尾名を保持してください。`D`は成り飛車の龍専用です。Webが部位を特定して動かします。`TeamCloth`材質を陣営色に差し替えます。
 5. `LOD_`から始まるルートは遠景用の派生モデルです。原型の`Unit_`を編集してください。再書き出し時に軽量モデルを自動更新します。
 6. 編集を保存して、次のコマンドで配信用GLBを書き出します。
 
@@ -17,7 +17,7 @@ npm run build
 npm run dev
 ```
 
-`Aether_Meadow`に配置された10体はプレビュー用のサンプルです。エクスポーターは`Unit_`から始まるルート配下とカメラ・ライトを地形GLBから除外します。兵士の正式な原型は`Aether_Army`で編集してください。
+`Aether_Meadow`に配置された11体はプレビュー用のサンプルです。エクスポーターは`Unit_`から始まるルート配下とカメラ・ライトを地形GLBから除外します。兵士の正式な原型は`Aether_Army`で編集してください。
 
 ## 座標と性能
 
@@ -27,7 +27,7 @@ npm run dev
 - 高低差は演出用です。中央の地形は連続した一枚のメッシュとして保ち、穴や重なる地面、急な崖は周囲へ配置してください。
 - 金属・布・装飾はPBR材質と頂点カラーで表現しています。プロシージャル材質を追加するときは、GLBで再現できる材質に変換・ベイクしてください。
 - Webでは部位別にメッシュを結合してインスタンス描画します。遠景は軽量モデル、近景は詳細な部位と動きを表示。通常の兵士原型を1.25倍で配置し、スマホでは各部隊を6人で表現します。
-- 現在のGLBは約23.32MiB、テクスチャは約6.73MiB。検証上限は素材合計34MiB、500描画呼び出し未満、PC110万三角形未満、スマホ全景60万三角形未満です。
+- 現在のGLBは約24.18MiB、テクスチャは約6.73MiB。検証上限は素材合計34MiB、500描画呼び出し未満、PC110万三角形未満、スマホ全景60万三角形未満です。
 
 ## 原型を再生成する場合
 
@@ -47,11 +47,11 @@ npm run dev
 - [Blender glTF 2.0](https://docs.blender.org/manual/en/latest/addons/import_export/scene_gltf2.html)
 - Three.jsの同梱コードのライセンスは`dist/vendor/THREE-LICENSE.txt`に保存しています。
 
-## 飛車の竜武者
+## 飛車の騎馬武者と成り後の龍
 
-`Unit_R`はドラゴンと騎手を一体として扱います。`_WingL`、`_WingR`、`_Tail`、`_ForelegL/R`、`_HindlegL/R`の部位名を保持してください。Web側で地上約3.5mを基準に浮かせ、翼と尾を全景でも動かします。中列はさらに1.3m高く配置します。成り用の竜の頭部装甲は`_Promotion`配下です。
+通常の飛車は`Unit_R`の馬と騎馬武者、成った飛車は`Unit_D`の東洋の龍と武者を使います。`D`は表示専用で、将棋の駒種は`R`のままです。両方とも8騎（スマホでは6騎）の配置を維持します。馬は地上、成り後の龍だけを地上約3.5mで浮遊させ、中列はさらに1.3m高くします。捕獲して打ち直すと通常の馬へ戻ります。
 
-原型を作り直す場合は`scripts/dragon.py`（竜）と`samurai.py`（騎手）を編集します。次の更新スクリプトは飛車とそのサンプルだけを置き換え、他の地形・兵士のメッシュが変化していないことを確認して保存します。手で編集した飛車を残す場合は、通常の`export_assets.py`を使ってください。
+馬は`scripts/warhorse.py`、龍は`eastern_dragon.py`、騎手は`samurai.py`で作成します。龍は翼のない長い胴、腹板、鱗、枝角、ひげ、たてがみ、四肢と爪を備えます。`_Tail`、`_ForelegL/R`、`_HindlegL/R`の部位名と、龍の`_Antlers`、`_WhiskersMane`を保持してください。角とひげは遠景でも形を残します。次の更新スクリプトは飛車の2原型・LOD・サンプルだけを置き換え、他の地形・兵士とLODのメッシュ、地形GLBが変化していないことを確認して保存します。手編集を残す場合は通常の`export_assets.py`を使ってください。
 
 ```powershell
 & 'C:/Program Files/Blender Foundation/Blender 5.2/blender.exe' --background assets/blender/aether-assets.blend --python scripts/update_rook.py

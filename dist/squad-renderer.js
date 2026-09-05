@@ -54,7 +54,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
       // A legal position can hold all 18 pawns on one side: 216 members.
       // Up to eight transient captured squads may coexist with the logical position.
       const mesh=new T.InstancedMesh(spec.geometry,material,384);
-      mesh.userData={flying:spec.key.startsWith('R:'),cells:[]};
+      mesh.userData={flying:spec.key.startsWith('D:'),cells:[]};
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.count=0;
       mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;
       scene.add(mesh);batches.set(spec.key,mesh);
@@ -66,21 +66,22 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     // Hysteresis prevents flicker when a squad lies on the detail boundary.
     for(const s of squads){const d=camera.position.distanceTo(new T.Vector3(s.x,h(s.x,s.z),s.z));s.near=d<(s.near?98:88);}
     const nearKey=squads.map(s=>+s.near).join('');
-    const animate=!reducedMotion&&squads.some(s=>s.near||s.moving||s.retreat||s.piece.t==='R');
+    const animate=!reducedMotion&&squads.some(s=>s.near||s.moving||s.retreat||(s.piece.t==='R'&&s.piece.p));
     if(!dirty&&!force&&!animate&&nearKey===previousNear)return false;
     previousNear=nearKey;dirty=false;detailed=0;represented=0;
     for(const b of batches.values()){b.count=0;b.visible=false;}
     for(const s of squads){
       const heading=s.heading??(s.piece.s?Math.PI:0),cos=Math.cos(heading),sin=Math.sin(heading);
       if(s.near)detailed++;
-      s.members??=formation(s.piece.t,mobile);
+      const memberKey=s.piece.t+Number(s.piece.p);
+      if(s.memberKey!==memberKey){s.members=formation(s.piece.t,mobile,s.piece.p);s.memberKey=memberKey;s.contacts=[];}
       for(let j=0;j<s.members.length;j++){
         const m=s.members[j],phase=time*10+j*1.3;
         // Followers start in sequence, then close ranks on arrival.
         const lag=s.moving?Math.sin(Math.PI*s.progress)*j*.14:0;
         const mx=m.x+(s.moving?Math.sin(phase)*.035:0),mz=m.z+lag;
         const x=s.x+mx*cos+mz*sin,z=s.z-mx*sin+mz*cos;
-        const flying=m.type==='R';
+        const flying=m.type==='D';
         const lift=flying?SQUADS.R.flightHeight+(m.altitudeOffset??0)+(reducedMotion?0:Math.sin(time*2.4+j*.9)*.16+(s.moving?Math.sin(Math.PI*s.progress)*.6:0)):s.moving?Math.abs(Math.sin(phase))*.065:0;
         const y=h(x,z)+.025+lift;
         s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying,model:m.type};
@@ -95,8 +96,8 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
             if(spec.part==='Cape')swing=Math.sin(time*2+j)*.08;
             else if(spec.part.startsWith('Wing'))wing=(Math.sin(time*(s.moving?7:5)+j*.9)*.62-.12)*sign;
             else if(spec.part==='Tail')tail=Math.sin(time*2+j)*.09;
-            else if((m.type==='R'||m.type==='N')&&spec.part.startsWith('Leg'))swing=0;
-            else if(/^(Foreleg|Hindleg)/.test(spec.part))swing=spec.part.startsWith('Fore')?.55:-.55;
+            else if(['R','N','D'].includes(m.type)&&spec.part.startsWith('Leg'))swing=0;
+            else if(/^(Foreleg|Hindleg)/.test(spec.part))swing=flying?(spec.part.startsWith('Fore')?.32:-.28):s.moving?Math.sin(phase+(spec.part.startsWith('Hind')?Math.PI:0))*.48*sign:0;
             else if(spec.part!=='Body')swing=s.moving?Math.sin(phase)*.27*sign:Math.sin(time*1.8+j)*.015;
             if(spec.part==='ArmR')swing-=s.attack||0;
           }
@@ -122,6 +123,6 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     const hit=ray.intersectObjects(meshes,false)[0];
     return hit?{point:hit.point,distance:hit.distance}:null;
   }
-  return {setSquads,update,pickFlying,pickSurface,stats:()=>({soldiers:squads.reduce((n,s)=>n+SQUADS[s.piece.t].count,0),representedSoldiers:represented,flyingRiders:squads.filter(s=>s.piece.t==='R').reduce((n,s)=>n+(s.members?.length??0),0),detailedSquads:detailed,instanceBatches:[...batches.values()].filter(b=>b.visible).length}),
+  return {setSquads,update,pickFlying,pickSurface,stats:()=>({soldiers:squads.reduce((n,s)=>n+SQUADS[s.piece.t].count,0),representedSoldiers:represented,flyingRiders:squads.filter(s=>s.piece.t==='R'&&s.piece.p).reduce((n,s)=>n+(s.members?.length??0),0),detailedSquads:detailed,instanceBatches:[...batches.values()].filter(b=>b.visible).length}),
     contacts:()=>squads.flatMap(s=>(s.contacts||[]).map(p=>({...p,cell:s.cell,ground:h(p.x,p.z)})))};
 }

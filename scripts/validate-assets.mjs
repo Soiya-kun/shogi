@@ -18,7 +18,7 @@ for(const name of ['meadow','army']) {
   const data=parseGLB(bytes);
   assert(data.buffers.every(b=>!b.uri),'GLB must be self-contained');
   assert(!data.images?.length,'Current artwork uses portable vertex colors');
-  const required=name==='army'?['P','L','N','S','G','B','R','K','A','H'].flatMap(t=>['Unit_'+t,'LOD_'+t]):['Terrain'];
+  const required=name==='army'?['P','L','N','S','G','B','R','K','A','H','D'].flatMap(t=>['Unit_'+t,'LOD_'+t]):['Terrain'];
   for(const n of required)assert(data.nodes.some(o=>o.name===n),`Missing ${n}`);
   const triangles=data.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+data.accessors[p.indices].count/3,0);
   reports[name]={bytes:bytes.length,triangles,meshes:data.meshes.length};
@@ -26,7 +26,7 @@ for(const name of ['meadow','army']) {
     const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length),'');
     gltf.scene.updateMatrixWorld(true);
     for(const prefix of ['Unit_','LOD_']){
-      for(const role of ['P','L','N','S','G','B','R','K','A','H']){
+      for(const role of ['P','L','N','S','G','B','R','K','A','H','D']){
         const unit=gltf.scene.getObjectByName(prefix+role);assert.equal(unit.userData.style,'sengoku_fantasy');
         const parts=role==='B'?['Eboshi','Kariginu','RitualStaff']:['P','L','A'].includes(role)?['Jingasa']:['Kabuto','Maedate'];
         if(['P','L'].includes(role))parts.push('Yari','Sashimono');
@@ -46,21 +46,25 @@ for(const name of ['meadow','army']) {
         let found=false;archer.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Archer missing ${prefix}${part}`);
       }
       // Mixed squads must resolve each member's model and fit with its equipment.
-      for(const type of Object.keys(SQUADS))for(const compact of [false,true])for(const m of formation(type,compact)){
+      for(const type of Object.keys(SQUADS))for(const compact of [false,true])for(const promoted of [false,true])for(const m of formation(type,compact,promoted)){
         const model=gltf.scene.getObjectByName(prefix+m.type);assert(model,`Missing squad member ${prefix}${m.type}`);
         const bounds=new Box3().setFromObject(model);
         for(const x of [bounds.min.x,bounds.max.x])assert(Math.abs(m.x+x*1.25)<6,`${type}/${m.type} equipment exceeds cell width`);
         for(const z of [bounds.min.z,bounds.max.z])assert(Math.abs(m.z+z*1.25)<6,`${type}/${m.type} equipment exceeds cell depth`);
       }
-      const root=gltf.scene.getObjectByName(prefix+'R');assert.equal(root.userData.mount,'dragon');
-      for(const part of ['WingL','WingR','Tail','ForelegL','ForelegR','HindlegL','HindlegR','Promotion']){
-        let found=false;root.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Dragon missing ${part}`);
+      const horse=gltf.scene.getObjectByName(prefix+'R');assert.equal(horse.userData.mount,'horse');
+      const root=gltf.scene.getObjectByName(prefix+'D');assert.equal(root.userData.mount,'eastern_dragon');
+      for(const mount of [horse,root])for(const part of ['Tail','ForelegL','ForelegR','HindlegL','HindlegR','Promotion']){
+        let found=false;mount.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Mount missing ${part}`);
       }
+      for(const part of ['SerpentineBody','DragonHead','Antlers','WhiskersMane','Scales']){let found=false;root.traverse(o=>{if(o.isMesh&&o.name.endsWith('_'+part))found=true;});assert(found,`Eastern dragon missing ${part}`);}
+      root.traverse(o=>assert(!/Wing|Membrane/.test(o.name),'Eastern dragons must have no wings'));
+      assert(new Box3().setFromObject(horse).min.y>=-.002,'Horse hooves must meet the ground');
       const bounds=new Box3().setFromObject(root);
       assert((bounds.max.y-bounds.min.y)*1.25>3,'Mounted rider silhouette must exceed 3m');
       assert((bounds.max.z-bounds.min.z)*1.25>4,'Dragon must retain its head and tail in LOD');
-      for(const compact of [false,true])for(const m of formation('R',compact)){
-        for(const x of [bounds.min.x,bounds.max.x])assert(Math.abs(m.x+x*1.25)<6,'Dragon wings exceed cell');
+      for(const compact of [false,true])for(const m of formation('R',compact,true)){
+        for(const x of [bounds.min.x,bounds.max.x])assert(Math.abs(m.x+x*1.25)<6,'Dragon whiskers exceed cell');
         for(const z of [bounds.min.z,bounds.max.z])assert(Math.abs(m.z+z*1.25)<6,'Dragon tail exceeds cell');
       }
     }

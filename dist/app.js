@@ -2,7 +2,7 @@ import {createBattlefield} from './battlefield.js';
 import {check,names,roles} from './rules.mjs';
 import {GameController} from './game-controller.mjs';
 import {OPENINGS,ORDERS} from './ai/strategy-policy.mjs';
-import {SQUADS} from './formations.mjs';
+import {squadSpec} from './formations.mjs';
 
 const $=s=>document.querySelector(s), storageKey='aether-shogi-v1';
 let saved;try{saved=JSON.parse(localStorage.getItem(storageKey));}catch{}
@@ -12,7 +12,7 @@ const match=controller.match;
 const promotion=$('#promotion');
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
 function save(){try{localStorage.setItem(storageKey,JSON.stringify(controller.serialize()));}catch{toast('このブラウザでは対局を保存できません');}}
-function showUnit(p){$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+SQUADS[p.t].name:'部隊を選択';$('#unitdesc').textContent=p?SQUADS[p.t].count+(SQUADS[p.t].unit||'人')+' · '+SQUADS[p.t].formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
+function showUnit(p){const spec=p?squadSpec(p.t,p.p):null;$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+spec.name:'部隊を選択';$('#unitdesc').textContent=p?spec.count+(spec.unit||'人')+' · '+spec.formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
 function refresh(){
   const g=match.g;
   $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の武士団':'蒼の武士団';
@@ -31,7 +31,7 @@ function refresh(){
 }
 async function finish(m){
   if(!controller.canPlay)return;selected=null;moves=[];
-  try{const {after,m:move}=await controller.play(m);if(move.promote)toast('部隊昇格 / '+SQUADS[after.b[move.to].t].name);if(match.end)toast(match.end);}
+  try{const {after,m:move}=await controller.play(m);if(move.promote)toast('部隊昇格 / '+squadSpec(after.b[move.to].t,true).name);if(match.end)toast(match.end);}
   catch(error){toast(error.message);}finally{showUnit(null);refresh();}
 }
 function pick(i){

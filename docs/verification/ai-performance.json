@@ -1,14 +1,14 @@
 {
-  "meanFrameMs": 13.419666666613677,
-  "p95FrameMs": 13.390000000000327,
+  "meanFrameMs": 13.246833332962463,
+  "p95FrameMs": 13.405000000000655,
   "units": 40,
   "ghosts": 0,
   "activeMotions": 2,
   "soldiers": 392,
   "representedSoldiers": 392,
-  "flyingRiders": 16,
+  "flyingRiders": 0,
   "detailedSquads": 0,
-  "instanceBatches": 26,
+  "instanceBatches": 22,
   "fieldWidth": 108,
   "quality": "full",
   "zoom": 185,
@@ -22,13 +22,13 @@
     0,
     0
   ],
-  "drawCalls": 234,
-  "triangles": 598199,
-  "geometries": 77,
+  "drawCalls": 230,
+  "triangles": 594599,
+  "geometries": 71,
   "textures": 46,
-  "averageRenderMs": 3.8833630950677964,
+  "averageRenderMs": 2.821036585656608,
   "busy": true,
-  "lastTime": 9091.015,
+  "lastTime": 7064.805,
   "ai": {
     "phase": "ai-thinking",
     "animations": 2,
@@ -49,23 +49,23 @@
       null
     ],
     "notices": [
-      "守備で判断",
-      "戦法の形を継続"
+      "この局面では作戦指示を優先",
+      "反撃狙いで判断"
     ],
     "activeRequest": {
-      "gameId": "edac7514-c9d9-42b6-abed-c1c13611d796",
-      "positionRevision": 11,
+      "gameId": "3fa9f5a6-f42b-42d7-a5ad-298398b6ac23",
+      "positionRevision": 10,
       "policyRevision": 8,
-      "requestId": "edac7514-c9d9-42b6-abed-c1c13611d796:15",
-      "side": 1,
-      "opening": "static",
-      "order": "counter",
+      "requestId": "3fa9f5a6-f42b-42d7-a5ad-298398b6ac23:14",
+      "side": 0,
+      "opening": "fourth",
+      "order": "defend",
       "limits": {
         "nodes": 50000,
         "timeMs": 1500
       },
-      "position": "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 6g6f 5c5d 3i4h 2b3c 7i7h 6c6d 5g5f 7c7d 9g9f",
-      "legalCount": 41,
+      "position": "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 6g6f 5c5d 3i4h 8c8d 5g5f 4c4d 3g3f 8d8e",
+      "legalCount": 29,
       "openingMoves": []
     },
     "engine": {
@@ -114,24 +114,24 @@
         "FV_SCALE"
       ]
     },
-    "positionRevision": 11,
+    "positionRevision": 10,
     "policyRevision": 8,
     "lastDecision": {
-      "side": 0,
+      "side": 1,
       "policy": {
         "enabled": true,
-        "opening": "fourth",
-        "order": "defend"
+        "opening": "static",
+        "order": "counter"
       },
       "plan": {
-        "state": "suspended",
+        "state": "continuing",
         "moves": [],
-        "message": "この局面では作戦指示を優先"
+        "message": "戦法の形を継続"
       },
       "choice": {
         "m": {
-          "from": 54,
-          "to": 45,
+          "from": 28,
+          "to": 37,
           "promote": false
         },
         "selected": {
@@ -139,33 +139,30 @@
           "rank": 1,
           "score": {
             "type": "cp",
-            "value": 63,
+            "value": -8,
             "bound": null
           },
           "pv": [
-            "9g9f",
-            "7a6b",
-            "2g2f",
-            "8c8d",
-            "8h7g",
-            "8a7c",
-            "3g3f",
-            "6a5b",
-            "4i5h",
-            "3a2b",
-            "2i3g",
-            "1c1d",
-            "2f2e",
-            "4c4d",
-            "1g1f",
             "8d8e",
-            "4g4f"
+            "8h7g",
+            "3a3b",
+            "2g2f",
+            "2b3a",
+            "7i8h",
+            "8e8f",
+            "8g8f",
+            "3a8f",
+            "7g8f",
+            "8b8f",
+            "6i7h",
+            "8f8b",
+            "4i5h"
           ],
-          "usi": "9g9f"
+          "usi": "8d8e"
         },
-        "reason": "守備で判断"
+        "reason": "反撃狙いで判断"
       },
-      "requestId": "edac7514-c9d9-42b6-abed-c1c13611d796:14"
+      "requestId": "3fa9f5a6-f42b-42d7-a5ad-298398b6ac23:13"
     }
   }
 }

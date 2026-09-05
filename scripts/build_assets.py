@@ -88,7 +88,7 @@ def field():
     return create_field()
 
 SILVER=(.43,.53,.57); TRIM=(.61,.39,.10); DARK=(.055,.069,.08); LEATHER=(.13,.07,.032); SKIN=(.60,.34,.19); WHITE=(.71,.76,.71)
-ROLES=['P','L','N','S','G','B','R','K','A','H']
+ROLES=['P','L','N','S','G','B','R','K','A','H','D']
 
 def soldiers(roles=None,write_assets=True):
     s=new_scene('Aether_Army')
@@ -120,7 +120,7 @@ def make_lods(scene,roles=None):
             if node.type=='MESH':
                 node.data=obj.data.copy()
                 mod=node.modifiers.new('Distant simplification','DECIMATE')
-                mod.ratio=1 if obj.name.endswith(('_Bowstring','_Arrows')) else .70 if 'WingMembrane' in obj.name or obj.name.endswith(('_Bow','_Tachi','_Maedate','_Sashimono')) else .45 if obj.name.startswith('H_') else .23
+                mod.ratio=1 if obj.name.endswith(('_Bowstring','_Arrows','_Antlers','_WhiskersMane')) else .70 if obj.name.endswith(('_Bow','_Tachi','_Maedate','_Sashimono')) else .45 if obj.name.startswith(('H_','D_')) else .23
                 bpy.context.view_layer.objects.active=node
                 bpy.ops.object.modifier_apply(modifier=mod.name)
             for child in obj.children: copy_low(child,node)
