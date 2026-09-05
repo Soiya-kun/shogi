@@ -89,18 +89,18 @@ def field():
 
 SILVER=(.43,.53,.57); TRIM=(.61,.39,.10); DARK=(.055,.069,.08); LEATHER=(.13,.07,.032); SKIN=(.60,.34,.19); WHITE=(.71,.76,.71)
 
-def soldiers():
+def soldiers(roles=None,write_assets=True):
     s=new_scene('Aether_Army')
-    hard=vertex_material('Armor',.62,.38)
-    soft=vertex_material('Details',.05,.8)
-    team=material('TeamCloth',(.04,.22,.46),0,.8)
-    for role in ['P','L','N','S','G','B','R','K']:
+    hard=bpy.data.materials.get('Armor') or vertex_material('Armor',.62,.38)
+    soft=bpy.data.materials.get('Details') or vertex_material('Details',.05,.8)
+    team=bpy.data.materials.get('TeamCloth') or material('TeamCloth',(.04,.22,.46),0,.8)
+    for role in roles or ['P','L','N','S','G','B','R','K']:
         root=empty('Unit_'+role)
         root['piece']=role
         body=empty(role+'_Body',root)
         armor=Builder(); detail=Builder(); cloth=Builder()
-        ride=.34 if role=='N' else 0
-        broad=1.20 if role=='R' else 1.06 if role in ['K','G'] else 1
+        ride=.83 if role=='R' else .34 if role=='N' else 0
+        broad=1.10 if role=='R' else 1.06 if role in ['K','G'] else 1
         # Layered cuirass, skirt, belt, articulated neck and a shaped closed helmet.
         armor.ring(0,.69+ride,0,[(0,.20*broad,.135),(.08,.25*broad,.16),(.29,.29*broad,.18),(.38,.18,.12)],SILVER,12)
         cloth.ring(0,.47+ride,0,[(0,.27,.20),(.21,.20,.15)],WHITE,10)
@@ -124,8 +124,7 @@ def soldiers():
         if role in ['G','S','L']:
             cloth.orb(0,1.44+ride,.035,.045,.19,.11,WHITE,8,5)
         if role=='R':
-            armor.box(0,.93,0,.57,.30,.37,SILVER)
-            for xx in [-.18,0,.18]: armor.box(xx,.92,-.202,.06,.24,.025,TRIM)
+            cloth.orb(0,1.46+ride,.045,.045,.20,.12,WHITE,8,5)
         if role=='B':
             cloth.ring(0,.35,0,[(0,.31,.24),(.46,.20,.15)],WHITE,12)
             cloth.ring(0,1.36,0,[(0,.24,.22),(.04,.18,.16),(.38,.005,.005)],WHITE,10)
@@ -152,8 +151,8 @@ def soldiers():
             a.ring(side*.32,.72+ride,-.02,[(0,.084,.088),(.05,.084,.088)],TRIM,8)
             a.orb(side*.32,.63+ride,-.025,.085,.085,.075,LEATHER,8,5)
             if side==1:
-                if role in ['P','L','G']:
-                    top=1.85 if role=='L' else 1.58
+                if role in ['P','L','G','R']:
+                    top=1.85 if role=='L' else 1.74 if role=='R' else 1.58
                     a.rod((.36,.10+ride,-.09),(.36,top+ride,-.09),.022,LEATHER)
                     a.add([(.36,top+.23+ride,-.09),(.29,top-.04+ride,-.09),(.43,top-.04+ride,-.09),(.36,top-.04+ride,-.14),(.36,top-.04+ride,-.04)],[(0,1,3),(0,3,2),(0,2,4),(0,4,1)],SILVER)
                     a.box(.36,top-.03+ride,-.09,.17,.035,.06,TRIM)
@@ -161,15 +160,11 @@ def soldiers():
                     a.rod((.36,.12,-.09),(.36,1.63,-.09),.027,TRIM)
                     a.orb(.36,1.73,-.09,.11,.16,.10,(.05,.65,.56),8,4)
                     a.ring(.36,1.57,-.09,[(0,.12,.11),(.065,.13,.12)],TRIM)
-                elif role=='R':
-                    a.rod((.39,.30,-.09),(.39,1.36,-.09),.04,LEATHER)
-                    a.box(.39,1.34,-.09,.43,.24,.24,SILVER)
-                    a.box(.39,1.34,-.09,.13,.26,.26,TRIM)
                 else:
                     a.rod((.34,.5+ride,-.12),(.34,.77+ride,-.12),.035,LEATHER)
                     a.box(.34,.76+ride,-.12,.24,.043,.063,TRIM)
                     a.add([(.295,.79+ride,-.12),(.385,.79+ride,-.12),(.37,1.27+ride,-.12),(.34,1.42+ride,-.12),(.31,1.27+ride,-.12),(.34,.86+ride,-.165)],[(0,1,5),(1,2,5),(2,3,5),(3,4,5),(4,0,5),(4,3,2,1,0)],SILVER)
-            elif role not in ['B','N']:
+            elif role not in ['B','N','R']:
                 # Kite shield with metal border, colored inset and raised crest.
                 for scale,zz,col in [(1,-.18,TRIM),(.85,-.195,(.035,.12,.20))]:
                     points=[(-.33+xx*scale,.70+ride+hh*scale,zz) for xx,hh in [(-.18,.22),(.18,.22),(.20,-.04),(0,-.32),(-.20,-.04)]]
@@ -178,6 +173,15 @@ def soldiers():
                 a.box(-.33,.79+ride,-.22,.17,.025,.024,TRIM)
             a.obj(role+'_ArmMesh'+str(side),hard,arm,pivot)
         for side in [-1,1]:
+            if role=='R':
+                pivot=(side*.20,.62+ride,.04);leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot);a=Builder()
+                knee=(side*.43,1.17,-.21);boot=(side*.48,.91,-.16)
+                a.rod(pivot,knee,.078,DARK);a.rod(knee,boot,.07,SILVER)
+                a.orb(*knee,.095,.09,.075,SILVER,8,4)
+                a.box(side*.49,.90,-.24,.14,.13,.25,LEATHER)
+                a.box(side*.49,.94,-.29,.14,.06,.15,SILVER)
+                a.obj(role+'_LegMesh'+str(side),hard,leg,pivot)
+                continue
             pivot=(side*.12,.62+ride,0); leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot); a=Builder()
             a.rod((side*.12,.18+ride,0),(side*.12,.61+ride,0),.075,DARK)
             a.box(side*.12,.29+ride,-.065,.135,.25,.09,SILVER)
@@ -196,8 +200,12 @@ def soldiers():
         for side in [-1,1]:
             a.ring(side*.29,1.11+ride,0,[(0,.13,.15),(.10,.11,.12),(.18,0,0)],TRIM,8)
         a.obj(role+'_AscendedCrest',hard,promote)
-    make_lods(s)
-    export(s,'army.glb')
+        if role=='R':
+            from dragon import dragon
+            dragon(root,soft,hard,team,promote)
+    if write_assets:
+        make_lods(s)
+        export(s,'army.glb')
     return s
 
 def make_lods(scene):
@@ -211,7 +219,7 @@ def make_lods(scene):
             scene.collection.objects.link(node); node.parent=parent
             if node.type=='MESH':
                 node.data=obj.data.copy()
-                mod=node.modifiers.new('Distant simplification','DECIMATE'); mod.ratio=.23
+                mod=node.modifiers.new('Distant simplification','DECIMATE'); mod.ratio=.70 if 'WingMembrane' in obj.name else .23
                 bpy.context.view_layer.objects.active=node
                 bpy.ops.object.modifier_apply(modifier=mod.name)
             for child in obj.children: copy_low(child,node)

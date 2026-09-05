@@ -5,14 +5,19 @@ export const SQUADS={
   N:{name:'騎兵隊',count:6,formation:'楔形隊形',kind:'wedge',spacing:2.0},
   S:{name:'剣士隊',count:8,formation:'散開隊形',kind:'block',cols:4,spacing:1.95},
   G:{name:'近衛隊',count:9,formation:'方陣',kind:'block',cols:3,spacing:1.8},
-  R:{name:'重装隊',count:8,formation:'盾壁',kind:'block',cols:4,spacing:1.9},
+  R:{name:'竜騎士隊',count:8,unit:'騎',formation:'飛行隊形',kind:'flight',spacing:3.8,flightHeight:3.5},
   B:{name:'魔導隊',count:6,formation:'護衛陣形',kind:'guard',spacing:2.0},
   K:{name:'本陣',count:8,formation:'指揮官と護衛',kind:'guard',spacing:2.0},
 };
 export function formation(type, compact=false) {
   const spec=SQUADS[type];if(!spec)throw new Error('Unknown squad '+type);
   const out=[];
-  if(spec.kind==='wedge') {
+  if(spec.kind==='flight') {
+    for(let row=0;row<3;row++){
+      const n=row===1?2:3;
+      for(let col=0;col<n;col++)out.push({x:(col-(n-1)/2)*spec.spacing,z:(row-1)*3.1,altitudeOffset:row===1?1.3:0,type});
+    }
+  } else if(spec.kind==='wedge') {
     for(let row=0;row<3;row++)for(let col=0;col<=row;col++)out.push({x:(col-row/2)*spec.spacing,z:row*1.9-1.9,type});
   } else if(spec.kind==='guard') {
     out.push({x:0,z:0,type});
@@ -20,7 +25,7 @@ export function formation(type, compact=false) {
     for(let i=0;i<n;i++){const a=Math.PI*2*i/n;out.push({x:Math.cos(a)*2.8,z:Math.sin(a)*2.4,type:type==='K'?'G':'S'});}
   } else {
     const rows=Math.ceil(spec.count/spec.cols);
-    for(let i=0;i<spec.count;i++)out.push({x:(i%spec.cols-(spec.cols-1)/2)*spec.spacing,z:(Math.floor(i/spec.cols)-(rows-1)/2)*1.85,type});
+    for(let i=0;i<spec.count;i++)out.push({x:(i%spec.cols-(spec.cols-1)/2)*spec.spacing,z:(Math.floor(i/spec.cols)-(rows-1)/2)*(spec.rowSpacing??1.85),type});
   }
   // Coarse quality reduces representation only; rules, hands and roster stay identical.
   return compact&&out.length>6 ? Array.from({length:6},(_,i)=>out[Math.floor(i*out.length/6)]) : out;

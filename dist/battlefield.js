@@ -131,8 +131,10 @@ export async function createBattlefield(canvas,onPick) {
       // The full cell is the squad hit area, including gaps between members.
       const hit=ray.intersectObject(ground)[0],groundCell=hit?cellAt(hit.point.x,hit.point.z):null;
       const marker=ray.intersectObjects(instances.flatMap(s=>s.banner.children.filter(c=>c.visible)),false)[0];
+      const flying=armyView.pickFlying(ray);
       // A label can cover a legal destination; movement keeps priority there.
-      const i=availableTargets.has(groundCell)?groundCell:marker?.object.userData.cell??groundCell;
+      const unitCell=flying&&(!marker||flying.distance<marker.distance)?flying.cell:marker?.object.userData.cell;
+      const i=availableTargets.has(groundCell)?groundCell:unitCell??groundCell;
       if(i!==null){focusCell=i;onPick(i);}
     }pointers.delete(e.pointerId);down=null;if(pointers.size===0)pinch=null;
   });
@@ -161,5 +163,6 @@ export async function createBattlefield(canvas,onPick) {
     labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels;return labels;},
     diagnostics:()=>({units:instances.length,...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
     contacts:armyView.contacts,projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
+    projectFlying:i=>{const member=armyView.contacts().find(p=>p.cell===i&&p.airborne),p=new T.Vector3(member.x,member.y+1.1,member.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectBanner:i=>{const s=instances.find(s=>s.cell===i),p=s.badge.getWorldPosition(new T.Vector3()).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},height:h};
 }

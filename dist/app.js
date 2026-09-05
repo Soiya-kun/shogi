@@ -10,7 +10,7 @@ let view,selected=null,moves=[],busy=false;
 const promotion=$('#promotion');
 function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
 function save(){try{localStorage.setItem(storageKey,JSON.stringify(match.serialize()));}catch{toast('このブラウザでは対局を保存できません');}}
-function showUnit(p){$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+SQUADS[p.t].name:'部隊を選択';$('#unitdesc').textContent=p?SQUADS[p.t].count+'人 · '+SQUADS[p.t].formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
+function showUnit(p){$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+SQUADS[p.t].name:'部隊を選択';$('#unitdesc').textContent=p?SQUADS[p.t].count+(SQUADS[p.t].unit||'人')+' · '+SQUADS[p.t].formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
 function refresh(){
   const g=match.g;
   $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の騎士団':'蒼の騎士団';
@@ -56,7 +56,7 @@ $('#reset').onclick=()=>{if(busy||!view||!confirm('対局を最初から始め�
 refresh();
 try {
   view=await createBattlefield($('#scene'),pick);view.draw(match.g.b);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';
-  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,projectCell:view.projectCell,projectBanner:view.projectBanner,height:view.height,contacts:view.contacts,state:()=>structuredClone(match.serialize())};
+  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,height:view.height,contacts:view.contacts,state:()=>structuredClone(match.serialize())};
 } catch(error) {
   console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);
 }

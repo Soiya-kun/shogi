@@ -21,7 +21,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
       let branch=o,part='Body',pivot=new T.Vector3(),promotion=false;
       while(branch&&branch!==root){
         if(branch.name.endsWith('_Promotion'))promotion=true;
-        if(near&&/_(ArmL|ArmR|LegL|LegR|Cape)$/.test(branch.name)){
+        if((near&&/_(ArmL|ArmR|LegL|LegR|Cape|ForelegL|ForelegR|HindlegL|HindlegR)$/.test(branch.name))||/_(WingL|WingR|Tail)$/.test(branch.name)){
           part=branch.name.split('_').at(-1);pivot.setFromMatrixPosition(branch.matrixWorld);
         }
         branch=branch.parent;
@@ -53,6 +53,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     if(!batches.has(spec.key)) {
       // A legal position can hold all 18 pawns on one side: 216 members.
       const mesh=new T.InstancedMesh(spec.geometry,material,256);
+      mesh.userData={flying:spec.key.startsWith('R:'),cells:[]};
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.count=0;
       mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;
       scene.add(mesh);batches.set(spec.key,mesh);
@@ -64,7 +65,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     // Hysteresis prevents flicker when a squad lies on the detail boundary.
     for(const s of squads){const d=camera.position.distanceTo(new T.Vector3(s.x,h(s.x,s.z),s.z));s.near=d<(s.near?98:88);}
     const nearKey=squads.map(s=>+s.near).join('');
-    const animate=!reducedMotion&&squads.some(s=>s.near||s.moving||s.retreat);
+    const animate=!reducedMotion&&squads.some(s=>s.near||s.moving||s.retreat||s.piece.t==='R');
     if(!dirty&&!force&&!animate&&nearKey===previousNear)return false;
     previousNear=nearKey;dirty=false;detailed=0;represented=0;
     for(const b of batches.values()){b.count=0;b.visible=false;}
@@ -78,23 +79,28 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
         const lag=s.moving?Math.sin(Math.PI*s.progress)*j*.14:0;
         const mx=m.x+(s.moving?Math.sin(phase)*.035:0),mz=m.z+lag;
         const x=s.x+mx*cos+mz*sin,z=s.z-mx*sin+mz*cos;
-        const lift=s.moving?Math.abs(Math.sin(phase))*.065:0;
+        const flying=m.type==='R';
+        const lift=flying?SQUADS.R.flightHeight+(m.altitudeOffset??0)+(reducedMotion?0:Math.sin(time*2.4+j*.9)*.16+(s.moving?Math.sin(Math.PI*s.progress)*.6:0)):s.moving?Math.abs(Math.sin(phase))*.065:0;
         const y=h(x,z)+.025+lift;
-        s.contacts??=[];s.contacts[j]={x,y:y-lift,z};
+        s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying};
         for(const spec of compile(m.type,s.piece.s,s.piece.p,s.near)){
           const mesh=batch(spec),p=spec.pivot;
           const size=s.scale??1;
           unit.position.set(x+(p.x*cos+p.z*sin)*size,y+p.y*size,z+(-p.x*sin+p.z*cos)*size);
           unit.rotation.set(0,heading,0);
-          let swing=0;
-          if(s.near&&!reducedMotion){
+          let swing=0,wing=0,tail=0;
+          if((s.near||flying)&&!reducedMotion){
             const sign=spec.part.endsWith('L')?1:-1;
             if(spec.part==='Cape')swing=Math.sin(time*2+j)*.08;
+            else if(spec.part.startsWith('Wing'))wing=(Math.sin(time*(s.moving?7:5)+j*.9)*.62-.12)*sign;
+            else if(spec.part==='Tail')tail=Math.sin(time*2+j)*.09;
+            else if(m.type==='R'&&spec.part.startsWith('Leg'))swing=0;
+            else if(/^(Foreleg|Hindleg)/.test(spec.part))swing=spec.part.startsWith('Fore')?.55:-.55;
             else if(spec.part!=='Body')swing=s.moving?Math.sin(phase)*.27*sign:Math.sin(time*1.8+j)*.015;
             if(spec.part==='ArmR')swing-=s.attack||0;
           }
-          unit.rotateX(swing);unit.scale.setScalar(s.scale??1);unit.updateMatrix();
-          mesh.setMatrixAt(mesh.count++,unit.matrix);mesh.visible=true;
+          unit.rotateX(swing);unit.rotateZ(wing);unit.rotateY(tail);unit.scale.setScalar(s.scale??1);unit.updateMatrix();
+          mesh.userData.cells[mesh.count]=s.cell;mesh.setMatrixAt(mesh.count++,unit.matrix);mesh.visible=true;
         }
         represented++;
       }
@@ -102,6 +108,13 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     for(const b of batches.values())if(b.count)b.instanceMatrix.needsUpdate=true;
     return true;
   }
-  return {setSquads,update,stats:()=>({soldiers:squads.reduce((n,s)=>n+SQUADS[s.piece.t].count,0),representedSoldiers:represented,detailedSquads:detailed,instanceBatches:[...batches.values()].filter(b=>b.visible).length}),
+  function pickFlying(ray){
+    const meshes=[...batches.values()].filter(b=>b.visible&&b.count&&b.userData.flying);
+    // Instance bounds change during flight; refresh them only when picking.
+    for(const mesh of meshes)mesh.computeBoundingSphere();
+    const hit=ray.intersectObjects(meshes,false)[0];
+    return hit?{cell:hit.object.userData.cells[hit.instanceId],distance:hit.distance}:null;
+  }
+  return {setSquads,update,pickFlying,stats:()=>({soldiers:squads.reduce((n,s)=>n+SQUADS[s.piece.t].count,0),representedSoldiers:represented,flyingRiders:squads.filter(s=>s.piece.t==='R').reduce((n,s)=>n+(s.members?.length??0),0),detailedSquads:detailed,instanceBatches:[...batches.values()].filter(b=>b.visible).length}),
     contacts:()=>squads.flatMap(s=>(s.contacts||[]).map(p=>({...p,cell:s.cell,ground:h(p.x,p.z)})))};
 }

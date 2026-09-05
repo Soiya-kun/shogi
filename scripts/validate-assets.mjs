@@ -2,6 +2,8 @@ import assert from 'node:assert/strict';
 import {readFile,stat} from 'node:fs/promises';
 import {GLTFLoader} from '../dist/vendor/loaders/GLTFLoader.js';
 import {terrainSampler,cellXZ} from '../dist/terrain.mjs';
+import {Box3} from 'three';
+import {formation} from '../dist/formations.mjs';
 
 // Three imports resolve through the installed dev dependency during offline QA.
 export function parseGLB(buffer) {
@@ -19,6 +21,23 @@ for(const name of ['meadow','army']) {
   for(const n of required)assert(data.nodes.some(o=>o.name===n),`Missing ${n}`);
   const triangles=data.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+data.accessors[p.indices].count/3,0);
   reports[name]={bytes:bytes.length,triangles,meshes:data.meshes.length};
+  if(name==='army'){
+    const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length),'');
+    gltf.scene.updateMatrixWorld(true);
+    for(const prefix of ['Unit_','LOD_']){
+      const root=gltf.scene.getObjectByName(prefix+'R');assert.equal(root.userData.mount,'dragon');
+      for(const part of ['WingL','WingR','Tail','ForelegL','ForelegR','HindlegL','HindlegR','Promotion']){
+        let found=false;root.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Dragon missing ${part}`);
+      }
+      const bounds=new Box3().setFromObject(root);
+      assert((bounds.max.y-bounds.min.y)*1.25>3,'Mounted rider silhouette must exceed 3m');
+      assert((bounds.max.z-bounds.min.z)*1.25>4,'Dragon must retain its head and tail in LOD');
+      for(const compact of [false,true])for(const m of formation('R',compact)){
+        for(const x of [bounds.min.x,bounds.max.x])assert(Math.abs(m.x+x*1.25)<6,'Dragon wings exceed cell');
+        for(const z of [bounds.min.z,bounds.max.z])assert(Math.abs(m.z+z*1.25)<6,'Dragon tail exceeds cell');
+      }
+    }
+  }
   if(name==='meadow') {
     const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length),'');
     gltf.scene.updateMatrixWorld(true);const terrain=gltf.scene.getObjectByName('Terrain');

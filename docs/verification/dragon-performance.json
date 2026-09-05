@@ -1,0 +1,19 @@
+{
+  "meanFrameMs": 13.29777777777778,
+  "p95FrameMs": 13.400000000000546,
+  "units": 40,
+  "soldiers": 392,
+  "representedSoldiers": 392,
+  "flyingRiders": 16,
+  "detailedSquads": 26,
+  "instanceBatches": 99,
+  "fieldWidth": 108,
+  "quality": "full",
+  "drawCalls": 194,
+  "triangles": 859535,
+  "geometries": 149,
+  "textures": 44,
+  "averageRenderMs": 2.556249998509884,
+  "busy": false,
+  "lastTime": 4550.3
+}

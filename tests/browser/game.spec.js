@@ -17,7 +17,8 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   expect(await page.evaluate(()=>window.__aether.diagnostics())).toMatchObject({soldiers:392,representedSoldiers:392,fieldWidth:108,detailedSquads:0});
   const contacts=await page.evaluate(()=>window.__aether.contacts());
   expect(contacts).toHaveLength(392);
-  expect(contacts.every(p=>Math.abs(p.y-p.ground-.025)<.0001)).toBe(true);
+  expect(contacts.filter(p=>p.airborne)).toHaveLength(16);
+  expect(contacts.every(p=>p.airborne?p.y-p.ground>3:Math.abs(p.y-p.ground-.025)<.0001)).toBe(true);
   await cell(page,54);await expect(page.locator('#unitname')).toHaveText('歩兵隊');
   await page.screenshot({path:'docs/verification/desktop-selected.png'});
   await cell(page,45);await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
@@ -90,4 +91,48 @@ test('missing GLB shows retry instead of silently leaving a broken board',async(
   await page.route('**/assets/meadow.glb',route=>route.abort());await page.goto('/');
   await expect(page.getByRole('button',{name:'再読み込み',exact:true})).toBeVisible();
   await expect(page.locator('body')).not.toHaveAttribute('data-ready','true');
+});
+
+test('dragon knights: eight mounted riders, close view, rook movement and dragon-king promotion',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
+  await page.goto('/?debug');await ready(page);
+  const rook=await page.evaluate(()=>window.__aether.state().g.b.findIndex(p=>p?.t==='R'&&p.s===0));
+  await cell(page,rook);await expect(page.locator('#unitname')).toHaveText('竜騎士隊');
+  await expect(page.locator('#unitdesc')).toHaveText('8騎 · 飛行隊形');
+  const first=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
+  expect(first).toHaveLength(16);expect(first.every(p=>p.y-p.ground>3)).toBe(true);
+  await page.waitForTimeout(200);
+  const second=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
+  expect(second.some((p,i)=>Math.abs(p.y-first[i].y)>.005)).toBe(true);
+  await page.locator('#closeView').click();
+  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBeGreaterThan(0);
+  // Turn around the selected squad so the dragons' heads and riders are visible.
+  await page.mouse.move(760,440);await page.mouse.down();await page.mouse.move(320,440,{steps:12});await page.mouse.up();
+  await page.waitForTimeout(1100);await page.screenshot({path:'docs/verification/dragon-knights.png'});
+  const metrics=await measure(page);expect(metrics.drawCalls).toBeLessThan(500);expect(metrics.triangles).toBeLessThan(1100000);
+  await writeFile('docs/verification/dragon-performance.json',JSON.stringify(metrics,null,2));
+  await page.locator('#scene').focus();await page.keyboard.press('ArrowDown');
+  for(let i=0;i<3;i++)await page.keyboard.press('ArrowLeft');await page.keyboard.press('Enter');
+  await expect(page.locator('#unitname')).toHaveText('本陣');
+  const flyingPoint=await page.evaluate(i=>window.__aether.projectFlying(i),rook);await page.mouse.click(flyingPoint.x,flyingPoint.y);
+  await expect(page.locator('#unitname')).toHaveText('竜騎士隊');
+  let g=blank();g.b[40]={t:'R',s:0,p:false};await fixture(page,g);
+  await cell(page,40);await cell(page,22);await expect(page.locator('#promotion')).toBeVisible();
+  await page.getByRole('button',{name:'成る',exact:true}).click();
+  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().busy)).toBe(true);
+  await page.waitForTimeout(220);
+  const airborneMove=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
+  expect(airborneMove).toHaveLength(8);expect(airborneMove.every(p=>p.y-p.ground>3)).toBe(true);
+  expect(airborneMove.reduce((z,p)=>z+p.z,0)/8).toBeLessThan(-1);
+  await settle(page);
+  expect(await page.evaluate(()=>window.__aether.state().g.b[22])).toEqual({t:'R',s:0,p:true});
+  await cell(page,22);await page.locator('#closeView').click();await page.waitForTimeout(1100);
+  await page.screenshot({path:'docs/verification/dragon-promoted.png'});
+  await page.reload();await ready(page);expect(await page.evaluate(()=>window.__aether.state().g.b[22].p)).toBe(true);
+  await page.locator('#undo').click();expect(await page.evaluate(()=>window.__aether.state().g.b[40])).toEqual({t:'R',s:0,p:false});
+  await page.emulateMedia({reducedMotion:'reduce'});await page.reload();await ready(page);
+  const still=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
+  expect(still.every(p=>p.y-p.ground>3)).toBe(true);await page.waitForTimeout(220);
+  expect(await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne))).toEqual(still);
+  expect(errors).toEqual([]);
 });
