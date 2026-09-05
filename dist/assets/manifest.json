@@ -1,0 +1,12 @@
+{
+  "generator": "Blender 5.2.1 LTS",
+  "cellSize": 1.6,
+  "assets": {
+    "army.glb": {
+      "bytes": 1101900
+    },
+    "meadow.glb": {
+      "bytes": 6284716
+    }
+  }
+}

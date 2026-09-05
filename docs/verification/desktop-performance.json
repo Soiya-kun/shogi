@@ -1,0 +1,12 @@
+{
+  "meanFrameMs": 13.222222222222221,
+  "p95FrameMs": 13.400000000000091,
+  "units": 40,
+  "drawCalls": 378,
+  "triangles": 179618,
+  "geometries": 92,
+  "textures": 35,
+  "averageRenderMs": 2.9246445493110547,
+  "busy": false,
+  "lastTime": 3333
+}

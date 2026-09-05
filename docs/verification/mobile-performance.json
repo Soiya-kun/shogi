@@ -1,0 +1,10 @@
+{
+  "units": 40,
+  "drawCalls": 382,
+  "triangles": 180130,
+  "geometries": 90,
+  "textures": 35,
+  "averageRenderMs": 4.34000000386011,
+  "busy": false,
+  "lastTime": 2470.7
+}

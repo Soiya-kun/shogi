@@ -1,43 +1,60 @@
-import * as T from './three.module.js';
-import {initial,legal,apply,check,names,roles,key} from './rules.mjs';
-const $=s=>document.querySelector(s),canvas=$('#scene');let g=initial(),past=[],records=[],end='',selected=null,moves=[],labels=true,angle=0.18,elevation=.86,zoom=15,anim=null;
-try{let a=JSON.parse(localStorage.getItem('aether-shogi-v1'));if(a?.g?.b?.length===81){g=a.g;past=a.past||[];records=a.records||[];end=a.end||'';}}catch{}
-const renderer=new T.WebGLRenderer({canvas,antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.8));renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.setClearColor(0x304b5b);renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.1;
-const scene=new T.Scene();scene.fog=new T.FogExp2(0x304b5b,.022);const camera=new T.PerspectiveCamera(40,1,.1,120);scene.add(new T.HemisphereLight(0xc1e5f4,0x536051,2.3));let sun=new T.DirectionalLight(0xffe4b5,3.7);sun.position.set(-7,15,6);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-13,right:13,top:13,bottom:-13,near:.5,far:40});sun.shadow.bias=-.0007;scene.add(sun);
-const mat=(color,metalness=0,roughness=.85)=>new T.MeshStandardMaterial({color,metalness,roughness});const stone=mat(0x778680),darkStone=mat(0x52635f),edge=mat(0x394e49),grass=mat(0x637359),gold=mat(0xc1a36b,.55,.35),steel=mat(0xb9c6c7,.55,.36),black=mat(0x263542),skin=mat(0xd5b695),blue=mat(0x327db3),red=mat(0xb6534e);
-function mesh(geo,material,parent,x=0,y=0,z=0){const m=new T.Mesh(geo,material);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;parent.add(m);return m;}
-function box(parent,w,h,d,x,y,z,m){return mesh(new T.BoxGeometry(w,h,d),m,parent,x,y,z)}
-function cyl(parent,r1,r2,h,x,y,z,m,n=8){return mesh(new T.CylinderGeometry(r1,r2,h,n),m,parent,x,y,z)}
-const land=new T.Group();scene.add(land);box(land,80,.3,80,0,-1.35,0,mat(0x3b5553));box(land,12,.9,12,0,-.65,0,edge);box(land,11.3,.3,11.3,0,-.12,0,stone);box(land,9.25,.12,9.25,0,.07,0,gold);
-let tiles=[],unitObjects=[],labelObjects=[];for(let z=0;z<9;z++)for(let x=0;x<9;x++){let m=box(land,.975,.14,.975,x-4,.14,z-4,mat((x+z)%2?0x7e8c7c:0x9aa58e));m.userData.cell=z*9+x;tiles.push(m);}
-let seed=391;function rnd(){seed=(seed*16807)%2147483647;return (seed-1)/2147483646;}
-function tower(x,z,h){let p=new T.Group();p.position.set(x,0,z);land.add(p);box(p,1.12,h,1.12,0,h/2-.2,0,darkStone);for(let yy=.25;yy<h;yy+=.5)box(p,1.16,.045,1.16,0,yy,0,edge);box(p,1.4,.22,1.4,0,h,0,stone);for(let a of [-.48,.48])for(let b of [-.48,.48])box(p,.35,.48,.35,a,h+.28,b,stone);box(p,.23,.6,.03,0,h*.6,.567,black);}
-for(let x of [-5.45,5.45])for(let z of [-5.45,5.45])tower(x,z,1.6+rnd());
-for(let side of [-1,1]){for(let i=0;i<5;i++){let x=side*6.9,z=-4.5+i*2.2;box(land,.7,.8+rnd()*.6,1.75,x,.1,z,darkStone);}tower(side*7.1,-7.2,3.5);box(land,3.9,1,1,side*4.6,.2,-7.3,darkStone);}
-function tree(x,z,s){let p=new T.Group();p.position.set(x,-.7,z);p.scale.setScalar(s);land.add(p);cyl(p,.12,.23,1.7,0,.6,0,mat(0x4a4c3a));for(let k=0;k<3;k++)mesh(new T.ConeGeometry(1-k*.19,1.65,7),mat(k%2?0x445d4b:0x526b50),p,0,1.5+k*.64,0);}
-for(let i=0;i<65;i++){let x=(rnd()-.5)*39,z=(rnd()-.5)*36;if(Math.abs(x)<8.4&&Math.abs(z)<9)continue;tree(x,z,.55+rnd()*.85);}for(let i=0;i<75;i++){let x=(rnd()-.5)*26,z=(rnd()-.5)*26;if(Math.abs(x)<6&&Math.abs(z)<6)continue;let r=mesh(new T.DodecahedronGeometry(.15+rnd()*.6,0),darkStone,land,x,-.65,z);r.scale.y=.65;r.rotation.set(rnd(),rnd(),rnd());}
-function flag(x,z,s){let p=new T.Group();p.position.set(x,.1,z);land.add(p);cyl(p,.035,.04,2.8,0,1.4,0,gold);box(p,.78,1.05,.03,.4,2.06,0,s===0?blue:red);box(p,.055,.65,.05,.4,2.07,.03,gold);box(p,.4,.055,.05,.4,2.15,.03,gold);mesh(new T.OctahedronGeometry(.12),gold,p,0,2.86,0);}flag(-5,4.8,0);flag(5,-4.8,1);
-const highlights=new T.Group();scene.add(highlights);const units=new T.Group();scene.add(units);
-function textSprite(text,color){let c=document.createElement('canvas');c.width=128;c.height=128;let ctx=c.getContext('2d');ctx.fillStyle='#101e28dd';ctx.beginPath();ctx.roundRect(10,10,108,108,20);ctx.fill();ctx.strokeStyle=color;ctx.lineWidth=5;ctx.stroke();ctx.fillStyle=color;ctx.font='bold 78px serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(text,64,67);let tx=new T.CanvasTexture(c);let s=new T.Sprite(new T.SpriteMaterial({map:tx,depthTest:false}));s.scale.set(.34,.34,1);s.renderOrder=3;return s;}
-function soldier(p,i){let root=new T.Group();root.position.set(i%9-4,.24,Math.floor(i/9)-4);root.userData.cell=i;units.add(root);let body=new T.Group();root.add(body);body.rotation.y=p.s?Math.PI:0;let cloth=p.s?red:blue;let armor=p.p?gold:steel;let h=p.t==='K'?1.15:1;body.scale.setScalar(h);cyl(body,.28,.34,.11,0,.02,0,p.s?red:blue,12);cyl(body,.29,.29,.04,0,.09,0,gold,12);
-if(p.t==='N'){box(body,.32,.32,.5,0,.4,0,mat(0x7b6552));for(let x of [-.12,.12])for(let z of [-.18,.18])box(body,.07,.28,.07,x,.22,z,black);cyl(body,.105,.13,.32,0,.61,-.24,mat(0x7b6552));box(body,.18,.17,.26,0,.75,-.31,mat(0x7b6552));body.position.y=.1;}
-let base=p.t==='N'?.28:0;for(let x of [-.09,.09]){box(body,.11,.23,.13,x,.23+base,0,black);box(body,.12,.08,.19,x,.12+base,-.02,armor);}cyl(body,.17,.22,.32,0,.48+base,0,cloth);box(body,.29,.2,.22,0,.53+base,-.01,armor);mesh(new T.SphereGeometry(.112,8,6),skin,body,0,.75+base,0);cyl(body,.14,.15,.14,0,.83+base,0,armor);box(body,.23,.045,.1,0,.785+base,-.095,black);
-for(let x of [-.23,.23]){mesh(new T.SphereGeometry(.10,6,5),armor,body,x,.6+base,0);box(body,.09,.23,.1,x,.45+base,0,cloth);}if(['K','G','S'].includes(p.t)||p.p){let cape=box(body,.32,.43,.035,0,.46+base,.145,cloth);cape.rotation.x=-.2;}
-if(['P','L','G'].includes(p.t)){cyl(body,.018,.018,p.t==='L'?1.23:.83,.29,.58+base,-.03,gold);mesh(new T.ConeGeometry(.055,.2,4),steel,body,.29,(p.t==='L'?1.26:1.05)+base,-.03);let shield=box(body,.22,.3,.07,-.27,.45+base,-.1,cloth);shield.rotation.z=.12;box(body,.025,.21,.08,-.27,.45+base,-.11,gold);}
-if(['K','S','N'].includes(p.t)){box(body,.045,.49,.065,.27,.61+base,-.07,steel);box(body,.18,.045,.08,.27,.38+base,-.07,gold);}
-if(p.t==='R'){box(body,.39,.3,.27,0,.53,0,armor);box(body,.27,.38,.1,-.28,.42,-.09,armor);cyl(body,.025,.03,.85,.29,.52,0,gold);box(body,.27,.22,.15,.29,.88,0,armor);}
-if(p.t==='B'){mesh(new T.ConeGeometry(.22,.37,8),cloth,body,0,1.01,0);cyl(body,.17,.28,.45,0,.35,0,cloth);cyl(body,.022,.025,1,.29,.6,0,gold);let gem=mesh(new T.OctahedronGeometry(.11),new T.MeshStandardMaterial({color:0x85efe5,emissive:0x3cdccc,emissiveIntensity:1}),body,.29,1.14,0);}
-if(p.t==='K'){cyl(body,.15,.14,.08,0,.94,0,gold);for(let x of [-.1,0,.1])mesh(new T.ConeGeometry(.043,.14,4),gold,body,x,1.04,0);}
-let symbol=p.p?({P:'と',L:'杏',N:'圭',S:'全',R:'龍',B:'馬'}[p.t]||names[p.t]):names[p.t];let label=textSprite(symbol,p.s?'#ffb0a0':'#bde8ff');label.position.set(0,.21,.27);label.visible=labels;root.add(label);labelObjects.push(label);root.traverse(o=>o.userData.cell=i);unitObjects.push(root);return root;}
-function disposeGroup(group){while(group.children.length){let o=group.children[0];o.traverse(c=>{if(c.geometry)c.geometry.dispose();if(c.isSprite){c.material.map.dispose();c.material.dispose();}});group.remove(o);}}
-function draw(){disposeGroup(units);unitObjects=[];labelObjects=[];g.b.forEach((p,i)=>{if(p)soldier(p,i);});highlight();}
-function highlight(){disposeGroup(highlights);let ids=[...new Set(moves.map(m=>m.to))];for(let j of ids){let m=mesh(new T.CylinderGeometry(.17,.17,.022,24),new T.MeshBasicMaterial({color:g.b[j]?0xeea266:0x9edcf1,transparent:true,opacity:.85}),highlights,j%9-4,.24,Math.floor(j/9)-4);m.userData.cell=j;}if(selected?.from!==undefined){let j=selected.from;let m=mesh(new T.RingGeometry(.35,.44,32),new T.MeshBasicMaterial({color:0xffdc8c,side:T.DoubleSide}),highlights,j%9-4,.25,Math.floor(j/9)-4);m.rotation.x=-Math.PI/2;}}
-function save(){try{localStorage.setItem('aether-shogi-v1',JSON.stringify({g,past,records,end}));}catch{}}
-function refresh(){ $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の騎士団':'蒼の騎士団';$('#turnIcon').style.background=g.turn?'#793e40':'#244b67';$('#count').textContent=String(g.ply+1).padStart(3,'0');$('#status').textContent=end||(check(g,g.turn)?'王手 — 王を守ってください':selected?'光るマスへ移動できます':'兵士を選択してください');$('#moveCount').textContent=g.ply+' 手';$('#history').innerHTML=records.length?records.slice(-20).reverse().map((s,i)=>'<li><em>'+String(records.length-i).padStart(2,'0')+'</em>'+s.text+'</li>').join(''):'<li class="muted">両軍が配置につきました。</li>';$('#hands').innerHTML='';let entries=Object.entries(g.h[g.turn]).filter(x=>x[1]>0);if(!entries.length)$('#hands').innerHTML='<p class="muted">待機中の部隊はありません</p>';for(let [t,n] of entries){let b=document.createElement('button');b.textContent=names[t]+' ×'+n;b.onclick=()=>{if(end||anim)return;selected={drop:t};moves=legal(g).filter(m=>m.drop===t);showUnit({t,p:false});highlight();refresh();};$('#hands').append(b);}$('#undo').disabled=!past.length;}
+import {createBattlefield} from './battlefield.js';
+import {check,names,roles} from './rules.mjs';
+import {Match} from './match.mjs';
+
+const $=s=>document.querySelector(s), storageKey='aether-shogi-v1';
+let saved;try{saved=JSON.parse(localStorage.getItem(storageKey));}catch{}
+const match=new Match(saved);
+let view,selected=null,moves=[],busy=false;
+const promotion=$('#promotion');
+function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
+function save(){try{localStorage.setItem(storageKey,JSON.stringify(match.serialize()));}catch{toast('このブラウザでは対局を保存できません');}}
 function showUnit(p){$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+roles[p.t]:'部隊を選択';$('#unitdesc').textContent=p?names[p.t]+' / '+(p.p?'成駒':'通常部隊'):'光るマスへ移動できます';}
-function toast(t){$('#toast').textContent=t;$('#toast').style.display='block';clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').style.display='none',2400);}
-function finish(m){let prev=g,p=m.drop?{t:m.drop}:g.b[m.from],text=(g.turn?'△ ':'▲ ')+(9-m.to%9)+'一二三四五六七八九'[Math.floor(m.to/9)]+' '+names[p.t]+(m.drop?' 打':m.promote?' 成':'');past.push(structuredClone(g));g=apply(g,m);records.push({text,mover:prev.turn,check:check(g,g.turn)});selected=null;moves=[];if(!legal(g).length)end=check(g,g.turn)?(prev.turn?'紅':'蒼')+'の騎士団の勝利 — 詰み':'終局 — 合法手がありません';let seq=[...past,g],hits=seq.map((s,i)=>key(s)===key(g)?i:-1).filter(i=>i>=0);if(hits.length>=4){let start=hits[hits.length-4],r=records.slice(start);let checker=[0,1].find(s=>r.some(v=>v.mover===s)&&r.filter(v=>v.mover===s).every(v=>v.check));end=checker!==undefined?(checker?'紅':'蒼')+'の反則負け — 連続王手の千日手':'千日手 — 引き分け・指し直し';}draw();if(m.from!==undefined){let ob=unitObjects.find(o=>o.userData.cell===m.to);if(ob){let dest=ob.position.clone();ob.position.set(m.from%9-4,.24,Math.floor(m.from/9)-4);anim={ob,from:ob.position.clone(),dest,start:performance.now()};}}refresh();save();if(m.promote)toast('CLASS CHANGE / '+roles[p.t]+' 昇格');if(end)toast(end);}
-function pick(j){if(end||anim)return;let choices=moves.filter(m=>m.to===j);if(choices.length){if(choices.length===2){$('#promotion').showModal();$('#yes').onclick=()=>{$('#promotion').close();finish(choices.find(m=>m.promote));};$('#no').onclick=()=>{$('#promotion').close();finish(choices.find(m=>!m.promote));};}else finish(choices[0]);return;}let p=g.b[j];if(p?.s===g.turn){selected={from:j};moves=legal(g).filter(m=>m.from===j);showUnit(p);if(!moves.length)toast('この部隊は今は移動できません');}else{selected=null;moves=[];showUnit(null);}highlight();refresh();}
-let down=null,drag=false;canvas.addEventListener('pointerdown',e=>{down={x:e.clientX,y:e.clientY,angle,elevation};drag=false;canvas.setPointerCapture(e.pointerId);});canvas.addEventListener('pointermove',e=>{if(!down)return;let dx=e.clientX-down.x,dy=e.clientY-down.y;if(Math.abs(dx)+Math.abs(dy)>7)drag=true;if(drag){angle=down.angle-dx*.006;elevation=Math.max(.48,Math.min(1.48,down.elevation+dy*.004));}});canvas.addEventListener('pointerup',e=>{if(!down)return;if(!drag){let r=canvas.getBoundingClientRect(),ray=new T.Raycaster();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);let hits=ray.intersectObjects([...tiles,...units.children],true).filter(h=>!h.object.isSprite);if(hits.length)pick(hits[0].object.userData.cell);}down=null;});canvas.addEventListener('pointercancel',()=>down=null);canvas.addEventListener('wheel',e=>{e.preventDefault();zoom=Math.max(11,Math.min(23,zoom+e.deltaY*.012));},{passive:false});$('#rotate').onclick=()=>angle+=Math.PI;$('#top').onclick=()=>{elevation=elevation>1.3?.86:1.48;};$('#labels').onclick=()=>{labels=!labels;labelObjects.forEach(o=>o.visible=labels);$('#labels').textContent='駒名 '+(labels?'ON':'OFF');};$('#design').onclick=()=>$('#architecture').showModal();$('.close').onclick=()=>$('#architecture').close();$('#undo').onclick=()=>{if(anim)return;if(past.length){g=past.pop();records.pop();end='';selected=null;moves=[];draw();refresh();save();}};$('#reset').onclick=()=>{if(!confirm('対局を最初から始めますか？'))return;g=initial();past=[];records=[];end='';selected=null;moves=[];anim=null;draw();refresh();save();};
-new ResizeObserver(()=>{let r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();}).observe($('#world'));
-function frame(t){requestAnimationFrame(frame);let r=zoom*(camera.aspect<1?1.32:1);camera.position.set(Math.sin(angle)*Math.cos(elevation)*r,Math.sin(elevation)*r,Math.cos(angle)*Math.cos(elevation)*r);camera.lookAt(0,.25,0);if(anim){let f=Math.min(1,(t-anim.start)/430),u=f*f*(3-2*f);anim.ob.position.lerpVectors(anim.from,anim.dest,u);anim.ob.position.y+=Math.sin(f*Math.PI)*.26;if(f===1)anim=null;}renderer.render(scene,camera);}draw();refresh();requestAnimationFrame(frame);
+function refresh(){
+  const g=match.g;
+  $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の騎士団':'蒼の騎士団';
+  $('#turnIcon').style.background=g.turn?'#793e40':'#244b67';$('#count').textContent=String(g.ply+1).padStart(3,'0');
+  $('#status').textContent=match.end||(busy?'部隊が移動しています':check(g,g.turn)?'王手 — 王を守ってください':selected?'光るマスへ移動できます':'兵士を選択してください');
+  $('#moveCount').textContent=g.ply+' 手';$('#history').replaceChildren();
+  if(!match.records.length){const li=document.createElement('li');li.className='muted';li.textContent='両軍が配置につきました。';$('#history').append(li);}
+  match.records.slice(-20).reverse().forEach((s,i)=>{const li=document.createElement('li'),em=document.createElement('em');em.textContent=String(match.records.length-i).padStart(2,'0');li.append(em,document.createTextNode(s.text));$('#history').append(li);});
+  $('#hands').replaceChildren();
+  const entries=Object.entries(g.h[g.turn]).filter(([,n])=>n>0);
+  if(!entries.length){const p=document.createElement('p');p.className='muted';p.textContent='待機中の部隊はありません';$('#hands').append(p);}
+  for(const [t,n] of entries){const b=document.createElement('button');b.textContent=names[t]+' ×'+n;b.disabled=busy||!!match.end;b.setAttribute('aria-pressed',String(selected?.drop===t));b.onclick=()=>{selected={drop:t};moves=match.moves.filter(m=>m.drop===t);showUnit({t,p:false});refresh();};$('#hands').append(b);}
+  $('#undo').disabled=busy||!match.past.length;$('#reset').disabled=busy;
+  view?.highlight(selected,moves,g.b,match.records.at(-1)?.m);
+}
+async function finish(m){
+  if(busy)return;busy=true;selected=null;moves=[];
+  try{
+    const {before,after,m:move}=match.play(m);save();refresh();
+    await view.transition(before,after,move);
+    if(move.promote)toast('CLASS CHANGE / '+roles[after.b[move.to].t]+' 昇格');
+    if(match.end)toast(match.end);
+  }catch(error){console.error(error);view.draw(match.g.b);toast('操作を完了できませんでした');}
+  finally{busy=false;showUnit(null);refresh();}
+}
+function pick(i){
+  if(busy||!view||match.end||promotion.open)return;
+  const choices=moves.filter(m=>m.to===i);
+  if(choices.length){
+    if(choices.length===2){promotion.showModal();$('#yes').onclick=()=>{promotion.close();finish(choices.find(m=>m.promote));};$('#no').onclick=()=>{promotion.close();finish(choices.find(m=>!m.promote));};}
+    else finish(choices[0]);return;
+  }
+  const p=match.g.b[i];
+  if(p?.s===match.g.turn){selected={from:i};moves=match.moves.filter(m=>m.from===i);showUnit(p);if(!moves.length)toast('この部隊は今は移動できません');}
+  else {selected=null;moves=[];showUnit(null);}refresh();
+}
+$('#rotate').onclick=()=>view?.rotate();$('#top').onclick=()=>view?.top();
+$('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));}};
+$('#design').onclick=()=>$('#architecture').showModal();$('.close').onclick=()=>$('#architecture').close();
+$('#undo').onclick=()=>{if(busy||!view)return;match.undo();selected=null;moves=[];view.draw(match.g.b);showUnit(null);refresh();save();};
+$('#reset').onclick=()=>{if(busy||!view||!confirm('対局を最初から始めますか？'))return;match.reset();selected=null;moves=[];view.draw(match.g.b);showUnit(null);refresh();save();};
+refresh();
+try {
+  view=await createBattlefield($('#scene'),pick);view.draw(match.g.b);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';
+  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,projectCell:view.projectCell,height:view.height,state:()=>structuredClone(match.serialize())};
+} catch(error) {
+  console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);
+}
