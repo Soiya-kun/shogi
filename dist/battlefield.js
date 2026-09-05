@@ -118,7 +118,14 @@ export async function createBattlefield(canvas,onPick) {
     if(pointers.size===1){down={id:e.pointerId,x:e.clientX,y:e.clientY,angle,elevation};drag=false;}
     else{const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom};drag=true;}
   });
-  function setZoom(value){zoom=T.MathUtils.clamp(value,42,240);if(zoom>=150)aim.set(0,0,0);else if(selectedCell!==null)aim.copy(position(selectedCell));}
+  function focusPosition(i){
+    const p=position(i),type=instances.find(s=>s.cell===i)?.piece.t;
+    // At close range, frame the soldiers or airborne dragons above their cell.
+    const detail=1-T.MathUtils.smoothstep(zoom,12,42);
+    p.y+=detail*(type==='R'?SQUADS.R.flightHeight+1.4:type==='N'?1.4:1);
+    return p;
+  }
+  function setZoom(value){zoom=T.MathUtils.clamp(value,8,240);if(zoom>=150)aim.set(0,0,0);else aim.copy(focusPosition(selectedCell??focusCell));}
   canvas.addEventListener('pointermove',e=>{
     if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
     if(pointers.size>1&&pinch){const [a,b]=[...pointers.values()];setZoom(pinch.zoom*pinch.distance/Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)));return;}
@@ -139,10 +146,13 @@ export async function createBattlefield(canvas,onPick) {
     }pointers.delete(e.pointerId);down=null;if(pointers.size===0)pinch=null;
   });
   canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);down=null;pinch=null;});
-  canvas.addEventListener('wheel',e=>{e.preventDefault();setZoom(zoom+e.deltaY*.11);},{passive:false});
+  canvas.addEventListener('wheel',e=>{
+    e.preventDefault();const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?canvas.clientHeight:1);
+    setZoom(zoom*Math.exp(T.MathUtils.clamp(delta*.0012,-1,1)));
+  },{passive:false});
   canvas.addEventListener('keydown',e=>{
     let x=focusCell%9,z=Math.floor(focusCell/9);const deltas={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
-    if(deltas[e.key]){e.preventDefault();const d=deltas[e.key];x=T.MathUtils.clamp(x+d[0],0,8);z=T.MathUtils.clamp(z+d[1],0,8);focusCell=z*9+x;cursor.geometry=patchGeometry(focusCell);cursor.visible=true;canvas.setAttribute('aria-label',`${9-x}${'一二三四五六七八九'[z]}。Enterで部隊を選択・移動`);if(zoom<150)aim.copy(position(focusCell));}
+    if(deltas[e.key]){e.preventDefault();const d=deltas[e.key];x=T.MathUtils.clamp(x+d[0],0,8);z=T.MathUtils.clamp(z+d[1],0,8);focusCell=z*9+x;cursor.geometry=patchGeometry(focusCell);cursor.visible=true;canvas.setAttribute('aria-label',`${9-x}${'一二三四五六七八九'[z]}。Enterで部隊を選択・移動`);if(zoom<150)aim.copy(focusPosition(focusCell));}
     if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!busy)onPick(focusCell);}
   });
   canvas.addEventListener('blur',()=>cursor.visible=false);
@@ -150,7 +160,9 @@ export async function createBattlefield(canvas,onPick) {
   function frame(t) {
     requestAnimationFrame(frame);if(document.hidden)return;const dt=Math.min((t-lastTime)/1000,.1),r=zoom*(camera.aspect<1?1.50:1),time=t*.001;
     scene.fog.near=200*(camera.aspect<1?1.5:1);scene.fog.far=485*(camera.aspect<1?1.5:1);
-    target.lerp(aim,reducedMotion?1:1-Math.exp(-dt*7));camera.position.set(target.x+Math.sin(angle)*Math.cos(elevation)*r,target.y+Math.sin(elevation)*r,target.z+Math.cos(angle)*Math.cos(elevation)*r);camera.lookAt(target);
+    target.lerp(aim,reducedMotion?1:1-Math.exp(-dt*7));camera.position.set(target.x+Math.sin(angle)*Math.cos(elevation)*r,target.y+Math.sin(elevation)*r,target.z+Math.cos(angle)*Math.cos(elevation)*r);
+    if(zoom<42)camera.position.y=Math.max(camera.position.y,h(camera.position.x,camera.position.z)+.8);
+    camera.lookAt(target);
     for(const fx of [...effects]){const f=Math.min(1,(t-fx.start)/fx.duration);fx.update(f);if(f===1){effects.splice(effects.indexOf(fx),1);fx.done();}}
     const changed=armyView.update(time,camera,busy);
     for(const s of instances){s.banner.position.set(s.x,h(s.x,s.z),s.z+3.6);s.banner.scale.setScalar(s.scale??1);s.flag.rotation.y=reducedMotion?0:Math.sin(time*2+s.cell)*.10;const badgeScale=(mobile?1.5:1)*Math.min(1,camera.position.distanceTo(s.banner.position)/140);s.badge.scale.set(3.4*badgeScale,4.25*badgeScale,1);}
@@ -161,7 +173,7 @@ export async function createBattlefield(canvas,onPick) {
   return {draw,highlight,transition,rotate:()=>angle+=Math.PI,top:()=>elevation=elevation>1.3?.93:1.49,
     close:()=>{aim.copy(position(selectedCell??focusCell));zoom=48;elevation=.36;},overview:()=>{zoom=185;elevation=.93;aim.set(0,0,0);},
     labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels;return labels;},
-    diagnostics:()=>({units:instances.length,...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
+    diagnostics:()=>({units:instances.length,...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
     contacts:armyView.contacts,projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectFlying:i=>{const member=armyView.contacts().find(p=>p.cell===i&&p.airborne),p=new T.Vector3(member.x,member.y+1.1,member.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectBanner:i=>{const s=instances.find(s=>s.cell===i),p=s.badge.getWorldPosition(new T.Vector3()).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},height:h};
