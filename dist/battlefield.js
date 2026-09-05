@@ -100,12 +100,14 @@ export async function createBattlefield(canvas,onPick) {
     if(!arriving){draw(after.b);busy=false;return;}
     const duration=reducedMotion?1:victim?1450:m.drop?700:1150;
     const heading=start?Math.atan2(-(destination.x-start.x),-(destination.z-start.z)):arriving.heading,originalHeading=arriving.heading;
+    // atan2 can return -PI for the same facing stored as +PI. Settle via the shortest arc.
+    const settledHeading=heading+Math.atan2(Math.sin(originalHeading-heading),Math.cos(originalHeading-heading));
     await new Promise(resolve=>effects.push({start:performance.now(),duration,update:f=>{
       arriving.progress=f;
       if(start){
         const u=Math.min(1,f/(victim ? .80 : .85)),smooth=u*u*(3-2*u);
         arriving.x=T.MathUtils.lerp(start.x,destination.x,smooth);arriving.z=T.MathUtils.lerp(start.z,destination.z,smooth);
-        arriving.moving=u<1;arriving.heading=f<.85?heading:T.MathUtils.lerp(heading,originalHeading,(f-.85)/.15);
+        arriving.moving=u<1;arriving.heading=f<.85?heading:T.MathUtils.lerp(heading,settledHeading,(f-.85)/.15);
         arriving.attack=victim?Math.sin(Math.max(0,(f-.50)/.5)*Math.PI)*.95:0;
       }else arriving.scale=Math.max(.01,Math.sin(f*Math.PI/2));
       if(victim){const retreat=Math.max(0,(f-.48)/.52);victim.retreat=retreat;victim.z=destination.z+(victim.piece.s?-1:1)*retreat*7;victim.scale=1-retreat;}
