@@ -27,11 +27,11 @@
     0.8563658798654785,
     -0.006240342757706685
   ],
-  "drawCalls": 174,
-  "triangles": 507393,
-  "geometries": 107,
-  "textures": 44,
-  "averageRenderMs": 5.585106390587827,
+  "drawCalls": 211,
+  "triangles": 503577,
+  "geometries": 105,
+  "textures": 46,
+  "averageRenderMs": 5.766666665673256,
   "busy": false,
-  "lastTime": 2165.9
+  "lastTime": 2201.5
 }

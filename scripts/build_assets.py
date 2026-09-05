@@ -95,143 +95,9 @@ def soldiers(roles=None,write_assets=True):
     hard=bpy.data.materials.get('Armor') or vertex_material('Armor',.62,.38)
     soft=bpy.data.materials.get('Details') or vertex_material('Details',.05,.8)
     team=bpy.data.materials.get('TeamCloth') or material('TeamCloth',(.04,.22,.46),0,.8)
+    from samurai import samurai
     for role in roles or ROLES:
-        if role=='H':
-            from heavy_knight import heavy_knight
-            heavy_knight(hard,soft,team)
-            continue
-        if role=='A':
-            from archer import archer
-            archer(hard,soft,team)
-            continue
-        root=empty('Unit_'+role)
-        root['piece']=role
-        body=empty(role+'_Body',root)
-        armor=Builder(); detail=Builder(); cloth=Builder()
-        ride=.83 if role=='R' else .34 if role=='N' else 0
-        broad=1.10 if role=='R' else 1.06 if role in ['K','G'] else 1
-        # Layered cuirass, skirt, belt, articulated neck and a shaped closed helmet.
-        armor.ring(0,.69+ride,0,[(0,.20*broad,.135),(.08,.25*broad,.16),(.29,.29*broad,.18),(.38,.18,.12)],SILVER,12)
-        cloth.ring(0,.47+ride,0,[(0,.27,.20),(.21,.20,.15)],WHITE,10)
-        detail.ring(0,.71+ride,0,[(0,.22,.16),(.045,.22,.16)],LEATHER,12)
-        armor.box(0,.745+ride,-.172,.085,.058,.028,TRIM)
-        for x in [-.15,0,.15]: armor.box(x,.59+ride,-.17,.105,.20,.035,SILVER)
-        detail.ring(0,1.06+ride,0,[(0,.09,.09),(.08,.09,.09)],DARK)
-        detail.orb(0,1.2+ride,-.015,.135,.16,.125,SKIN)
-        armor.ring(0,1.17+ride,0,[(0,.15,.14),(.14,.155,.145),(.22,.06,.07),(.23,.0,.0)],SILVER,12)
-        detail.box(0,1.245+ride,-.139,.215,.038,.023,DARK)
-        armor.box(0,1.20+ride,-.159,.027,.15,.027,TRIM)
-        for x in [-.14,.14]: armor.box(x,1.15+ride,-.018,.025,.17,.19,SILVER)
-        armor.box(0,.91+ride,-.188,.038,.19,.018,TRIM)
-        armor.box(0,.92+ride,-.195,.14,.031,.018,TRIM)
-        for x in [-.20,.20]:
-            for hh in [.82,1.0]: armor.orb(x,hh+ride,-.13,.018,.018,.018,TRIM,6,3)
-        if role=='K':
-            armor.ring(0,1.38,0,[(0,.15,.14),(.065,.15,.14)],TRIM,12)
-            for i in range(7):
-                a=i*math.tau/7; armor.ring(.14*math.cos(a),1.44,.14*math.sin(a),[(0,.031,.031),(.12,.0,.0)],TRIM,5)
-        if role in ['G','S','L','N']:
-            cloth.orb(0,1.44+ride,.035,.045,.19,.11,WHITE,8,5)
-        if role=='R':
-            cloth.orb(0,1.46+ride,.045,.045,.20,.12,WHITE,8,5)
-        if role=='B':
-            cloth.ring(0,.35,0,[(0,.31,.24),(.46,.20,.15)],WHITE,12)
-            cloth.ring(0,1.36,0,[(0,.24,.22),(.04,.18,.16),(.38,.005,.005)],WHITE,10)
-            armor.ring(0,1.39,0,[(0,.18,.17),(.045,.17,.16)],TRIM,10)
-        if role=='N':
-            root['mount']='horse';root['unitRole']='commander'
-            detail.orb(0,.55,0,.27,.30,.53,(.24,.11,.045),12,8)
-            detail.rod((0,.62,-.30),(0,1.02,-.42),.17,(.24,.11,.045),10,.115)
-            detail.orb(0,1.06,-.47,.13,.18,.23,(.30,.15,.06),10,6)
-            detail.box(0,1.13,-.31,.08,.28,.20,DARK)
-            for xx in [-.09,.09]:
-                detail.ring(xx,1.20,-.44,[(0,.045,.055),(.15,.0,.0)],(.24,.11,.045),5)
-                armor.orb(xx*1.4,1.10,-.56,.022,.023,.017,DARK,6,3)
-            for xx in [-.18,.18]:
-                for zz in [-.32,.33]:
-                    detail.rod((xx,.05,zz),(xx,.51,zz),.058,(.24,.11,.045),7)
-                    detail.box(xx,.065,zz-.025,.13,.13,.17,DARK)
-            cloth.box(0,.70,.09,.57,.12,.5,WHITE)
-            # A raised leather saddle, reins, stirrups and a long horse tail.
-            detail.orb(0,.79,.04,.25,.065,.27,LEATHER,10,5)
-            detail.box(0,.86,.25,.39,.13,.07,LEATHER)
-            for side in [-1,1]:
-                detail.rod((side*.13,1.02,-.64),(side*.13,1.16,-.41),.016,LEATHER,6)
-                detail.rod((side*.13,1.12,-.46),(side*.30,.99,-.05),.012,LEATHER,6)
-                detail.rod((side*.28,.77,.05),(side*.38,.38,-.12),.018,LEATHER,6)
-                armor.box(side*.38,.36,-.12,.15,.025,.19,TRIM)
-                cloth.add([(side*.25,.73,-.17),(side*.31,.68,.32),(side*.30,.43,.32),(side*.29,.48,-.17)],[(0,1,2,3)],WHITE)
-            detail.rod((0,.71,.43),(0,.34,.67),.065,DARK,8,.025)
-        armor.obj(role+'_Cuirass',hard,body); detail.obj(role+'_Details',soft,body); cloth.obj(role+'_Uniform',team,body)
-        # Export named pivots; the Web scene animates these without a heavy skeleton.
-        for side in [-1,1]:
-            pivot=(side*.30,1.00+ride,0); arm=empty(role+('_ArmL' if side<0 else '_ArmR'),body,pivot)
-            a=Builder(); a.orb(side*.30,1.02+ride,0,.15,.12,.18,SILVER)
-            a.rod((side*.32,.65+ride,-.025),(side*.32,.98+ride,0),.075,SILVER)
-            a.ring(side*.32,.72+ride,-.02,[(0,.084,.088),(.05,.084,.088)],TRIM,8)
-            a.orb(side*.32,.63+ride,-.025,.085,.085,.075,LEATHER,8,5)
-            if side==1:
-                if role in ['P','L','G','R']:
-                    top=1.85 if role=='L' else 1.74 if role=='R' else 1.58
-                    a.rod((.36,.10+ride,-.09),(.36,top+ride,-.09),.022,LEATHER)
-                    a.add([(.36,top+.23+ride,-.09),(.29,top-.04+ride,-.09),(.43,top-.04+ride,-.09),(.36,top-.04+ride,-.14),(.36,top-.04+ride,-.04)],[(0,1,3),(0,3,2),(0,2,4),(0,4,1)],SILVER)
-                    a.box(.36,top-.03+ride,-.09,.17,.035,.06,TRIM)
-                elif role=='B':
-                    a.rod((.36,.12,-.09),(.36,1.63,-.09),.027,TRIM)
-                    a.orb(.36,1.73,-.09,.11,.16,.10,(.05,.65,.56),8,4)
-                    a.ring(.36,1.57,-.09,[(0,.12,.11),(.065,.13,.12)],TRIM)
-                else:
-                    a.rod((.34,.5+ride,-.12),(.34,.77+ride,-.12),.035,LEATHER)
-                    a.box(.34,.76+ride,-.12,.24,.043,.063,TRIM)
-                    a.add([(.295,.79+ride,-.12),(.385,.79+ride,-.12),(.37,1.27+ride,-.12),(.34,1.42+ride,-.12),(.31,1.27+ride,-.12),(.34,.86+ride,-.165)],[(0,1,5),(1,2,5),(2,3,5),(3,4,5),(4,0,5),(4,3,2,1,0)],SILVER)
-            elif role not in ['B','N','R']:
-                # Kite shield with metal border, colored inset and raised crest.
-                for scale,zz,col in [(1,-.18,TRIM),(.85,-.195,(.035,.12,.20))]:
-                    points=[(-.33+xx*scale,.70+ride+hh*scale,zz) for xx,hh in [(-.18,.22),(.18,.22),(.20,-.04),(0,-.32),(-.20,-.04)]]
-                    a.add(points,[(0,1,2,3,4)],col)
-                a.box(-.33,.71+ride,-.21,.025,.29,.024,TRIM)
-                a.box(-.33,.79+ride,-.22,.17,.025,.024,TRIM)
-            a.obj(role+'_ArmMesh'+str(side),hard,arm,pivot)
-        for side in [-1,1]:
-            if role=='N':
-                pivot=(side*.19,.62+ride,.04);leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot);a=Builder()
-                knee=(side*.34,.64,-.19);boot=(side*.38,.42,-.13)
-                a.rod(pivot,knee,.078,DARK);a.rod(knee,boot,.065,SILVER)
-                a.orb(*knee,.09,.08,.075,SILVER,8,4)
-                a.box(side*.38,.42,-.19,.14,.13,.25,LEATHER)
-                a.box(side*.38,.46,-.25,.14,.06,.15,SILVER)
-                a.obj(role+'_LegMesh'+str(side),hard,leg,pivot)
-                continue
-            if role=='R':
-                pivot=(side*.20,.62+ride,.04);leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot);a=Builder()
-                knee=(side*.43,1.17,-.21);boot=(side*.48,.91,-.16)
-                a.rod(pivot,knee,.078,DARK);a.rod(knee,boot,.07,SILVER)
-                a.orb(*knee,.095,.09,.075,SILVER,8,4)
-                a.box(side*.49,.90,-.24,.14,.13,.25,LEATHER)
-                a.box(side*.49,.94,-.29,.14,.06,.15,SILVER)
-                a.obj(role+'_LegMesh'+str(side),hard,leg,pivot)
-                continue
-            pivot=(side*.12,.62+ride,0); leg=empty(role+('_LegL' if side<0 else '_LegR'),root,pivot); a=Builder()
-            a.rod((side*.12,.18+ride,0),(side*.12,.61+ride,0),.075,DARK)
-            a.box(side*.12,.29+ride,-.065,.135,.25,.09,SILVER)
-            a.orb(side*.12,.46+ride,-.065,.09,.085,.06,SILVER,8,4)
-            a.box(side*.12,.10+ride,-.065,.16,.16,.29,LEATHER)
-            a.box(side*.12,.15+ride,-.14,.16,.06,.18,SILVER)
-            a.obj(role+'_LegMesh'+str(side),hard,leg,pivot)
-        cape=empty(role+'_Cape',body,(0,1.05+ride,.15)); a=Builder()
-        if role in ['K','G','S','B','R','N']:
-            vs=[((i/5-.5)*(.40+j*.09),1.05+ride-j*.15,.17+j*.045+.025*math.sin(i*1.5)) for j in range(5) for i in range(6)]
-            a.add(vs,[(j*6+i,j*6+i+1,(j+1)*6+i+1,(j+1)*6+i) for j in range(4) for i in range(5)],WHITE)
-            a.obj(role+'_Mantle',team,cape,(0,1.05+ride,.15))
-        # Separate ornament lets promotion visibly upgrade every eligible piece.
-        promote=empty(role+'_Promotion',root); a=Builder()
-        a.ring(0,1.37+ride,0,[(0,.17,.16),(.07,.17,.16)],TRIM,12)
-        for side in [-1,1]:
-            a.ring(side*.29,1.11+ride,0,[(0,.13,.15),(.10,.11,.12),(.18,0,0)],TRIM,8)
-        a.obj(role+'_AscendedCrest',hard,promote)
-        if role=='R':
-            from dragon import dragon
-            dragon(root,soft,hard,team,promote)
+        samurai(role,hard,soft,team)
     if write_assets:
         make_lods(s)
         export(s,'army.glb')
@@ -254,7 +120,7 @@ def make_lods(scene,roles=None):
             if node.type=='MESH':
                 node.data=obj.data.copy()
                 mod=node.modifiers.new('Distant simplification','DECIMATE')
-                mod.ratio=1 if obj.name.endswith(('_Bowstring','_Arrows')) else .70 if 'WingMembrane' in obj.name or obj.name.endswith(('_Bow','_Broadsword')) else .45 if obj.name.startswith('H_') else .23
+                mod.ratio=1 if obj.name.endswith(('_Bowstring','_Arrows')) else .70 if 'WingMembrane' in obj.name or obj.name.endswith(('_Bow','_Tachi','_Maedate','_Sashimono')) else .45 if obj.name.startswith('H_') else .23
                 bpy.context.view_layer.objects.active=node
                 bpy.ops.object.modifier_apply(modifier=mod.name)
             for child in obj.children: copy_low(child,node)

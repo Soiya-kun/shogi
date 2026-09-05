@@ -23,7 +23,7 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   expect(contacts.filter(p=>p.model==='H')).toHaveLength(32);
   expect(contacts.filter(p=>p.model==='S')).toHaveLength(10);
   expect(contacts.every(p=>p.airborne?p.y-p.ground>3:Math.abs(p.y-p.ground-.025)<.0001)).toBe(true);
-  await cell(page,54);await expect(page.locator('#unitname')).toHaveText('歩兵隊');
+  await cell(page,54);await expect(page.locator('#unitname')).toHaveText('足軽隊');
   await page.screenshot({path:'docs/verification/desktop-selected.png'});
   await cell(page,45);await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
   await page.reload();await ready(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
@@ -49,7 +49,7 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   // Clear the selection and select through a raised flag in the low camera view.
   await cell(page,40);
   const banner=await page.evaluate(()=>window.__aether.projectBanner(58));await page.mouse.click(banner.x,banner.y);
-  await expect(page.locator('#unitname')).toHaveText('歩兵隊');
+  await expect(page.locator('#unitname')).toHaveText('足軽隊');
   await cell(page,49);await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
   await page.locator('#overview').click();
   await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBe(0);
@@ -104,7 +104,7 @@ test('dragon knights: eight mounted riders, close view, rook movement and dragon
   const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto('/?debug');await ready(page);
   const rook=await page.evaluate(()=>window.__aether.state().g.b.findIndex(p=>p?.t==='R'&&p.s===0));
-  await cell(page,rook);await expect(page.locator('#unitname')).toHaveText('竜騎士隊');
+  await cell(page,rook);await expect(page.locator('#unitname')).toHaveText('竜武者隊');
   await expect(page.locator('#unitdesc')).toHaveText('8騎 · 飛行隊形');
   const first=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));
   expect(first).toHaveLength(16);expect(first.every(p=>p.y-p.ground>3)).toBe(true);
@@ -122,7 +122,7 @@ test('dragon knights: eight mounted riders, close view, rook movement and dragon
   const kingBanner=await page.evaluate(()=>window.__aether.projectBanner(76));await page.mouse.click(kingBanner.x,kingBanner.y);
   await expect(page.locator('#unitname')).toHaveText('本陣');
   const flyingPoint=await page.evaluate(i=>window.__aether.projectFlying(i),rook);await page.mouse.click(flyingPoint.x,flyingPoint.y);
-  await expect(page.locator('#unitname')).toHaveText('竜騎士隊');
+  await expect(page.locator('#unitname')).toHaveText('竜武者隊');
   let g=blank();g.b[40]={t:'R',s:0,p:false};await fixture(page,g);
   await cell(page,40);await cell(page,22);await expect(page.locator('#promotion')).toBeVisible();
   await page.getByRole('button',{name:'成る',exact:true}).click();

@@ -1,0 +1,245 @@
+{
+  "errors": [],
+  "roles": {
+    "P": {
+      "name": "足軽隊",
+      "desc": "12人 · 密集隊形",
+      "units": 3,
+      "soldiers": 28,
+      "representedSoldiers": 28,
+      "flyingRiders": 0,
+      "detailedSquads": 3,
+      "instanceBatches": 27,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 22.003488542650732,
+      "cameraPosition": [
+        7.503503095842327,
+        12.271543220850049,
+        -20.555937966782842
+      ],
+      "cameraTarget": [
+        0.7096765519692196,
+        2.7007840745856395,
+        -1.9441675431363237
+      ],
+      "drawCalls": 71,
+      "triangles": 385951,
+      "geometries": 64,
+      "textures": 33,
+      "averageRenderMs": 3.3758241802781495,
+      "busy": false,
+      "lastTime": 1997.3
+    },
+    "L": {
+      "name": "長槍足軽隊",
+      "desc": "10人 · 二列横隊",
+      "units": 3,
+      "soldiers": 26,
+      "representedSoldiers": 26,
+      "flyingRiders": 0,
+      "detailedSquads": 3,
+      "instanceBatches": 27,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 22.003488542650732,
+      "cameraPosition": [
+        6.783566638043756,
+        11.257337398297981,
+        -18.583663286875947
+      ],
+      "cameraTarget": [
+        -0.010259905829351545,
+        1.6865782520335717,
+        0.028107136770572083
+      ],
+      "drawCalls": 71,
+      "triangles": 382499,
+      "geometries": 66,
+      "textures": 33,
+      "averageRenderMs": 3.3776595706635333,
+      "busy": false,
+      "lastTime": 1979.6
+    },
+    "N": {
+      "name": "弓足軽隊",
+      "desc": "6人 · 騎馬武者1人＋弓足軽5人",
+      "units": 3,
+      "soldiers": 22,
+      "representedSoldiers": 22,
+      "flyingRiders": 0,
+      "detailedSquads": 3,
+      "instanceBatches": 33,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 22.003488542650732,
+      "cameraPosition": [
+        6.783566638043756,
+        11.257337398297981,
+        -18.583663286875947
+      ],
+      "cameraTarget": [
+        -0.010259905829351545,
+        1.6865782520335717,
+        0.028107136770572083
+      ],
+      "drawCalls": 75,
+      "triangles": 377864,
+      "geometries": 72,
+      "textures": 33,
+      "averageRenderMs": 3.1913043532682503,
+      "busy": false,
+      "lastTime": 1921.5
+    },
+    "S": {
+      "name": "重装武者隊",
+      "desc": "8人 · 重装二列横隊",
+      "units": 3,
+      "soldiers": 24,
+      "representedSoldiers": 24,
+      "flyingRiders": 0,
+      "detailedSquads": 3,
+      "instanceBatches": 27,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 22.003488542650732,
+      "cameraPosition": [
+        7.409792458648818,
+        12.139528967582,
+        -20.29921653675574
+      ],
+      "cameraTarget": [
+        0.6159659147757104,
+        2.5687698213175914,
+        -1.687446113109221
+      ],
+      "drawCalls": 79,
+      "triangles": 387967,
+      "geometries": 68,
+      "textures": 33,
+      "averageRenderMs": 3.5468750037252903,
+      "busy": false,
+      "lastTime": 1976.5
+    },
+    "G": {
+      "name": "旗本隊",
+      "desc": "9人 · 方陣",
+      "units": 3,
+      "soldiers": 25,
+      "representedSoldiers": 25,
+      "flyingRiders": 0,
+      "detailedSquads": 3,
+      "instanceBatches": 22,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 22.003488542650732,
+      "cameraPosition": [
+        6.839544030865988,
+        11.336195187921792,
+        -18.737014035146263
+      ],
+      "cameraTarget": [
+        0.045717486992880474,
+        1.7654360416573827,
+        -0.1252436114997444
+      ],
+      "drawCalls": 76,
+      "triangles": 388468,
+      "geometries": 63,
+      "textures": 33,
+      "averageRenderMs": 3.3304347888283106,
+      "busy": false,
+      "lastTime": 1935.6
+    },
+    "R": {
+      "name": "竜武者隊",
+      "desc": "8騎 · 飛行隊形",
+      "units": 3,
+      "soldiers": 24,
+      "representedSoldiers": 24,
+      "flyingRiders": 8,
+      "detailedSquads": 3,
+      "instanceBatches": 34,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 29.70160280669476,
+      "cameraPosition": [
+        7.821131848202938,
+        16.311515931989234,
+        -26.50283409064861
+      ],
+      "cameraTarget": [
+        -1.349574749187811,
+        3.3923424032156344,
+        -1.3795718597068003
+      ],
+      "drawCalls": 92,
+      "triangles": 418175,
+      "geometries": 87,
+      "textures": 33,
+      "averageRenderMs": 3.5773195863999043,
+      "busy": false,
+      "lastTime": 2037
+    },
+    "B": {
+      "name": "陰陽師隊",
+      "desc": "6人 · 護衛陣形",
+      "units": 3,
+      "soldiers": 22,
+      "representedSoldiers": 22,
+      "flyingRiders": 0,
+      "detailedSquads": 3,
+      "instanceBatches": 32,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 22.003488542650732,
+      "cameraPosition": [
+        7.5364954322701605,
+        12.318020961131491,
+        -20.646320873583473
+      ],
+      "cameraTarget": [
+        0.7426688883970529,
+        2.747261814867082,
+        -2.0345504499369547
+      ],
+      "drawCalls": 88,
+      "triangles": 381675,
+      "geometries": 85,
+      "textures": 33,
+      "averageRenderMs": 3.7808080682850846,
+      "busy": false,
+      "lastTime": 2124.1
+    },
+    "K": {
+      "name": "本陣",
+      "desc": "8人 · 指揮官と護衛",
+      "units": 2,
+      "soldiers": 16,
+      "representedSoldiers": 16,
+      "flyingRiders": 0,
+      "detailedSquads": 2,
+      "instanceBatches": 22,
+      "fieldWidth": 108,
+      "quality": "full",
+      "zoom": 22.003488542650732,
+      "cameraPosition": [
+        6.839544030865988,
+        11.336195187921792,
+        -18.737014035146263
+      ],
+      "cameraTarget": [
+        0.045717486992880474,
+        1.7654360416573827,
+        -0.1252436114997444
+      ],
+      "drawCalls": 76,
+      "triangles": 369197,
+      "geometries": 65,
+      "textures": 32,
+      "averageRenderMs": 3.451612901943986,
+      "busy": false,
+      "lastTime": 1962.9
+    }
+  }
+}

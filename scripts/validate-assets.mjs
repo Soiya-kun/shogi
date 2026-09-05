@@ -25,8 +25,15 @@ for(const name of ['meadow','army']) {
     const gltf=await new GLTFLoader().parseAsync(bytes.buffer.slice(bytes.byteOffset,bytes.byteOffset+bytes.length),'');
     gltf.scene.updateMatrixWorld(true);
     for(const prefix of ['Unit_','LOD_']){
-      const heavy=gltf.scene.getObjectByName(prefix+'H');assert.equal(heavy.userData.armor,'full_plate');
-      for(const part of ['Cuirass','GreatHelm','TowerShield','Broadsword','Promotion']){
+      for(const role of ['P','L','N','S','G','B','R','K','A','H']){
+        const unit=gltf.scene.getObjectByName(prefix+role);assert.equal(unit.userData.style,'sengoku_fantasy');
+        const parts=role==='B'?['Eboshi','Kariginu','RitualStaff']:['P','L','A'].includes(role)?['Jingasa']:['Kabuto','Maedate'];
+        if(['P','L'].includes(role))parts.push('Yari','Sashimono');
+        if(role==='K')parts.push('Gunbai','Jinbaori');
+        for(const part of parts){let found=false;unit.traverse(o=>{if(o.isMesh&&o.name.endsWith('_'+part))found=true;});assert(found,`Samurai missing ${prefix}${role}/${part}`);}
+      }
+      const heavy=gltf.scene.getObjectByName(prefix+'H');assert.equal(heavy.userData.armor,'o_yoroi');
+      for(const part of ['Do','Kabuto','Maedate','Menpo','SodeL','SodeR','Tachi','Promotion']){
         let found=false;heavy.traverse(o=>{if(o.name.endsWith('_'+part))found=true;});assert(found,`Heavy knight missing ${prefix}${part}`);
       }
       const heavyBounds=new Box3().setFromObject(heavy),infantryBounds=new Box3().setFromObject(gltf.scene.getObjectByName(prefix+'P'));

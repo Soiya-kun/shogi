@@ -23,7 +23,7 @@ test('wheel zoom stays under the pointer across selection, rotation, limits and 
   const selected=await page.evaluate(()=>window.__aether.projectCell(54));await page.mouse.click(selected.x,selected.y);
   const point=await page.evaluate(()=>window.__aether.projectCell(42));
   await wheel(page,point,-240);await wheel(page,point,-350);await wheel(page,point,260);
-  await expect(page.locator('#unitname')).toHaveText('歩兵隊');
+  await expect(page.locator('#unitname')).toHaveText('足軽隊');
   // Wheel events can arrive before the next frame, with a changing pointer position.
   const checks=await page.evaluate(()=>{
     const c=document.querySelector('#scene'),r=c.getBoundingClientRect(),results=[];
@@ -93,5 +93,5 @@ test('a wheel gesture interrupts view easing without drifting afterwards',async(
   await page.waitForTimeout(550);await anchored(page,check.anchor,check.point);
   await page.locator('#overview').click();
   await expect.poll(()=>page.evaluate(()=>Math.hypot(...window.__aether.diagnostics().cameraTarget))).toBeLessThan(.01);
-  await expect(page.locator('#unitname')).toHaveText('歩兵隊');
+  await expect(page.locator('#unitname')).toHaveText('足軽隊');
 });

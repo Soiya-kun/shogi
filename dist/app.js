@@ -13,7 +13,7 @@ function save(){try{localStorage.setItem(storageKey,JSON.stringify(match.seriali
 function showUnit(p){$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+SQUADS[p.t].name:'部隊を選択';$('#unitdesc').textContent=p?SQUADS[p.t].count+(SQUADS[p.t].unit||'人')+' · '+SQUADS[p.t].formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
 function refresh(){
   const g=match.g;
-  $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の騎士団':'蒼の騎士団';
+  $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の武士団':'蒼の武士団';
   $('#turnIcon').style.background=g.turn?'#793e40':'#244b67';$('#count').textContent=String(g.ply+1).padStart(3,'0');
   $('#status').textContent=match.end||(busy?'部隊が移動しています':check(g,g.turn)?'王手 — 王を守ってください':selected?'光るマスへ移動できます':'部隊を選択してください');
   $('#moveCount').textContent=g.ply+' 手';$('#history').replaceChildren();

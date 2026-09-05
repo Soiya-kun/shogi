@@ -78,11 +78,21 @@ export async function createBattlefield(canvas,onPick) {
     for(const i of new Set(moves.map(m=>m.to)))indicators.add(patch(i,board[i]?0xff685c:0x65d8ff,.40));
   }
   const poleGeometry=new T.CylinderGeometry(.055,.075,4.2,6),poleMaterial=new T.MeshStandardMaterial({color:0x6a5140,roughness:.8});
-  const flagGeometry=new T.PlaneGeometry(1.8,1.2,6,2),flagMaterials=[0x225994,0xb32b27].map(color=>new T.MeshStandardMaterial({color,side:T.DoubleSide,roughness:.9}));
-  const promotedFlag=new T.MeshStandardMaterial({color:0xdcb35d,metalness:.45,roughness:.55,side:T.DoubleSide});
+  // Vertical nobori with an original three-disc mon, matching the soldiers' sashimono.
+  function noboriMaterial(color,promoted=false){
+    const canvas=document.createElement('canvas');canvas.width=128;canvas.height=256;const ctx=canvas.getContext('2d');
+    ctx.fillStyle=color;ctx.fillRect(0,0,128,256);ctx.fillStyle=promoted?'#49321b':'#f2e4c5';
+    for(const angle of [-Math.PI/2,Math.PI/6,Math.PI*5/6]){ctx.beginPath();ctx.arc(64+Math.cos(angle)*19,72+Math.sin(angle)*19,12,0,Math.PI*2);ctx.fill();}
+    ctx.fillRect(59,130,10,80);
+    const map=new T.CanvasTexture(canvas);map.colorSpace=T.SRGBColorSpace;
+    return new T.MeshStandardMaterial({map,side:T.DoubleSide,roughness:.9});
+  }
+  const flagGeometry=new T.PlaneGeometry(1.15,2.4,2,6),flagMaterials=['#225994','#b32b27'].map(color=>noboriMaterial(color));
+  const promotedFlag=noboriMaterial('#dcb35d',true),crossbarGeometry=new T.CylinderGeometry(.04,.04,1.3,6);
   function makeSquad(piece,cell) {
     const [x,z]=cellXZ(cell),banner=new T.Group(),pole=new T.Mesh(poleGeometry,poleMaterial);pole.position.y=2.1;banner.add(pole);
-    const flag=new T.Mesh(flagGeometry,piece.p?promotedFlag:flagMaterials[piece.s]);flag.position.set(.9,3.55,0);banner.add(flag);
+    const flag=new T.Mesh(flagGeometry,piece.p?promotedFlag:flagMaterials[piece.s]);flag.position.set(.575,2.75,0);banner.add(flag);
+    const crossbar=new T.Mesh(crossbarGeometry,poleMaterial);crossbar.rotation.z=Math.PI/2;crossbar.position.set(.58,3.99,0);banner.add(crossbar);
     const badge=label(piece.p?symbols[piece.t]||names[piece.t]:names[piece.t],piece.p?'#ffe49a':piece.s?'#ffc2b3':'#c9edff',String(SQUADS[piece.t].count));
     badge.position.set(0,5.3,0);badge.visible=labels;banner.add(badge);scene.add(banner);
     for(const child of banner.children)child.userData.cell=cell;

@@ -1,5 +1,5 @@
 {
-  "meanFrameMs": 13.189999999735088,
+  "meanFrameMs": 13.264444444974268,
   "p95FrameMs": 13.400000000000546,
   "units": 40,
   "soldiers": 392,
@@ -20,11 +20,11 @@
     0,
     0
   ],
-  "drawCalls": 190,
-  "triangles": 600007,
-  "geometries": 59,
-  "textures": 44,
-  "averageRenderMs": 1.7057347707850958,
+  "drawCalls": 230,
+  "triangles": 597047,
+  "geometries": 61,
+  "textures": 46,
+  "averageRenderMs": 2.119097222470575,
   "busy": false,
-  "lastTime": 4438.2
+  "lastTime": 4651.6
 }
