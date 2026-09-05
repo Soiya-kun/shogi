@@ -31,6 +31,7 @@ export async function createBattlefield(canvas,onPick) {
   for(let i=0;i<pos.count;i++){uv[i*2]=pos.getX(i)/8;uv[i*2+1]=-pos.getZ(i)/8;}
   ground.geometry.setAttribute('uv',new T.BufferAttribute(uv,2));ground.material=landMaterial;ground.receiveShadow=true;
   const h=terrainSampler(pos.array,ground.geometry.index?.array);
+  ground.geometry.computeBoundingBox();const groundBounds=ground.geometry.boundingBox;
   field.scene.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=!['GrassAndFlowers','Terrain'].includes(o.name);}});
   const rocks=field.scene.getObjectByName('Rocks');
   if(rocks){const p=rocks.geometry.attributes.position,uv=new Float32Array(p.count*2),v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(rocks.matrixWorld);uv[i*2]=v.x/3;uv[i*2+1]=-v.z/3;}rocks.geometry.setAttribute('uv',new T.BufferAttribute(uv,2));rocks.material=landMaterial.userData.rockMaterial;}
@@ -116,7 +117,7 @@ export async function createBattlefield(canvas,onPick) {
   canvas.addEventListener('pointerdown',e=>{
     canvas.focus();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId);
     if(pointers.size===1){down={id:e.pointerId,x:e.clientX,y:e.clientY,angle,elevation};drag=false;}
-    else{const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom};drag=true;}
+    else{const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom,anchor:zoomAnchor((a.x+b.x)/2,(a.y+b.y)/2)};drag=true;}
   });
   function focusPosition(i){
     const p=position(i),type=instances.find(s=>s.cell===i)?.piece.t;
@@ -125,10 +126,54 @@ export async function createBattlefield(canvas,onPick) {
     p.y+=detail*(type==='R'?SQUADS.R.flightHeight+1.4:type==='N'?1.4:1);
     return p;
   }
-  function setZoom(value){zoom=T.MathUtils.clamp(value,8,240);if(zoom>=150)aim.set(0,0,0);else aim.copy(focusPosition(selectedCell??focusCell));}
+  function cameraFloor(p){
+    // Cursor navigation can reach the landscape edge; there is no surface outside it.
+    return p.x>groundBounds.min.x&&p.x<groundBounds.max.x&&p.z>groundBounds.min.z&&p.z<groundBounds.max.z?h(p.x,p.z)+.8:-Infinity;
+  }
+  function updateCamera(){
+    const r=zoom*(camera.aspect<1?1.50:1);
+    camera.position.set(target.x+Math.sin(angle)*Math.cos(elevation)*r,target.y+Math.sin(elevation)*r,target.z+Math.cos(angle)*Math.cos(elevation)*r);
+    // Lift the view together, keeping its orientation stable near hills.
+    const lift=Math.max(0,cameraFloor(camera.position)-camera.position.y);
+    if(lift){target.y+=lift;aim.y+=lift;camera.position.y+=lift;}
+    camera.lookAt(target);camera.updateMatrixWorld(true);
+  }
+  function pointerRay(x,y){
+    const r=canvas.getBoundingClientRect();
+    ray.setFromCamera(new T.Vector2((x-r.left)/r.width*2-1,1-(y-r.top)/r.height*2),camera);
+    return ray;
+  }
+  function zoomAnchor(x,y){
+    pointerRay(x,y);
+    const terrain=ray.intersectObject(ground)[0],unit=armyView.pickSurface(ray);
+    const hit=unit&&(!terrain||unit.distance<terrain.distance)?unit:terrain;
+    if(hit)return hit.point.clone();
+    // Sky has no depth: use the view plane through the current orbit target.
+    return ray.ray.intersectPlane(new T.Plane().setFromNormalAndCoplanarPoint(camera.getWorldDirection(new T.Vector3()),target),new T.Vector3())??target.clone();
+  }
+  function setZoom(value,x,y,anchor){
+    const next=T.MathUtils.clamp(value,8,240),ratio=next/zoom;
+    if(next===zoom&&!anchor)return;
+    anchor??=zoomAnchor(x,y);
+    pointerRay(x,y);
+    const forward=camera.getWorldDirection(new T.Vector3()),offset=camera.position.clone().sub(target);
+    // Preserve the anchor's screen position and depth ratio, also when a pinch midpoint moves.
+    const depth=anchor.clone().sub(camera.position).dot(forward);
+    const proposed=anchor.clone().addScaledVector(ray.ray.direction,-depth*ratio/ray.ray.direction.dot(forward));
+    let fraction=1;
+    if(proposed.y<cameraFloor(proposed)){
+      // Stop along the dolly path before entering terrain, rather than displacing the anchor.
+      let safe=0,blocked=1;
+      for(let i=0;i<18;i++){const t=(safe+blocked)/2,p=camera.position.clone().lerp(proposed,t);if(p.y>=cameraFloor(p))safe=t;else blocked=t;}
+      fraction=safe;
+    }
+    const applied=T.MathUtils.lerp(1,ratio,fraction);
+    target.copy(camera.position.clone().lerp(proposed,fraction).addScaledVector(offset,-applied));
+    aim.copy(target);zoom=T.MathUtils.clamp(zoom*applied,8,240);updateCamera();
+  }
   canvas.addEventListener('pointermove',e=>{
     if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-    if(pointers.size>1&&pinch){const [a,b]=[...pointers.values()];setZoom(pinch.zoom*pinch.distance/Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)));return;}
+    if(pointers.size>1&&pinch){const [a,b]=[...pointers.values()];setZoom(pinch.zoom*pinch.distance/Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)),(a.x+b.x)/2,(a.y+b.y)/2,pinch.anchor);return;}
     if(!down||down.id!==e.pointerId)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;
     if(Math.abs(dx)+Math.abs(dy)>7)drag=true;if(drag){angle=down.angle-dx*.005;elevation=T.MathUtils.clamp(down.elevation+dy*.003,.28,1.49);}
   });
@@ -143,12 +188,12 @@ export async function createBattlefield(canvas,onPick) {
       const unitCell=flying&&(!marker||flying.distance<marker.distance)?flying.cell:marker?.object.userData.cell;
       const i=availableTargets.has(groundCell)?groundCell:unitCell??groundCell;
       if(i!==null){focusCell=i;onPick(i);}
-    }pointers.delete(e.pointerId);down=null;if(pointers.size===0)pinch=null;
+    }pointers.delete(e.pointerId);down=null;if(pointers.size<2)pinch=null;
   });
   canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);down=null;pinch=null;});
   canvas.addEventListener('wheel',e=>{
     e.preventDefault();const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?canvas.clientHeight:1);
-    setZoom(zoom*Math.exp(T.MathUtils.clamp(delta*.0012,-1,1)));
+    setZoom(zoom*Math.exp(T.MathUtils.clamp(delta*.0012,-1,1)),e.clientX,e.clientY);
   },{passive:false});
   canvas.addEventListener('keydown',e=>{
     let x=focusCell%9,z=Math.floor(focusCell/9);const deltas={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
@@ -158,11 +203,9 @@ export async function createBattlefield(canvas,onPick) {
   canvas.addEventListener('blur',()=>cursor.visible=false);
   new ResizeObserver(()=>{const r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();}).observe(canvas.parentElement);
   function frame(t) {
-    requestAnimationFrame(frame);if(document.hidden)return;const dt=Math.min((t-lastTime)/1000,.1),r=zoom*(camera.aspect<1?1.50:1),time=t*.001;
+    requestAnimationFrame(frame);if(document.hidden)return;const dt=Math.min((t-lastTime)/1000,.1),time=t*.001;
     scene.fog.near=200*(camera.aspect<1?1.5:1);scene.fog.far=485*(camera.aspect<1?1.5:1);
-    target.lerp(aim,reducedMotion?1:1-Math.exp(-dt*7));camera.position.set(target.x+Math.sin(angle)*Math.cos(elevation)*r,target.y+Math.sin(elevation)*r,target.z+Math.cos(angle)*Math.cos(elevation)*r);
-    if(zoom<42)camera.position.y=Math.max(camera.position.y,h(camera.position.x,camera.position.z)+.8);
-    camera.lookAt(target);
+    target.lerp(aim,reducedMotion?1:1-Math.exp(-dt*7));updateCamera();
     for(const fx of [...effects]){const f=Math.min(1,(t-fx.start)/fx.duration);fx.update(f);if(f===1){effects.splice(effects.indexOf(fx),1);fx.done();}}
     const changed=armyView.update(time,camera,busy);
     for(const s of instances){const flagX=s.x+(SQUADS[s.piece.t].bannerOffsetX??0);s.banner.position.set(flagX,h(flagX,s.z+3.6),s.z+3.6);s.banner.scale.setScalar(s.scale??1);s.flag.rotation.y=reducedMotion?0:Math.sin(time*2+s.cell)*.10;const badgeScale=(mobile?1.5:1)*Math.min(1,camera.position.distanceTo(s.banner.position)/140);s.badge.scale.set(3.4*badgeScale,4.25*badgeScale,1);}
@@ -174,7 +217,7 @@ export async function createBattlefield(canvas,onPick) {
     close:()=>{aim.copy(position(selectedCell??focusCell));zoom=48;elevation=.36;},overview:()=>{zoom=185;elevation=.93;aim.set(0,0,0);},
     labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels;return labels;},
     diagnostics:()=>({units:instances.length,...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
-    contacts:armyView.contacts,projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
+    contacts:armyView.contacts,zoomAnchor:(x,y)=>zoomAnchor(x,y).toArray(),projectPoint:point=>{const p=new T.Vector3(...point).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectFlying:i=>{const member=armyView.contacts().find(p=>p.cell===i&&p.airborne),p=new T.Vector3(member.x,member.y+1.1,member.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectBanner:i=>{const s=instances.find(s=>s.cell===i),p=s.badge.getWorldPosition(new T.Vector3()).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},height:h};
 }

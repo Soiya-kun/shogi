@@ -56,7 +56,7 @@ $('#reset').onclick=()=>{if(busy||!view||!confirm('対局を最初から始め�
 refresh();
 try {
   view=await createBattlefield($('#scene'),pick);view.draw(match.g.b);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';
-  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,height:view.height,contacts:view.contacts,state:()=>structuredClone(match.serialize())};
+  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,state:()=>structuredClone(match.serialize())};
 } catch(error) {
   console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);
 }

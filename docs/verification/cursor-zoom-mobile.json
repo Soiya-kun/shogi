@@ -1,0 +1,37 @@
+{
+  "anchor": [
+    11.99948261609396,
+    2.56909775456694,
+    -0.018719819289287898
+  ],
+  "point": {
+    "x": 226.53644394630246,
+    "y": 351.95608806088705
+  },
+  "units": 40,
+  "soldiers": 392,
+  "representedSoldiers": 240,
+  "flyingRiders": 12,
+  "detailedSquads": 0,
+  "instanceBatches": 26,
+  "fieldWidth": 108,
+  "quality": "compact",
+  "zoom": 123.33333333333333,
+  "cameraPosition": [
+    15.041331428605904,
+    149.15605494336427,
+    110.04051062355538
+  ],
+  "cameraTarget": [
+    3.999826756331643,
+    0.8563658798654785,
+    -0.006240342757706685
+  ],
+  "drawCalls": 174,
+  "triangles": 507393,
+  "geometries": 107,
+  "textures": 44,
+  "averageRenderMs": 5.585106390587827,
+  "busy": false,
+  "lastTime": 2165.9
+}

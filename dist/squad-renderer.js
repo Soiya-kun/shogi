@@ -115,6 +115,12 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     const hit=ray.intersectObjects(meshes,false)[0];
     return hit?{cell:hit.object.userData.cells[hit.instanceId],distance:hit.distance}:null;
   }
-  return {setSquads,update,pickFlying,stats:()=>({soldiers:squads.reduce((n,s)=>n+SQUADS[s.piece.t].count,0),representedSoldiers:represented,flyingRiders:squads.filter(s=>s.piece.t==='R').reduce((n,s)=>n+(s.members?.length??0),0),detailedSquads:detailed,instanceBatches:[...batches.values()].filter(b=>b.visible).length}),
+  function pickSurface(ray){
+    const meshes=[...batches.values()].filter(b=>b.visible&&b.count);
+    for(const mesh of meshes)mesh.computeBoundingSphere();
+    const hit=ray.intersectObjects(meshes,false)[0];
+    return hit?{point:hit.point,distance:hit.distance}:null;
+  }
+  return {setSquads,update,pickFlying,pickSurface,stats:()=>({soldiers:squads.reduce((n,s)=>n+SQUADS[s.piece.t].count,0),representedSoldiers:represented,flyingRiders:squads.filter(s=>s.piece.t==='R').reduce((n,s)=>n+(s.members?.length??0),0),detailedSquads:detailed,instanceBatches:[...batches.values()].filter(b=>b.visible).length}),
     contacts:()=>squads.flatMap(s=>(s.contacts||[]).map(p=>({...p,cell:s.cell,ground:h(p.x,p.z)})))};
 }
