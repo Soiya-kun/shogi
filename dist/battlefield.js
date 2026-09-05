@@ -154,9 +154,14 @@ export async function createBattlefield(canvas,onPick) {
     });
   }
   const pointers=new Map();let down=null,drag=false,pinch=null;const ray=new T.Raycaster();
+  canvas.addEventListener('contextmenu',e=>e.preventDefault());
   canvas.addEventListener('pointerdown',e=>{
+    if(e.button!==0&&e.button!==2)return;
     canvas.focus();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId);
-    if(pointers.size===1){down={id:e.pointerId,x:e.clientX,y:e.clientY,angle,elevation};drag=false;}
+    if(pointers.size===1){
+      down={id:e.pointerId,button:e.button,x:e.clientX,y:e.clientY,angle,elevation};drag=false;
+      if(e.button===2){e.preventDefault();aim.copy(target);updateCamera();down.pan=panAnchor(e.clientX,e.clientY);canvas.classList.add('panning');}
+    }
     else{const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom,anchor:zoomAnchor((a.x+b.x)/2,(a.y+b.y)/2)};drag=true;}
   });
   function focusPosition(i){
@@ -191,6 +196,23 @@ export async function createBattlefield(canvas,onPick) {
     // Sky has no depth: use the view plane through the current orbit target.
     return ray.ray.intersectPlane(new T.Plane().setFromNormalAndCoplanarPoint(camera.getWorldDirection(new T.Vector3()),target),new T.Vector3())??target.clone();
   }
+  function panAnchor(x,y){
+    const anchor=zoomAnchor(x,y);
+    return {anchor,plane:new T.Plane().setFromNormalAndCoplanarPoint(camera.getWorldDirection(new T.Vector3()),anchor)};
+  }
+  function panView(x,y){
+    const {anchor,plane}=down.pan,point=pointerRay(x,y).ray.intersectPlane(plane,new T.Vector3());
+    if(!point)return;
+    const shift=anchor.clone().sub(point),proposed=camera.position.clone().add(shift);
+    let fraction=1;
+    if(proposed.y<cameraFloor(proposed)){
+      let safe=0,blocked=1;
+      for(let i=0;i<18;i++){const t=(safe+blocked)/2,p=camera.position.clone().addScaledVector(shift,t);if(p.y>=cameraFloor(p))safe=t;else blocked=t;}
+      fraction=safe;
+    }
+    // Translate the view and its target together; keep the grabbed point under the cursor.
+    target.addScaledVector(shift,fraction);aim.copy(target);updateCamera();
+  }
   function setZoom(value,x,y,anchor){
     const next=T.MathUtils.clamp(value,8,240),ratio=next/zoom;
     if(next===zoom&&!anchor)return;
@@ -215,10 +237,12 @@ export async function createBattlefield(canvas,onPick) {
     if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
     if(pointers.size>1&&pinch){const [a,b]=[...pointers.values()];setZoom(pinch.zoom*pinch.distance/Math.max(1,Math.hypot(a.x-b.x,a.y-b.y)),(a.x+b.x)/2,(a.y+b.y)/2,pinch.anchor);return;}
     if(!down||down.id!==e.pointerId)return;const dx=e.clientX-down.x,dy=e.clientY-down.y;
-    if(Math.abs(dx)+Math.abs(dy)>7)drag=true;if(drag){angle=down.angle-dx*.005;elevation=T.MathUtils.clamp(down.elevation+dy*.003,.28,1.49);}
+    if(Math.abs(dx)+Math.abs(dy)>7)drag=true;
+    if(drag){if(down.pan)panView(e.clientX,e.clientY);else{angle=down.angle-dx*.005;elevation=T.MathUtils.clamp(down.elevation+dy*.003,.28,1.49);}}
   });
+  function releasePointer(e){pointers.delete(e.pointerId);down=null;if(pointers.size<2)pinch=null;canvas.classList.remove('panning');}
   canvas.addEventListener('pointerup',e=>{
-    if(down?.id===e.pointerId&&!drag){
+    if(down?.id===e.pointerId&&down.button===0&&e.button===0&&!drag){
       const r=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2),camera);
       // The full cell is the squad hit area, including gaps between members.
       const hit=ray.intersectObject(ground)[0],groundCell=hit?cellAt(hit.point.x,hit.point.z):null;
@@ -228,12 +252,15 @@ export async function createBattlefield(canvas,onPick) {
       const unitCell=flying&&(!marker||flying.distance<marker.distance)?flying.cell:marker?.object.userData.cell;
       const i=availableTargets.has(groundCell)?groundCell:unitCell??groundCell;
       if(i!==null&&i>=0){focusCell=i;onPick(i);}
-    }pointers.delete(e.pointerId);down=null;if(pointers.size<2)pinch=null;
+    }releasePointer(e);
   });
-  canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);down=null;pinch=null;});
+  canvas.addEventListener('pointercancel',releasePointer);
+  canvas.addEventListener('lostpointercapture',releasePointer);
+  addEventListener('blur',()=>{pointers.clear();down=null;pinch=null;canvas.classList.remove('panning');});
   canvas.addEventListener('wheel',e=>{
     e.preventDefault();const delta=e.deltaY*(e.deltaMode===1?16:e.deltaMode===2?canvas.clientHeight:1);
     setZoom(zoom*Math.exp(T.MathUtils.clamp(delta*.0012,-1,1)),e.clientX,e.clientY);
+    if(down?.pan)down.pan=panAnchor(e.clientX,e.clientY);
   },{passive:false});
   canvas.addEventListener('keydown',e=>{
     let x=focusCell%9,z=Math.floor(focusCell/9);const deltas={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
