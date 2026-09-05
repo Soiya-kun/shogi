@@ -15,7 +15,7 @@ for(const name of ['meadow','army']) {
   const data=parseGLB(bytes);
   assert(data.buffers.every(b=>!b.uri),'GLB must be self-contained');
   assert(!data.images?.length,'Current artwork uses portable vertex colors');
-  const required=name==='army'?['P','L','N','S','G','B','R','K'].map(t=>'Unit_'+t):['Terrain'];
+  const required=name==='army'?['P','L','N','S','G','B','R','K'].flatMap(t=>['Unit_'+t,'LOD_'+t]):['Terrain'];
   for(const n of required)assert(data.nodes.some(o=>o.name===n),`Missing ${n}`);
   const triangles=data.meshes.flatMap(m=>m.primitives).reduce((n,p)=>n+data.accessors[p.indices].count/3,0);
   reports[name]={bytes:bytes.length,triangles,meshes:data.meshes.length};
@@ -25,10 +25,20 @@ for(const name of ['meadow','army']) {
     const geo=terrain.geometry.clone().applyMatrix4(terrain.matrixWorld);
     const h=terrainSampler(geo.attributes.position.array,geo.index.array);
     const heights=Array.from({length:81},(_,i)=>h(...cellXZ(i)));
-    assert(heights.every(Number.isFinite));assert(Math.max(...heights)-Math.min(...heights)<1.5,'Playable slope exceeds art budget');
+    assert(heights.every(Number.isFinite));assert(Math.max(...heights)-Math.min(...heights)<6,'Playable slope exceeds art budget');
     reports[name].playableHeightRange=[Math.min(...heights),Math.max(...heights)];
   }
 }
-assert(Object.values(reports).reduce((s,r)=>s+r.bytes,0)<10*1024*1024,'Asset transfer budget: 10 MiB');
+assert(Object.values(reports).reduce((s,r)=>s+r.bytes,0)<28*1024*1024,'GLB transfer budget: 28 MiB');
 assert((await stat(new URL('../assets/blender/aether-assets.blend',import.meta.url))).size>0);
+const sources=JSON.parse(await readFile(new URL('../dist/assets/textures/sources.json',import.meta.url),'utf8'));
+assert.equal(sources.files.length,9);
+let textureBytes=0;
+for(const source of sources.files){
+  assert.equal(source.license,'CC0');
+  const bytes=await readFile(new URL('../dist/assets/textures/'+source.file,import.meta.url));
+  assert.equal(bytes.readUInt16BE(0),0xffd8,'Texture must be a local JPEG');textureBytes+=bytes.length;
+}
+assert(textureBytes+Object.values(reports).reduce((s,r)=>s+r.bytes,0)<34*1024*1024,'Initial artwork budget: 34 MiB');
+reports.textures={files:9,bytes:textureBytes};
 console.log(JSON.stringify(reports,null,2));

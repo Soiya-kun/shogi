@@ -1,8 +1,8 @@
 """Reproducible Blender source. Run: blender --background --python scripts/build_assets.py
 
 Authored coordinates: x/right, z/toward viewer, h/up. Blender maps these to
-(x, -z, h); glTF's Y-up export restores (x, h, z). One square is 1.6 metres.
-No external models, textures or paid services are required.
+(x, -z, h); glTF's Y-up export restores (x, h, z). One square is 12 metres.
+Models are original. Web terrain materials use bundled CC0 textures.
 """
 import bpy, math, random, json, sys
 from pathlib import Path
@@ -14,6 +14,7 @@ SOURCE = ROOT / 'assets/blender'
 OUT.mkdir(parents=True, exist_ok=True)
 SOURCE.mkdir(parents=True, exist_ok=True)
 rng = random.Random(921)
+sys.path.insert(0, str(ROOT / 'scripts'))
 
 def material(name, color, metal=0, rough=.8):
     m = bpy.data.materials.new(name)
@@ -75,83 +76,16 @@ def empty(name,parent=None,loc=(0,0,0)):
     x,h,z=loc; o.location=(x,-z,h); return o
 
 def height(x,z):
-    core=.22*math.sin(x*.32+z*.14)+.18*math.cos(z*.46)+.45*math.exp(-((x-3)**2+(z+2)**2)/24)
-    outside=max(0,min(1,(max(abs(x),abs(z))-7.6)/7))
-    hills=1.5+1.1*math.sin(x*.22+z*.16)+.8*math.cos(z*.32-x*.17)
-    return core+outside*hills
+    from landscape import height as surface
+    return surface(x,z)
 
 def export(scene,filename):
     bpy.context.window.scene=scene
     bpy.ops.export_scene.gltf(filepath=str(OUT/filename),export_format='GLB',use_active_scene=True,export_animations=False,export_extras=True)
 
 def field():
-    s=new_scene('Aether_Meadow'); mat=vertex_material('MeadowPalette')
-    terrain=Builder(); size=161; step=.4; half=32
-    colors=[]
-    vs=[]
-    for j in range(size):
-        z=-half+j*step
-        for i in range(size):
-            x=-half+i*step; vs.append((x,height(x,z),z))
-            wave=(math.sin(x*.55+z*.2)+math.cos(z*.71-x*.23))*.5
-            c=(.22+.026*wave,.35+.04*wave,.09+.013*wave)
-            # A worn winding trail crosses the meadow without adding obstacles.
-            pathx=2.5*math.sin(z*.24)-1.5
-            d=abs(x-pathx)
-            if d<.48+.08*math.sin(z*2): c=(.38,.33,.18)
-            elif d<.8: c=tuple(c[k]*.65+(.38,.33,.18)[k]*.35 for k in range(3))
-            colors.append(c)
-    fs=[]
-    for j in range(size-1):
-        for i in range(size-1):
-            a=j*size+i; fs += [(a,a+size,a+1),(a+1,a+size,a+size+1)]
-    terrain.add(vs,fs,(1,1,1)); terrain.c=colors
-    ground=terrain.obj('Terrain',mat)
-    for p in ground.data.polygons: p.use_smooth=True
-    # Meadow details, combined into a few meshes to keep draw calls bounded.
-    foliage=Builder(); trunks=Builder(); stones=Builder(); flowers=Builder(); props=Builder()
-    for i in range(120):
-        x=rng.uniform(-28,28); z=rng.uniform(-28,22)
-        if abs(x)<9 and abs(z)<9: continue
-        if z>7 and abs(x)<12: continue # preserve the player's sight line
-        h=height(x,z); scale=rng.uniform(.65,1.5)
-        trunks.rod((x,h,z),(x+.12*scale,h+2.4*scale,z),.15*scale,(.16,.105,.055),8,.085*scale)
-        for k in range(4):
-            a=k*2.4; dx=math.sin(a)*.55*scale; dz=math.cos(a)*.55*scale
-            trunks.rod((x,h+1.4*scale,z),(x+dx,h+(2.2+k*.16)*scale,z+dz),.065*scale,(.19,.13,.07),6,.025*scale)
-            foliage.orb(x+dx,h+(2.35+k*.28)*scale,z+dz,1.02*scale,.9*scale,.88*scale,[(.11,.23,.065),(.18,.31,.08),(.27,.39,.10),(.34,.44,.12)][k],8,5)
-    for i in range(170):
-        x=rng.uniform(-25,25); z=rng.uniform(-25,20)
-        if abs(x)<7.9 and abs(z)<7.9: continue
-        scale=rng.uniform(.15,.75); h=height(x,z)
-        stones.orb(x,h+scale*.28,z,scale,.65*scale,.8*scale,(.27,.30,.26),7,4)
-    for i in range(3400):
-        x=rng.uniform(-19,19); z=rng.uniform(-19,16); h=height(x,z)
-        if abs(x-(2.5*math.sin(z*.24)-1.5))<.65: continue
-        central=abs(x)<7.2 and abs(z)<7.2
-        tall=rng.uniform(.045,.10) if central else rng.uniform(.12,.28)
-        c=rng.choice([(.32,.43,.10),(.39,.48,.14),(.20,.35,.08)])
-        for a in (0,1.7):
-            dx=math.cos(a)*.035; dz=math.sin(a)*.035
-            flowers.add([(x-dx,h,z-dz),(x+dx,h,z+dz),(x+.025,h+tall,z+.025)],[(0,1,2)],c)
-        if not central and i%8==0:
-            flowers.orb(x,h+tall,z,.055,.03,.055,rng.choice([(.8,.68,.30),(.76,.76,.60),(.40,.25,.50)]),5,3)
-    # Half-buried old stone arch at the far side; it never covers playable cells.
-    for x in (9.7,12.1):
-        for k in range(5): props.box(x,height(x,-11)+k*.43+.2,-11,.7,.41,.8,(.39,.40,.31))
-    for i in range(9):
-        a=math.pi*i/8; x=10.9+1.2*math.cos(a); h=height(10.9,-11)+2+1.05*math.sin(a)
-        props.box(x,h,-11,.43,.40,.8,(.43,.43,.34))
-    for x,z,team in [(-8.4,6.5,(.05,.28,.55)),(8.4,-6.5,(.53,.075,.07))]:
-        h=height(x,z); props.rod((x,h,z),(x,h+2.9,z),.045,(.37,.26,.12))
-        for i in range(8):
-            a=i/8; b=(i+1)/8
-            props.add([(x+a*.85,h+2.7,z+.10*math.sin(a*5)),(x+b*.85,h+2.7,z+.10*math.sin(b*5)),(x+b*.85,h+1.7+b*.2,z+.10*math.sin(b*5)),(x+a*.85,h+1.7+a*.2,z+.10*math.sin(a*5))],[(0,1,2,3)],team)
-    foliage.obj('TreeCanopies',mat); trunks.obj('TreeTrunks',mat); stones.obj('Rocks',mat); flowers.obj('GrassAndFlowers',mat); props.obj('RuinsAndBanners',mat)
-    mat.surface_render_method='DITHERED' # opaque colors, double-sided foliage in glTF
-    mat.use_backface_culling=False
-    export(s,'meadow.glb')
-    return s
+    from landscape import create_field
+    return create_field()
 
 SILVER=(.43,.53,.57); TRIM=(.61,.39,.10); DARK=(.055,.069,.08); LEATHER=(.13,.07,.032); SKIN=(.60,.34,.19); WHITE=(.71,.76,.71)
 
@@ -262,8 +196,27 @@ def soldiers():
         for side in [-1,1]:
             a.ring(side*.29,1.11+ride,0,[(0,.13,.15),(.10,.11,.12),(.18,0,0)],TRIM,8)
         a.obj(role+'_AscendedCrest',hard,promote)
+    make_lods(s)
     export(s,'army.glb')
     return s
+
+def make_lods(scene):
+    """Independent low detail trees; the editable originals keep all detail."""
+    bpy.context.window.scene=scene
+    for obj in list(scene.objects):
+        if obj.name.startswith('LOD_'): bpy.data.objects.remove(obj,do_unlink=True)
+    for role in ['P','L','N','S','G','B','R','K']:
+        def copy_low(obj,parent=None):
+            node=obj.copy(); node.name='LOD_'+obj.name
+            scene.collection.objects.link(node); node.parent=parent
+            if node.type=='MESH':
+                node.data=obj.data.copy()
+                mod=node.modifiers.new('Distant simplification','DECIMATE'); mod.ratio=.23
+                bpy.context.view_layer.objects.active=node
+                bpy.ops.object.modifier_apply(modifier=mod.name)
+            for child in obj.children: copy_low(child,node)
+            return node
+        root=copy_low(scene.objects['Unit_'+role]); root.name='LOD_'+role
 
 def stage(scene):
     bpy.context.window.scene=scene
@@ -271,7 +224,7 @@ def stage(scene):
     scene.world.node_tree.nodes['Background'].inputs[0].default_value=(.38,.52,.64,1)
     scene.world.node_tree.nodes['Background'].inputs[1].default_value=.65
     data=bpy.data.lights.new('Sun','SUN'); data.energy=2.5; obj=bpy.data.objects.new('Sun',data); scene.collection.objects.link(obj); obj.rotation_euler=(.45,-.6,-.45)
-    data=bpy.data.cameras.new('Overview'); obj=bpy.data.objects.new('Overview',data); scene.collection.objects.link(obj); obj.location=(16,-23,23)
+    data=bpy.data.cameras.new('Overview'); obj=bpy.data.objects.new('Overview',data); scene.collection.objects.link(obj); obj.location=(115,-170,160)
     obj.rotation_euler=(Vector((0,0,.3))-obj.location).to_track_quat('-Z','Y').to_euler(); data.lens=40; scene.camera=obj
     scene.render.engine='CYCLES'; scene.cycles.samples=24; scene.render.resolution_x=1440; scene.render.resolution_y=1000; scene.render.resolution_percentage=100
 
@@ -289,11 +242,11 @@ if __name__=='__main__':
                     n=o.copy(); fs.collection.objects.link(n); n.parent=parent
                     for c in o.children: copy_tree(c,n)
                     return n
-                sample=copy_tree(original); sample.location=(x*1.6,-5.0,height(x*1.6,5))
+                sample=copy_tree(original); sample.location=(x*12,-36.0,height(x*12,36))
                 for o in sample.children:
                     if 'Promotion' in o.name: o.hide_render=True; o.hide_viewport=True
         bpy.context.window.scene=fs
     bpy.ops.wm.save_as_mainfile(filepath=str(SOURCE/'aether-assets.blend'),compress=True)
     manifest={p.name:{'bytes':p.stat().st_size} for p in OUT.glob('*.glb')}
-    (OUT/'manifest.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string,'cellSize':1.6,'assets':manifest},indent=2))
+    (OUT/'manifest.json').write_text(json.dumps({'generator':'Blender '+bpy.app.version_string,'cellSize':12,'assets':manifest},indent=2))
     print('ASSETS_COMPLETE',manifest)

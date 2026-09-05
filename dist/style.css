@@ -16,3 +16,5 @@
 @media(prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
 .mobile-help{display:none}
 @media(max-width:900px){.bottom{grid-column:1/-1}.bottom button{width:calc(50% - 4px);white-space:nowrap}.desktop-help{display:none}.scene-footer .mobile-help{display:inline!important;font-size:12px}}
+
+.view-controls{flex-wrap:wrap;right:20px}.view-controls button{font-size:13px}.scene-title p{letter-spacing:.5px}@media(max-width:900px){.view-controls{gap:5px;left:12px;right:8px}.view-controls button{padding:8px;font-size:11px}.unit p{font-size:12px}}

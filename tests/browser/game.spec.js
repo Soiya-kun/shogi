@@ -6,13 +6,19 @@ async function ready(page){await expect(page.locator('body')).toHaveAttribute('d
 async function cell(page,i){const p=await page.evaluate(i=>window.__aether.projectCell(i),i);await page.mouse.click(p.x,p.y);}
 async function settle(page){await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().busy)).toBe(false);}
 async function fixture(page,g){await page.evaluate(g=>localStorage.setItem('aether-shogi-v1',JSON.stringify({g,past:[],records:[],end:''})),g);await page.reload();await ready(page);}
+async function measure(page){return page.evaluate(async()=>{const t=[];await new Promise(resolve=>{let last=performance.now();function step(now){t.push(now-last);last=now;if(t.length<90)requestAnimationFrame(step);else resolve();}requestAnimationFrame(step);});return {meanFrameMs:t.reduce((a,b)=>a+b,0)/t.length,p95FrameMs:t.sort((a,b)=>a-b)[85],...window.__aether.diagnostics()};});}
 function blank(){const g=initial();g.b.fill(null);g.b[76]={t:'K',s:0,p:false};g.b[4]={t:'K',s:1,p:false};return g;}
 
-test('40 soldiers: mouse move, undo, keyboard, restore, views and desktop render',async({page})=>{
+test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   await page.goto('/?debug');await ready(page);
   expect((await page.evaluate(()=>window.__aether.diagnostics())).units).toBe(40);
-  await cell(page,54);await expect(page.locator('#unitname')).toHaveText('歩兵');
+  expect(await page.evaluate(()=>window.__aether.diagnostics())).toMatchObject({soldiers:392,representedSoldiers:392,fieldWidth:108,detailedSquads:0});
+  const contacts=await page.evaluate(()=>window.__aether.contacts());
+  expect(contacts).toHaveLength(392);
+  expect(contacts.every(p=>Math.abs(p.y-p.ground-.025)<.0001)).toBe(true);
+  await cell(page,54);await expect(page.locator('#unitname')).toHaveText('歩兵隊');
   await page.screenshot({path:'docs/verification/desktop-selected.png'});
   await cell(page,45);await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
   await page.reload();await ready(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
@@ -24,10 +30,24 @@ test('40 soldiers: mouse move, undo, keyboard, restore, views and desktop render
   await page.locator('#labels').click();await expect(page.locator('#labels')).toHaveText('駒名 OFF');await page.locator('#labels').click();
   await page.locator('#rotate').click();await page.locator('#top').click();
   await page.locator('#design').click();await expect(page.locator('#architecture')).toBeVisible();await page.locator('.close').click();
-  const timing=await page.evaluate(async()=>{const t=[];await new Promise(resolve=>{let last=performance.now();function step(now){t.push(now-last);last=now;if(t.length<90)requestAnimationFrame(step);else resolve();}requestAnimationFrame(step);});return {meanFrameMs:t.reduce((a,b)=>a+b,0)/t.length,p95FrameMs:t.sort((a,b)=>a-b)[85],...window.__aether.diagnostics()};});
+  const timing=await measure(page);
   await writeFile('docs/verification/desktop-performance.json',JSON.stringify(timing,null,2));
-  expect(timing.drawCalls).toBeLessThan(500);expect(timing.triangles).toBeLessThan(250000);
+  expect(timing.drawCalls).toBeLessThan(500);expect(timing.triangles).toBeLessThan(1100000);
   await page.screenshot({path:'docs/verification/desktop.png'});
+  await cell(page,58);await page.locator('#closeView').click();
+  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBeGreaterThan(0);
+  await page.waitForTimeout(1100);
+  await page.screenshot({path:'docs/verification/close.png'});
+  const detail=await measure(page);
+  expect(detail.triangles).toBeLessThan(1100000);expect(detail.drawCalls).toBeLessThan(500);
+  await writeFile('docs/verification/close-performance.json',JSON.stringify(detail,null,2));
+  // Clear the selection and select through a raised flag in the low camera view.
+  await cell(page,40);
+  const banner=await page.evaluate(()=>window.__aether.projectBanner(58));await page.mouse.click(banner.x,banner.y);
+  await expect(page.locator('#unitname')).toHaveText('歩兵隊');
+  await cell(page,49);await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
+  await page.locator('#overview').click();
+  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBe(0);
   expect(errors).toEqual([]);
 });
 
@@ -52,10 +72,17 @@ test('mobile portrait: whole field, touch move and no horizontal overflow',async
   const context=await browser.newContext({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});
   const page=await context.newPage();await page.goto('http://127.0.0.1:5174/?debug');await ready(page);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+  expect(await page.evaluate(()=>window.__aether.diagnostics())).toMatchObject({soldiers:392,representedSoldiers:240,quality:'compact'});
   for(const i of [54,45]){const p=await page.evaluate(i=>window.__aether.projectCell(i),i);await page.touchscreen.tap(p.x,p.y);}
   await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
   await page.screenshot({path:'docs/verification/mobile.png',fullPage:true});
-  await writeFile('docs/verification/mobile-performance.json',JSON.stringify(await page.evaluate(()=>window.__aether.diagnostics()),null,2));
+  const timing=await measure(page);
+  expect(timing.drawCalls).toBeLessThan(500);expect(timing.triangles).toBeLessThan(600000);
+  await writeFile('docs/verification/mobile-performance.json',JSON.stringify(timing,null,2));
+  await page.locator('#closeView').click();
+  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBeGreaterThan(0);
+  await page.locator('#overview').click();
+  await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBe(0);
   await context.close();
 });
 

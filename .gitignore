@@ -6,3 +6,4 @@ node_modules/
 *.blend1
 test-results/
 playwright-report/
+__pycache__/

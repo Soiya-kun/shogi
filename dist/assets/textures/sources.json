@@ -1,0 +1,60 @@
+{
+  "license_url": "https://polyhaven.com/license",
+  "files": [
+    {
+      "file": "aerial_grass_rock_color.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_diff_1k.jpg",
+      "license": "CC0",
+      "asset": "aerial_grass_rock"
+    },
+    {
+      "file": "aerial_grass_rock_normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_nor_gl_1k.jpg",
+      "license": "CC0",
+      "asset": "aerial_grass_rock"
+    },
+    {
+      "file": "aerial_grass_rock_roughness.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/aerial_grass_rock/aerial_grass_rock_rough_1k.jpg",
+      "license": "CC0",
+      "asset": "aerial_grass_rock"
+    },
+    {
+      "file": "brown_mud_dry_color.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_mud_dry/brown_mud_dry_diff_1k.jpg",
+      "license": "CC0",
+      "asset": "brown_mud_dry"
+    },
+    {
+      "file": "brown_mud_dry_normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_mud_dry/brown_mud_dry_nor_gl_1k.jpg",
+      "license": "CC0",
+      "asset": "brown_mud_dry"
+    },
+    {
+      "file": "brown_mud_dry_roughness.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/brown_mud_dry/brown_mud_dry_rough_1k.jpg",
+      "license": "CC0",
+      "asset": "brown_mud_dry"
+    },
+    {
+      "file": "rocky_terrain_02_color.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rocky_terrain_02/rocky_terrain_02_diff_1k.jpg",
+      "license": "CC0",
+      "asset": "rocky_terrain_02"
+    },
+    {
+      "file": "rocky_terrain_02_normal.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rocky_terrain_02/rocky_terrain_02_nor_gl_1k.jpg",
+      "license": "CC0",
+      "asset": "rocky_terrain_02"
+    },
+    {
+      "file": "rocky_terrain_02_roughness.jpg",
+      "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/1k/rocky_terrain_02/rocky_terrain_02_rough_1k.jpg",
+      "license": "CC0",
+      "asset": "rocky_terrain_02"
+    }
+  ],
+  "source": "Poly Haven"
+}

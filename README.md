@@ -1,6 +1,6 @@
 # AETHER SHOGI — 蒼穹の盤上
 
-Blenderで制作した草原・丘と8兵種を使う3D将棋。同一端末で2人対局できます。Work製デモを基に、地形に沿う9×9のマスと兵士の動作を実装しています。
+Blenderで制作した草原・丘と8兵種を使う3D将棋。同一端末で2人対局できます。Work製デモを基に、108m四方の丘陵に40部隊・392人を配置します。地形に沿う9×9のマス、実写の地面材質、隊列移動、全景・部隊への接近表示に対応します。
 
 今後の構想・Blender連携の状況は[将棋アプリの構想と制作方針](docs/product-vision.md)を参照してください。
 
@@ -26,6 +26,7 @@ npm run test:web
 `npm run build`は配信アセットの構造・座標・容量を検証します。Webのソースを変換する工程はありません。
 
 - [Blenderファイルの編集・再書き出し](assets/blender/README.md)
+- [部隊化・広域フィールドの仕様](docs/squad-scale.md)
 - [実装・検証結果](docs/implementation-report.md)
 
 ## 構成
@@ -34,9 +35,11 @@ npm run test:web
 - `dist/app.js`：画面操作・自動保存
 - `dist/match.mjs`：対局状態・履歴・終局判定
 - `dist/battlefield.js`：GLB読込、3D描画、操作、アニメーション
+- `dist/formations.mjs`、`dist/squad-renderer.js`：部隊構成・インスタンス描画・詳細度切替
+- `dist/terrain-material.js`：草・土・岩の材質
 - `dist/terrain.mjs`：マス座標とGLB地面の高さ
 - `assets/blender/`：編集用Blenderファイル
-- `dist/assets/`：Web配信用GLB
+- `dist/assets/`：Web配信用GLB・CC0テクスチャ
 - `dist/rules.mjs`：描画から独立した将棋ルール
 - `dist/style.css`：画面スタイル
 - `dist/three.module.js`：同梱Three.js r170（MIT）
