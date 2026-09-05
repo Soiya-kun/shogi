@@ -5,8 +5,11 @@ import { resolve, sep, extname } from 'node:path';
 
 const root = fileURLToPath(new URL('../dist/', import.meta.url));
 const port = Number(process.env.PORT || 5173);
-const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.glb':'model/gltf-binary', '.json':'application/json', '.svg':'image/svg+xml' };
+const types = { '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.mjs': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.glb':'model/gltf-binary', '.json':'application/json', '.svg':'image/svg+xml', '.wasm':'application/wasm' };
 createServer(async (req, res) => {
+  res.setHeader('Cross-Origin-Opener-Policy','same-origin');
+  res.setHeader('Cross-Origin-Embedder-Policy','require-corp');
+  res.setHeader('Cross-Origin-Resource-Policy','same-origin');
   try {
     if (!['GET', 'HEAD'].includes(req.method)) {
       res.writeHead(405).end();

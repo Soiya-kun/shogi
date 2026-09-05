@@ -1,0 +1,4 @@
+# Rebuild using the corresponding source shipped beside the executable.
+FROM emscripten/emsdk:3.1.24
+COPY source.tar.xz /src/source.tar.xz
+RUN cd /src && tar xf source.tar.xz

@@ -4,6 +4,8 @@ Blenderで制作した草原・丘と8兵種を使う3D将棋。同一端末で2
 
 今後の構想・Blender連携の状況は[将棋アプリの構想と制作方針](docs/product-vision.md)を参照してください。
 
+先手・後手それぞれの「AI開始」で、現在の局面からAIに任せられます。両軍AIの観戦、途中停止での手動復帰、戦法・作戦の変更に対応します。AIと移動演出は並行して動きます。
+
 ## ローカル起動
 
 Node.js 22以降で実行します。依存パッケージのインストールは不要です。
@@ -28,12 +30,14 @@ npm run test:web
 - [Blenderファイルの編集・再書き出し](assets/blender/README.md)
 - [部隊化・広域フィールドの仕様](docs/squad-scale.md)
 - [実装・検証結果](docs/implementation-report.md)
+- [AIの操作・採用版・配信設定](docs/ai-implementation.md)
 
 ## 構成
 
 - `dist/index.html`：画面・設計説明
 - `dist/app.js`：画面操作・自動保存
 - `dist/match.mjs`：対局状態・履歴・終局判定
+- `dist/game-controller.mjs`、`dist/ai/`：先後のAI担当・指示、USI、局面別定跡、Worker＋WASM探索
 - `dist/battlefield.js`：GLB読込、3D描画、操作、アニメーション
 - `dist/formations.mjs`、`dist/squad-renderer.js`：部隊構成・インスタンス描画・詳細度切替
 - `dist/terrain-material.js`：草・土・岩の材質
@@ -48,7 +52,9 @@ npm run test:web
 
 `dist/` は元デモの編集対象ソース兼配信ファイルです。生成物として削除・除外しないでください。ビルド工程はありません。フォントはGoogle Fontsから取得します。対局はブラウザのlocalStorageに保存されるため、公開デモの対局状態はlocalhostには引き継がれません。
 
-移動・捕獲・成り・持ち駒・王手・二歩・打ち歩詰め・千日手判定、視点操作、一手戻すに対応。CPU・オンライン対局・対局時計・持将棋・入玉宣言は未実装です。
+移動・捕獲・成り・持ち駒・王手・二歩・打ち歩詰め・千日手判定、視点操作、一手戻す、先後それぞれのAIに対応。オンライン対局・対局時計・持将棋・入玉宣言は未実装です。
+
+AIにはlocalhostまたはHTTPSとクロスオリジン分離が必要です。ローカルサーバーは必要ヘッダーを設定します。静的ホストでは`dist/_headers`を適用するか、初回AI起動時のService Workerによる準備を使用します。やねうら王WASMのGPLv3本文・対応ソース・固定版の情報は`dist/ai/vendor/`と画面の「AIについて」から確認できます。
 
 ## 取り込み元
 

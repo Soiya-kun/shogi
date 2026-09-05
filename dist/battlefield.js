@@ -20,7 +20,7 @@ export async function createBattlefield(canvas,onPick) {
   sun.shadow.bias=-.00015;sun.shadow.normalBias=.09;scene.add(sun);
   const camera=new T.PerspectiveCamera(42,1,.4,900),target=new T.Vector3(),aim=new T.Vector3();
   let angle=.10,elevation=.93,zoom=185,labels=true,busy=false,focusCell=76,selectedCell=null;
-  let instances=[],effects=[],lastTime=0,renderMs=0,frames=0,availableTargets=new Set();
+  let instances=[],effects=[],lastTime=0,renderMs=0,frames=0,availableTargets=new Set(),squadSequence=0;
   const loader=new GLTFLoader();
   const [field,army,landMaterial]=await Promise.all([loader.loadAsync('./assets/meadow.glb'),loader.loadAsync('./assets/army.glb'),terrainMaterial(renderer)]);
   scene.add(field.scene);field.scene.updateMatrixWorld(true);
@@ -96,23 +96,36 @@ export async function createBattlefield(canvas,onPick) {
     const badge=label(piece.p?symbols[piece.t]||names[piece.t]:names[piece.t],piece.p?'#ffe49a':piece.s?'#ffc2b3':'#c9edff',String(SQUADS[piece.t].count));
     badge.position.set(0,5.3,0);badge.visible=labels;banner.add(badge);scene.add(banner);
     for(const child of banner.children)child.userData.cell=cell;
-    return {cell,piece:{...piece},x,z,banner,badge,flag,heading:piece.s?Math.PI:0,progress:0};
+    return {id:++squadSequence,cell,piece:{...piece},x,z,banner,badge,flag,heading:piece.s?Math.PI:0,progress:0};
   }
   function draw(board) {
+    for(const fx of effects){if(fx.cancel)fx.cancel();else fx.done();}effects=[];busy=false;
     for(const s of instances)s.banner.removeFromParent();instances=[];board.forEach((p,i)=>{if(p)instances.push(makeSquad(p,i));});
     armyView.setSquads(instances);renderer.shadowMap.needsUpdate=true;
   }
   function position(i){const [x,z]=cellXZ(i);return new T.Vector3(x,h(x,z)+.025,z);}
-  async function transition(before,after,m) {
-    busy=true;let arriving=instances.find(s=>s.cell===m.from);
-    const victim=instances.find(s=>s.cell===m.to),destination=position(m.to),start=arriving?{x:arriving.x,z:arriving.z}:null;
+  function finishEffect(fx){
+    const index=effects.indexOf(fx);if(index<0)return;
+    effects.splice(index,1);fx.update(1);fx.done();
+  }
+  async function transition(before,after,m,event) {
+    let arriving=instances.find(s=>!s.ghost&&s.cell===m.from);
+    const victim=instances.find(s=>!s.ghost&&s.cell===m.to),destination=position(m.to);
+    // Shorten only conflicting presentations. Independent squads continue in parallel.
+    if(arriving?.motion)finishEffect(arriving.motion);
+    if(victim?.motion)finishEffect(victim.motion);
+    const start=arriving?{x:arriving.x,z:arriving.z}:null;
     if(m.drop){arriving=makeSquad(after.b[m.to],m.to);arriving.scale=.01;instances.push(arriving);armyView.setSquads(instances);}
-    if(!arriving){draw(after.b);busy=false;return;}
+    if(!arriving){draw(after.b);return;}
+    arriving.cell=m.to;for(const child of arriving.banner.children)child.userData.cell=m.to;
+    if(victim){victim.ghost=true;victim.cell=-1;victim.badge.visible=false;for(const child of victim.banner.children)child.userData.cell=-1;}
+    busy=true;
     const duration=reducedMotion?1:victim?1450:m.drop?700:1150;
     const heading=start?Math.atan2(-(destination.x-start.x),-(destination.z-start.z)):arriving.heading,originalHeading=arriving.heading;
     // atan2 can return -PI for the same facing stored as +PI. Settle via the shortest arc.
     const settledHeading=heading+Math.atan2(Math.sin(originalHeading-heading),Math.cos(originalHeading-heading));
-    await new Promise(resolve=>effects.push({start:performance.now(),duration,update:f=>{
+    await new Promise(resolve=>{
+      const fx={event,squadId:arriving.id,start:performance.now(),duration,update:f=>{
       arriving.progress=f;
       if(start){
         const u=Math.min(1,f/(victim ? .80 : .85)),smooth=u*u*(3-2*u);
@@ -122,8 +135,23 @@ export async function createBattlefield(canvas,onPick) {
       }else arriving.scale=Math.max(.01,Math.sin(f*Math.PI/2));
       if(victim){const retreat=Math.max(0,(f-.48)/.52);victim.retreat=retreat;victim.z=destination.z+(victim.piece.s?-1:1)*retreat*7;victim.scale=1-retreat;}
       armyView.setSquads(instances);renderer.shadowMap.needsUpdate=true;
-    },done:()=>{draw(after.b);busy=false;resolve();}}));
-    if(m.promote&&!reducedMotion){const glow=patch(m.to,0xffd46c,.8);scene.add(glow);effects.push({start:performance.now(),duration:900,update:f=>glow.material.opacity=.65*(1-f),done:()=>{glow.removeFromParent();glow.material.dispose();}});}
+      },done:()=>{
+        if(arriving.motion===fx){
+          arriving.motion=null;arriving.x=destination.x;arriving.z=destination.z;arriving.moving=false;arriving.attack=0;arriving.scale=1;arriving.heading=originalHeading;
+          arriving.piece={...after.b[m.to]};
+          if(m.promote){
+            arriving.flag.material=promotedFlag;arriving.badge.material=label(symbols[arriving.piece.t]||names[arriving.piece.t],'#ffe49a',String(SQUADS[arriving.piece.t].count)).material;
+            if(!reducedMotion){const glow=patch(m.to,0xffd46c,.8);scene.add(glow);effects.push({start:performance.now(),duration:900,update:f=>glow.material.opacity=.65*(1-f),done:()=>{glow.removeFromParent();glow.material.dispose();}});}
+          }
+        }
+        if(victim){victim.banner.removeFromParent();instances=instances.filter(s=>s!==victim);}
+        armyView.setSquads(instances);busy=instances.some(s=>s.motion);renderer.shadowMap.needsUpdate=true;resolve();
+      },cancel:()=>{arriving.motion=null;resolve();}};
+      arriving.motion=fx;effects.push(fx);
+      // Bound transient squads, even under very fast playback or repeated captures.
+      while(effects.filter(e=>e.squadId).length>8)finishEffect(effects.find(e=>e.squadId));
+      while(effects.length>16)finishEffect(effects.find(e=>!e.squadId));
+    });
   }
   const pointers=new Map();let down=null,drag=false,pinch=null;const ray=new T.Raycaster();
   canvas.addEventListener('pointerdown',e=>{
@@ -190,16 +218,16 @@ export async function createBattlefield(canvas,onPick) {
     if(Math.abs(dx)+Math.abs(dy)>7)drag=true;if(drag){angle=down.angle-dx*.005;elevation=T.MathUtils.clamp(down.elevation+dy*.003,.28,1.49);}
   });
   canvas.addEventListener('pointerup',e=>{
-    if(down?.id===e.pointerId&&!drag&&!busy){
+    if(down?.id===e.pointerId&&!drag){
       const r=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,1-(e.clientY-r.top)/r.height*2),camera);
       // The full cell is the squad hit area, including gaps between members.
       const hit=ray.intersectObject(ground)[0],groundCell=hit?cellAt(hit.point.x,hit.point.z):null;
-      const marker=ray.intersectObjects(instances.flatMap(s=>s.banner.children.filter(c=>c.visible)),false)[0];
+      const marker=ray.intersectObjects(instances.filter(s=>!s.ghost).flatMap(s=>s.banner.children.filter(c=>c.visible)),false)[0];
       const flying=armyView.pickFlying(ray);
       // A label can cover a legal destination; movement keeps priority there.
       const unitCell=flying&&(!marker||flying.distance<marker.distance)?flying.cell:marker?.object.userData.cell;
       const i=availableTargets.has(groundCell)?groundCell:unitCell??groundCell;
-      if(i!==null){focusCell=i;onPick(i);}
+      if(i!==null&&i>=0){focusCell=i;onPick(i);}
     }pointers.delete(e.pointerId);down=null;if(pointers.size<2)pinch=null;
   });
   canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);down=null;pinch=null;});
@@ -210,7 +238,7 @@ export async function createBattlefield(canvas,onPick) {
   canvas.addEventListener('keydown',e=>{
     let x=focusCell%9,z=Math.floor(focusCell/9);const deltas={ArrowLeft:[-1,0],ArrowRight:[1,0],ArrowUp:[0,-1],ArrowDown:[0,1]};
     if(deltas[e.key]){e.preventDefault();const d=deltas[e.key];x=T.MathUtils.clamp(x+d[0],0,8);z=T.MathUtils.clamp(z+d[1],0,8);focusCell=z*9+x;cursor.geometry=patchGeometry(focusCell);cursor.visible=true;canvas.setAttribute('aria-label',`${9-x}${'一二三四五六七八九'[z]}。Enterで部隊を選択・移動`);if(zoom<150)aim.copy(focusPosition(focusCell));}
-    if(e.key==='Enter'||e.key===' '){e.preventDefault();if(!busy)onPick(focusCell);}
+    if(e.key==='Enter'||e.key===' '){e.preventDefault();onPick(focusCell);}
   });
   canvas.addEventListener('blur',()=>cursor.visible=false);
   new ResizeObserver(()=>{const r=canvas.getBoundingClientRect();renderer.setSize(r.width,r.height,false);camera.aspect=r.width/r.height;camera.updateProjectionMatrix();}).observe(canvas.parentElement);
@@ -218,7 +246,7 @@ export async function createBattlefield(canvas,onPick) {
     requestAnimationFrame(frame);if(document.hidden)return;const dt=Math.min((t-lastTime)/1000,.1),time=t*.001;
     scene.fog.near=200*(camera.aspect<1?1.5:1);scene.fog.far=485*(camera.aspect<1?1.5:1);
     target.lerp(aim,reducedMotion?1:1-Math.exp(-dt*7));updateCamera();
-    for(const fx of [...effects]){const f=Math.min(1,(t-fx.start)/fx.duration);fx.update(f);if(f===1){effects.splice(effects.indexOf(fx),1);fx.done();}}
+    for(const fx of [...effects]){if(!effects.includes(fx))continue;const f=Math.min(1,(t-fx.start)/fx.duration);fx.update(f);if(f===1){effects.splice(effects.indexOf(fx),1);fx.done();}}
     const changed=armyView.update(time,camera,busy);
     for(const s of instances){const flagX=s.x+(SQUADS[s.piece.t].bannerOffsetX??0);s.banner.position.set(flagX,h(flagX,s.z+3.6),s.z+3.6);s.banner.scale.setScalar(s.scale??1);s.flag.rotation.y=reducedMotion?0:Math.sin(time*2+s.cell)*.10;const badgeScale=(mobile?1.5:1)*Math.min(1,camera.position.distanceTo(s.banner.position)/140);s.badge.scale.set(3.4*badgeScale,4.25*badgeScale,1);}
     if(changed&&frames%3===0)renderer.shadowMap.needsUpdate=true;
@@ -227,8 +255,8 @@ export async function createBattlefield(canvas,onPick) {
   requestAnimationFrame(frame);
   return {draw,highlight,transition,rotate:()=>angle+=Math.PI,top:()=>elevation=elevation>1.3?.93:1.49,
     close:()=>{aim.copy(position(selectedCell??focusCell));zoom=48;elevation=.36;},overview:()=>{zoom=185;elevation=.93;aim.set(0,0,0);},
-    labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels;return labels;},
-    diagnostics:()=>({units:instances.length,...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
+    labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels&&!s.ghost;return labels;},
+    diagnostics:()=>({units:instances.filter(s=>!s.ghost).length,ghosts:instances.filter(s=>s.ghost).length,activeMotions:instances.filter(s=>s.motion).length,...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
     contacts:armyView.contacts,zoomAnchor:(x,y)=>zoomAnchor(x,y).toArray(),projectPoint:point=>{const p=new T.Vector3(...point).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectFlying:i=>{const member=armyView.contacts().find(p=>p.cell===i&&p.airborne),p=new T.Vector3(member.x,member.y+1.1,member.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectBanner:i=>{const s=instances.find(s=>s.cell===i),p=s.badge.getWorldPosition(new T.Vector3()).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},height:h};

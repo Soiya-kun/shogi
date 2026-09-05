@@ -1,7 +1,9 @@
 {
-  "meanFrameMs": 13.264444444974268,
-  "p95FrameMs": 13.400000000000546,
+  "meanFrameMs": 13.204666666613685,
+  "p95FrameMs": 13.404999999999745,
   "units": 40,
+  "ghosts": 0,
+  "activeMotions": 0,
   "soldiers": 392,
   "representedSoldiers": 392,
   "flyingRiders": 16,
@@ -24,7 +26,7 @@
   "triangles": 597047,
   "geometries": 61,
   "textures": 46,
-  "averageRenderMs": 2.119097222470575,
+  "averageRenderMs": 3.055033005503538,
   "busy": false,
-  "lastTime": 4651.6
+  "lastTime": 5102.54
 }

@@ -24,7 +24,8 @@ test('squads settle through the shortest turn after forward moves, captures and 
       function sample(){
         const busy=window.__aether.diagnostics().busy;started||=busy;
         if(started){
-          const members=window.__aether.contacts().filter(p=>p.cell===(busy?example.from:example.to));
+          // Logical occupancy changes immediately; follow its destination during presentation too.
+          const members=window.__aether.contacts().filter(p=>p.cell===example.to);
           if(members.length>1){
             const dx=members[1].x-members[0].x,dz=members[1].z-members[0].z;
             window.turnSamples.push({busy,heading:Math.atan2(-dz,dx)});

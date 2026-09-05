@@ -1,0 +1,171 @@
+{
+  "meanFrameMs": 13.419666666613677,
+  "p95FrameMs": 13.390000000000327,
+  "units": 40,
+  "ghosts": 0,
+  "activeMotions": 2,
+  "soldiers": 392,
+  "representedSoldiers": 392,
+  "flyingRiders": 16,
+  "detailedSquads": 0,
+  "instanceBatches": 26,
+  "fieldWidth": 108,
+  "quality": "full",
+  "zoom": 185,
+  "cameraPosition": [
+    11.041504672274261,
+    148.2996890634988,
+    110.04675096631308
+  ],
+  "cameraTarget": [
+    0,
+    0,
+    0
+  ],
+  "drawCalls": 234,
+  "triangles": 598199,
+  "geometries": 77,
+  "textures": 46,
+  "averageRenderMs": 3.8833630950677964,
+  "busy": true,
+  "lastTime": 9091.015,
+  "ai": {
+    "phase": "ai-thinking",
+    "animations": 2,
+    "settings": [
+      {
+        "enabled": true,
+        "opening": "fourth",
+        "order": "defend"
+      },
+      {
+        "enabled": true,
+        "opening": "static",
+        "order": "counter"
+      }
+    ],
+    "errors": [
+      null,
+      null
+    ],
+    "notices": [
+      "守備で判断",
+      "戦法の形を継続"
+    ],
+    "activeRequest": {
+      "gameId": "edac7514-c9d9-42b6-abed-c1c13611d796",
+      "positionRevision": 11,
+      "policyRevision": 8,
+      "requestId": "edac7514-c9d9-42b6-abed-c1c13611d796:15",
+      "side": 1,
+      "opening": "static",
+      "order": "counter",
+      "limits": {
+        "nodes": 50000,
+        "timeMs": 1500
+      },
+      "position": "position sfen lnsgkgsnl/1r5b1/ppppppppp/9/9/9/PPPPPPPPP/1B5R1/LNSGKGSNL b - 1 moves 7g7f 3c3d 6g6f 5c5d 3i4h 2b3c 7i7h 6c6d 5g5f 7c7d 9g9f",
+      "legalCount": 41,
+      "openingMoves": []
+    },
+    "engine": {
+      "name": "YaneuraOu NNUE KP256 7.63 32WASM TOURNAMENT",
+      "threads": 1,
+      "hashMiB": 16,
+      "options": [
+        "Threads",
+        "USI_Hash",
+        "USI_Ponder",
+        "Stochastic_Ponder",
+        "MultiPV",
+        "NetworkDelay",
+        "NetworkDelay2",
+        "MinimumThinkingTime",
+        "SlowMover",
+        "MaxMovesToDraw",
+        "DepthLimit",
+        "NodesLimit",
+        "EvalDir",
+        "EvalFile",
+        "WriteDebugLog",
+        "GenerateAllLegalMoves",
+        "EnteringKingRule",
+        "USI_OwnBook",
+        "NarrowBook",
+        "BookMoves",
+        "BookIgnoreRate",
+        "BookFile",
+        "BookDir",
+        "BookEvalDiff",
+        "BookEvalBlackLimit",
+        "BookEvalWhiteLimit",
+        "BookDepthLimit",
+        "BookOnTheFly",
+        "ConsiderBookMoveCount",
+        "BookPvMoves",
+        "IgnoreBookPly",
+        "SkillLevel",
+        "DrawValueBlack",
+        "DrawValueWhite",
+        "PvInterval",
+        "ResignValue",
+        "ConsiderationMode",
+        "OutputFailLHPV",
+        "FV_SCALE"
+      ]
+    },
+    "positionRevision": 11,
+    "policyRevision": 8,
+    "lastDecision": {
+      "side": 0,
+      "policy": {
+        "enabled": true,
+        "opening": "fourth",
+        "order": "defend"
+      },
+      "plan": {
+        "state": "suspended",
+        "moves": [],
+        "message": "この局面では作戦指示を優先"
+      },
+      "choice": {
+        "m": {
+          "from": 54,
+          "to": 45,
+          "promote": false
+        },
+        "selected": {
+          "depth": 8,
+          "rank": 1,
+          "score": {
+            "type": "cp",
+            "value": 63,
+            "bound": null
+          },
+          "pv": [
+            "9g9f",
+            "7a6b",
+            "2g2f",
+            "8c8d",
+            "8h7g",
+            "8a7c",
+            "3g3f",
+            "6a5b",
+            "4i5h",
+            "3a2b",
+            "2i3g",
+            "1c1d",
+            "2f2e",
+            "4c4d",
+            "1g1f",
+            "8d8e",
+            "4g4f"
+          ],
+          "usi": "9g9f"
+        },
+        "reason": "守備で判断"
+      },
+      "requestId": "edac7514-c9d9-42b6-abed-c1c13611d796:14"
+    }
+  }
+}

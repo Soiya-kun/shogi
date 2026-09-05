@@ -9,6 +9,8 @@
     "y": 351.95608806088705
   },
   "units": 40,
+  "ghosts": 0,
+  "activeMotions": 0,
   "soldiers": 392,
   "representedSoldiers": 240,
   "flyingRiders": 12,
@@ -31,7 +33,7 @@
   "triangles": 503577,
   "geometries": 105,
   "textures": 46,
-  "averageRenderMs": 5.766666665673256,
+  "averageRenderMs": 5.9402941091387875,
   "busy": false,
-  "lastTime": 2201.5
+  "lastTime": 2266.09
 }

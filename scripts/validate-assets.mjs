@@ -4,6 +4,7 @@ import {GLTFLoader} from '../dist/vendor/loaders/GLTFLoader.js';
 import {terrainSampler,cellXZ} from '../dist/terrain.mjs';
 import {Box3} from 'three';
 import {formation,SQUADS} from '../dist/formations.mjs';
+import {createHash} from 'node:crypto';
 
 // Three imports resolve through the installed dev dependency during offline QA.
 export function parseGLB(buffer) {
@@ -86,4 +87,14 @@ for(const source of sources.files){
 }
 assert(textureBytes+Object.values(reports).reduce((s,r)=>s+r.bytes,0)<34*1024*1024,'Initial artwork budget: 34 MiB');
 reports.textures={files:9,bytes:textureBytes};
+const engineManifest=JSON.parse(await readFile(new URL('../dist/ai/vendor/manifest.json',import.meta.url),'utf8'));
+assert.equal(engineManifest.commit,'4568f76268128a65c5936d15a2188c8f64f71847');
+for(const [name,expected] of Object.entries(engineManifest.files)){
+  const bytes=await readFile(new URL('../dist/ai/vendor/'+name,import.meta.url));
+  assert.equal(bytes.length,expected.bytes,`AI asset size: ${name}`);
+  assert.equal(createHash('sha256').update(bytes).digest('hex'),expected.sha256,`AI asset hash: ${name}`);
+  if(name.endsWith('.wasm'))assert(WebAssembly.validate(bytes),'Invalid AI WASM');
+}
+assert((await readFile(new URL('../dist/ai/vendor/NOTICE.html',import.meta.url),'utf8')).includes('corresponding-source.zip'));
+reports.ai={engine:engineManifest.engine,wasmBytes:engineManifest.files['yaneuraou.wasm'].bytes,lazyLoaded:true};
 console.log(JSON.stringify(reports,null,2));

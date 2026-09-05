@@ -1,0 +1,43 @@
+{
+  "engine": "YaneuraOu NNUE KP256 7.63 32WASM TOURNAMENT",
+  "evaluation": "SuishoPetite (20211123), embedded",
+  "upstream": "https://github.com/usumerican/yaneuraou-suisho-petite",
+  "commit": "4568f76268128a65c5936d15a2188c8f64f71847",
+  "license": "GPL-3.0",
+  "emscripten": "3.1.24",
+  "variant": "nosimd",
+  "files": {
+    "yaneuraou.js": {
+      "bytes": 49944,
+      "sha256": "de05e7b7a4bddf766cbc87940a3bfe55d2cb8b9412709dfd17363d7699173d12"
+    },
+    "yaneuraou.wasm": {
+      "bytes": 1425683,
+      "sha256": "a9e2d54f6039f6e1ed6f9ef7ad9f788ccdc464d963bfbc9857f04daa517e6721"
+    },
+    "yaneuraou.worker.js": {
+      "bytes": 3009,
+      "sha256": "9874f107a8524f36c89be66b2db15b73698813a76751db6e4b8950a81ca4a926"
+    },
+    "LICENSE": {
+      "bytes": 35823,
+      "sha256": "230184f60bae2feaf244f10a8bac053c8ff33a183bcc365b4d8b876d2b7f4809"
+    },
+    "source/source.tar.xz": {
+      "bytes": 821324,
+      "sha256": "7d11f673fccdb03b69dd25b9431291a4444bbe020b965ad56ce502f5ec2ab45b"
+    },
+    "source/script/Makefile": {
+      "bytes": 25606,
+      "sha256": "6b20265d2249cd3b0e45ecf541a36021861f0b0128f4295d90d1a54354c3a93a"
+    },
+    "source/script/usi.cpp": {
+      "bytes": 49529,
+      "sha256": "c2ff049890b2d7adaba51e52e222a1945bd9366fbddcfe5761624738d98e01f8"
+    },
+    "corresponding-source.zip": {
+      "bytes": 862231,
+      "sha256": "4470542e0e4b3786b6c3901d5c3950dde9349c28e9b7c56fff2990b623758bef"
+    }
+  }
+}

@@ -52,7 +52,8 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
   function batch(spec) {
     if(!batches.has(spec.key)) {
       // A legal position can hold all 18 pawns on one side: 216 members.
-      const mesh=new T.InstancedMesh(spec.geometry,material,256);
+      // Up to eight transient captured squads may coexist with the logical position.
+      const mesh=new T.InstancedMesh(spec.geometry,material,384);
       mesh.userData={flying:spec.key.startsWith('R:'),cells:[]};
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.count=0;
       mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;
@@ -112,7 +113,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     const meshes=[...batches.values()].filter(b=>b.visible&&b.count&&b.userData.flying);
     // Instance bounds change during flight; refresh them only when picking.
     for(const mesh of meshes)mesh.computeBoundingSphere();
-    const hit=ray.intersectObjects(meshes,false)[0];
+    const hit=ray.intersectObjects(meshes,false).find(hit=>hit.object.userData.cells[hit.instanceId]>=0);
     return hit?{cell:hit.object.userData.cells[hit.instanceId],distance:hit.distance}:null;
   }
   function pickSurface(ray){
