@@ -9,6 +9,25 @@ async function fixture(page,g){await page.evaluate(g=>localStorage.setItem('aeth
 async function measure(page){return page.evaluate(async()=>{const t=[];await new Promise(resolve=>{let last=performance.now();function step(now){t.push(now-last);last=now;if(t.length<90)requestAnimationFrame(step);else resolve();}requestAnimationFrame(step);});return {meanFrameMs:t.reduce((a,b)=>a+b,0)/t.length,p95FrameMs:t.sort((a,b)=>a-b)[85],...window.__aether.diagnostics()};});}
 function blank(){const g=initial();g.b.fill(null);g.b[76]={t:'K',s:0,p:false};g.b[4]={t:'K',s:1,p:false};return g;}
 
+test('reset confirmation supports cancel, Escape and repeated reset without window dialogs',async({page})=>{
+  const dialogs=[];page.on('dialog',d=>{dialogs.push(d.type());d.dismiss();});
+  await page.goto('/?debug');await ready(page);
+  await cell(page,54);await cell(page,45);await settle(page);
+  const modal=page.locator('#reset-confirmation');
+  await page.locator('#reset').click();await expect(modal).toBeVisible();
+  await expect(page.locator('#reset-cancel')).toBeFocused();
+  await page.locator('#reset-cancel').click();await expect(modal).not.toBeVisible();
+  await expect(page.locator('#moveCount')).toHaveText('1 手');
+  await page.locator('#reset').click();await page.keyboard.press('Escape');await expect(modal).not.toBeVisible();
+  await expect(page.locator('#moveCount')).toHaveText('1 手');
+  for(let i=0;i<2;i++){
+    await page.locator('#reset').click();await page.locator('#reset-confirm').click();
+    await expect(modal).not.toBeVisible();await expect(page.locator('#moveCount')).toHaveText('0 手');
+    expect(await page.evaluate(()=>window.__aether.ai().settings.every(s=>!s.enabled))).toBe(true);
+  }
+  await page.reload();await ready(page);await expect(page.locator('#moveCount')).toHaveText('0 手');expect(dialogs).toEqual([]);
+});
+
 test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});

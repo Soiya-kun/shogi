@@ -57,7 +57,10 @@ $('#closeView').onclick=()=>view?.close();$('#overview').onclick=()=>view?.overv
 $('#rotate').onclick=()=>view?.rotate();$('#top').onclick=()=>view?.top();
 $('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));}};
 $('#undo').onclick=()=>{if(!view)return;controller.undo();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
-$('#reset').onclick=()=>{if(!view||!confirm('対局を最初から始めますか？'))return;controller.reset();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
+const resetDialog=$('#reset-confirmation');
+$('#reset').onclick=()=>{if(view&&!resetDialog.open)resetDialog.showModal();};
+$('#reset-cancel').onclick=()=>resetDialog.close();
+$('#reset-confirm').onclick=()=>{if(!view||!resetDialog.open)return;resetDialog.close();controller.reset();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 function refreshAI(){
   for(const side of [0,1]){
     const policy=controller.settings[side],toggle=$('#ai-toggle-'+side),error=controller.errors[side];

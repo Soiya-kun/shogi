@@ -26,7 +26,7 @@ test('promotion, reinforcement and check render kanji/subtitles without voices; 
   g=base();put(g,40,'R');await load(page,g,{effects:true});await move(page,40,36);await logged(page,19);await expect(page.locator('.war-kanji')).toHaveText('王手');
   await page.screenshot({path:'docs/verification/war-check.png'});
   await page.locator('#undo').click();expect(await page.locator('.war-banner').count()).toBe(0);
-  page.once('dialog',d=>d.accept());await page.locator('#reset').click();expect(await page.evaluate(()=>window.__aether.war().log.length)).toBe(0);expect(errors).toEqual([]);
+  await page.locator('#reset').click();await page.locator('#reset-confirm').click();expect(await page.evaluate(()=>window.__aether.war().log.length)).toBe(0);expect(errors).toEqual([]);
 });
 test('actual checkmate plays 29 then 30 once, after arrival; reload does not replay the result',async({page})=>{
   const g=base();g.b[0]=null;put(g,4,'K',1);put(g,22,'G');put(g,12,'G');put(g,14,'G');await load(page,g,{effects:true});

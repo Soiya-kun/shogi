@@ -119,7 +119,7 @@ test('capture and immediate redeployment use distinct generations; undo, restore
   expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(5);
   await move(page,40,49,6);await page.reload();await ready(page);await page.waitForTimeout(4500);await synced(page);expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(6);
   await move(page,41,32,7);await page.locator('#battle-effects').uncheck();await synced(page);expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(7);
-  await page.locator('#battle-effects').check();await move(page,49,48,8);page.once('dialog',d=>d.accept());await page.locator('#reset').click();await page.waitForTimeout(4500);await synced(page);expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(0);
+  await page.locator('#battle-effects').check();await move(page,49,48,8);await page.locator('#reset').click();await page.locator('#reset-confirm').click();await page.waitForTimeout(4500);await synced(page);expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(0);
 });
 
 test('rapid independent battles stay bounded, retain current-cell picking, and finish safely at game end',async({page})=>{

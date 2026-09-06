@@ -28,3 +28,5 @@
 @media(max-width:900px){.war-banner{left:12px;bottom:62px;width:calc(100% - 24px);max-width:400px;padding:10px 14px}.war-kanji{font-size:40px}.war-banner[data-intensity=large] .war-kanji{font-size:48px}.war-subtitle{font-size:14px;margin-top:8px}.war-translation{font-size:13px}.war-banner[data-intensity=small]{width:calc(100% - 24px)}.war-history{grid-column:1/-1}.war-command{max-width:none}.war-settings select{min-height:38px}}
 @media(prefers-reduced-motion:reduce){.war-banner,.war-mark{animation:none!important}}
 .war-banner:not(.war-command){bottom:118px}@media(max-width:900px){.war-banner:not(.war-command){bottom:116px}}
+
+#reset-confirmation{max-width:480px}.reset-actions{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:24px}#reset-confirm{background:#456478}

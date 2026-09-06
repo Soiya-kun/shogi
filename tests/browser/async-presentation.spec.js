@@ -20,5 +20,5 @@ test('consecutive captures, immediate drops and repeated movement never restore 
   await move(page,50,41,5);await move(page,30,39,6);await synced(page);
   const state=await page.evaluate(()=>window.__aether.state()),replay=new Match({g,past:[],records:[],end:''});for(const r of state.records)replay.play(r.m);expect(replay.g).toEqual(state.g);
   await move(page,41,32,7);await page.locator('#undo').click();await page.waitForTimeout(1600);await synced(page);expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(6);
-  await move(page,41,32,7);page.once('dialog',d=>d.accept());await page.locator('#reset').click();await page.waitForTimeout(1600);await synced(page);expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(0);expect(errors).toEqual([]);
+  await move(page,41,32,7);await page.locator('#reset').click();await page.locator('#reset-confirm').click();await page.waitForTimeout(1600);await synced(page);expect(await page.evaluate(()=>window.__aether.state().g.ply)).toBe(0);expect(errors).toEqual([]);
 });
