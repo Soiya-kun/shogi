@@ -1,3 +1,4 @@
+import {control,camera} from './ui-controls.js';
 import {test,expect} from '@playwright/test';
 import {writeFile} from 'node:fs/promises';
 
@@ -33,9 +34,9 @@ test('wheel zoom stays under the pointer across selection, rotation, limits and 
       const q=window.__aether.projectPoint(a);results.push(Math.hypot(q.x-p.x,q.y-p.y));
     }return results;
   });expect(checks.every(v=>v<1)).toBe(true);
-  await page.locator('#top').click();await page.locator('#rotate').click();await page.waitForTimeout(100);
+  await camera(page,'top');await camera(page,'rotate');await page.waitForTimeout(100);
   const rotated={x:730,y:470};await wheel(page,rotated,-200);await wheel(page,rotated,200);
-  await page.locator('#overview').click();await page.waitForTimeout(100);
+  await camera(page,'overview');await page.waitForTimeout(100);
   // Use one fixed terrain coordinate down to the closest zoom and back out.
   const centre=await page.evaluate(()=>{const p=window.__aether.projectCell(40);return {x:Math.floor(p.x),y:Math.floor(p.y)};}),anchor=await anchorAt(page,centre);
   for(let i=0;i<5;i++){await page.mouse.move(centre.x,centre.y);await page.mouse.wheel(0,-800);await page.waitForTimeout(60);}
@@ -47,17 +48,17 @@ test('wheel zoom stays under the pointer across selection, rotation, limits and 
   await page.screenshot({path:'docs/verification/cursor-zoom.png'});
   for(let i=0;i<4;i++){await page.mouse.wheel(0,800);await page.waitForTimeout(60);}
   expect(await page.evaluate(()=>window.__aether.diagnostics().zoom)).toBeCloseTo(240,5);await anchored(page,anchor,centre);
-  await page.locator('#overview').click();await page.waitForTimeout(100);
+  await camera(page,'overview');await page.waitForTimeout(100);
   // The rook flies only after promotion. Keep the airborne cursor case explicit.
   await page.evaluate(()=>{const s=window.__aether.state();s.g.b[70].p=true;localStorage.setItem('aether-shogi-v1',JSON.stringify(s));});await page.reload();await ready(page);
-  const rook=await page.evaluate(()=>window.__aether.projectCell(70));await page.mouse.click(rook.x,rook.y);await page.locator('#closeView').click();await page.waitForTimeout(100);
+  const rook=await page.evaluate(()=>window.__aether.projectCell(70));await page.mouse.click(rook.x,rook.y);await camera(page,'close');await page.waitForTimeout(100);
   const flying=await page.evaluate(()=>window.__aether.projectFlying(70)),surface=await anchorAt(page,flying);
   expect(await page.evaluate(p=>p[1]-window.__aether.height(p[0],p[2]),surface)).toBeGreaterThan(2.5);
   await wheel(page,flying,-200);await wheel(page,flying,200);
   // A cursor over the sky still produces a finite view, even near the field edge.
   await wheel(page,{x:40,y:100},-100);
   expect(await page.evaluate(()=>window.__aether.diagnostics().cameraPosition.every(Number.isFinite))).toBe(true);
-  await page.locator('#overview').click();await page.waitForTimeout(100);
+  await camera(page,'overview');await page.waitForTimeout(100);
   expect(await page.evaluate(()=>window.__aether.diagnostics())).toMatchObject({zoom:185,cameraTarget:[0,0,0]});
   expect(errors).toEqual([]);
 });
@@ -84,7 +85,7 @@ test('pinch keeps the world point at the moving midpoint of two fingers',async({
 test('a wheel gesture interrupts view easing without drifting afterwards',async({page})=>{
   await page.goto('/?debug');await ready(page);
   const point=await page.evaluate(()=>window.__aether.projectCell(54));await page.mouse.click(point.x,point.y);
-  await page.locator('#closeView').click();await page.waitForTimeout(40);
+  await camera(page,'close');await page.waitForTimeout(40);
   // Capture the anchor inside the actual event, while the camera is still moving.
   await page.evaluate(()=>document.querySelector('#scene').addEventListener('wheel',e=>{
     window.zoomCheck={anchor:window.__aether.zoomAnchor(e.clientX,e.clientY),point:{x:e.clientX,y:e.clientY}};
@@ -93,7 +94,7 @@ test('a wheel gesture interrupts view easing without drifting afterwards',async(
   await page.waitForFunction(()=>window.zoomCheck);
   const check=await page.evaluate(()=>window.zoomCheck);await anchored(page,check.anchor,check.point);
   await page.waitForTimeout(550);await anchored(page,check.anchor,check.point);
-  await page.locator('#overview').click();
+  await camera(page,'overview');
   await expect.poll(()=>page.evaluate(()=>Math.hypot(...window.__aether.diagnostics().cameraTarget))).toBeLessThan(.01);
   await expect(page.locator('#unitname')).toHaveText('足軽隊');
 });

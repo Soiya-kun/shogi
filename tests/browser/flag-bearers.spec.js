@@ -1,3 +1,4 @@
+import {control,camera} from './ui-controls.js';
 import {test,expect} from '@playwright/test';
 const ready=page=>page.waitForFunction(()=>window.__aether?.diagnostics().lastTime>0);
 async function attachment(page){
@@ -20,7 +21,7 @@ test('existing soldiers carry flags through both armies movement, interruption a
     await attachment(page);
     const moving=await page.evaluate(to=>window.__aether.presentation().squads.find(s=>s.cell===to),to);expect(moving.moving).toBe(true);
   }
-  await page.locator('#undo').click();await ready(page);await attachment(page);expect(errors).toEqual([]);
+  await control(page,'#undo','click');await ready(page);await attachment(page);expect(errors).toEqual([]);
 });
 test('mounted and flying flag bearers retain attachments on compact displays and restoration',async({page})=>{
   await page.setViewportSize({width:390,height:844});await page.goto('/?debug');await ready(page);
@@ -28,6 +29,6 @@ test('mounted and flying flag bearers retain attachments on compact displays and
   await page.reload();await ready(page);expect((await attachment(page)).count).toBe(240);
   const riders=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.flagBearer&&p.model==='D'));expect(riders).toHaveLength(2);
   for(const r of riders)expect(r.flagHand[1]-r.ground).toBeGreaterThan(3.5);
-  await page.locator('#closeView').click();await page.waitForTimeout(600);await attachment(page);
-  await page.locator('#battle-effects').uncheck();await page.waitForTimeout(100);await attachment(page);
+  await camera(page,'close');await page.waitForTimeout(600);await attachment(page);
+  await control(page,'#battle-effects','uncheck');await page.waitForTimeout(100);await attachment(page);
 });

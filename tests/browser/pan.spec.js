@@ -1,3 +1,4 @@
+import {control,camera} from './ui-controls.js';
 import {test,expect} from '@playwright/test';
 
 async function ready(page){await page.goto('/?debug');await expect(page.locator('body')).toHaveAttribute('data-ready','true');await page.waitForFunction(()=>window.__aether.diagnostics().lastTime>0);}
@@ -62,7 +63,7 @@ test('right click never selects or moves a squad and suppresses the canvas conte
 test('panning interrupts easing, ends outside the canvas or on capture loss, and stays above terrain',async({page})=>{
   await ready(page);
   const selected=await page.evaluate(()=>window.__aether.projectCell(54));await page.mouse.click(selected.x,selected.y);
-  await page.locator('#closeView').click();
+  await camera(page,'close');
   // Observe the world point at the input event, while the close-up is still easing.
   await page.evaluate(()=>document.querySelector('#scene').addEventListener('pointerdown',e=>{
     window.panCheck={anchor:window.__aether.zoomAnchor(e.clientX,e.clientY),id:e.pointerId};
@@ -82,7 +83,7 @@ test('panning interrupts easing, ends outside the canvas or on capture loss, and
   const cancelled=await view(page);await page.mouse.move(800,540);await page.mouse.up({button:'left'});
   expect((await view(page)).cameraPosition).toEqual(cancelled.cameraPosition);
   // Reset near the soldiers, zoom in, then push the camera towards the ground.
-  await page.locator('#closeView').click();await page.waitForTimeout(1200);
+  await camera(page,'close');await page.waitForTimeout(1200);
   const centre=await page.evaluate(()=>window.__aether.projectCell(54));await page.mouse.move(centre.x,centre.y);
   for(let i=0;i<3;i++){await page.mouse.wheel(0,-800);await page.waitForTimeout(80);}
   const near=await view(page);expect(near.zoom).toBeLessThan(12);

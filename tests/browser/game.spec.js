@@ -1,3 +1,4 @@
+import {control,camera} from './ui-controls.js';
 import {test,expect} from '@playwright/test';
 import {initial} from '../../dist/rules.mjs';
 import {writeFile} from 'node:fs/promises';
@@ -14,14 +15,14 @@ test('reset confirmation supports cancel, Escape and repeated reset without wind
   await page.goto('/?debug');await ready(page);
   await cell(page,54);await cell(page,45);await settle(page);
   const modal=page.locator('#reset-confirmation');
-  await page.locator('#reset').click();await expect(modal).toBeVisible();
+  await control(page,'#reset','click');await expect(modal).toBeVisible();
   await expect(page.locator('#reset-cancel')).toBeFocused();
   await page.locator('#reset-cancel').click();await expect(modal).not.toBeVisible();
   await expect(page.locator('#moveCount')).toHaveText('1 手');
-  await page.locator('#reset').click();await page.keyboard.press('Escape');await expect(modal).not.toBeVisible();
+  await control(page,'#reset','click');await page.keyboard.press('Escape');await expect(modal).not.toBeVisible();
   await expect(page.locator('#moveCount')).toHaveText('1 手');
   for(let i=0;i<2;i++){
-    await page.locator('#reset').click();await page.locator('#reset-confirm').click();
+    await control(page,'#reset','click');await page.locator('#reset-confirm').click();
     await expect(modal).not.toBeVisible();await expect(page.locator('#moveCount')).toHaveText('0 手');
     expect(await page.evaluate(()=>window.__aether.ai().settings.every(s=>!s.enabled))).toBe(true);
   }
@@ -47,18 +48,18 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   await page.screenshot({path:'docs/verification/desktop-selected.png'});
   await cell(page,45);await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
   await page.reload();await ready(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
-  await page.locator('#undo').click();await expect(page.locator('#moveCount')).toHaveText('0 手');
+  await control(page,'#undo','click');await expect(page.locator('#moveCount')).toHaveText('0 手');
   // Focus begins at 76. Move to pawn 58, select it, advance to 49.
   await page.locator('#scene').focus();await page.keyboard.press('ArrowUp');await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');
   await page.keyboard.press('ArrowUp');await page.keyboard.press('Enter');await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
-  await page.locator('#undo').click();await page.locator('#top').click();await page.locator('#rotate').click();
-  await page.locator('#labels').click();await expect(page.locator('#labels')).toHaveText('駒名 OFF');await page.locator('#labels').click();
-  await page.locator('#rotate').click();await page.locator('#top').click();
+  await control(page,'#undo','click');await camera(page,'top');await camera(page,'rotate');
+  await control(page,'#labels','click');await expect(page.locator('#labels')).toHaveText('駒名 OFF');await control(page,'#labels','click');
+  await camera(page,'rotate');await camera(page,'top');
   const timing=await measure(page);
   await writeFile('docs/verification/desktop-performance.json',JSON.stringify(timing,null,2));
   expect(timing.drawCalls).toBeLessThan(500);expect(timing.triangles).toBeLessThan(1100000);
   await page.screenshot({path:'docs/verification/desktop.png'});
-  await cell(page,58);await page.locator('#closeView').click();
+  await cell(page,58);await camera(page,'close');
   await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBeGreaterThan(0);
   await page.waitForTimeout(1100);
   await page.screenshot({path:'docs/verification/close.png'});
@@ -70,7 +71,7 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   const banner=await page.evaluate(()=>window.__aether.projectBanner(58));await page.mouse.click(banner.x,banner.y);
   await expect(page.locator('#unitname')).toHaveText('足軽隊');
   await cell(page,49);await settle(page);await expect(page.locator('#moveCount')).toHaveText('1 手');
-  await page.locator('#overview').click();
+  await camera(page,'overview');
   await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBe(0);
   expect(errors).toEqual([]);
 });
@@ -106,9 +107,9 @@ test('mobile portrait: whole field, touch move and no horizontal overflow',async
   const timing=await measure(page);
   expect(timing.drawCalls).toBeLessThan(500);expect(timing.triangles).toBeLessThan(600000);
   await writeFile('docs/verification/mobile-performance.json',JSON.stringify(timing,null,2));
-  await page.locator('#closeView').click();
+  await camera(page,'close');
   await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBeGreaterThan(0);
-  await page.locator('#overview').click();
+  await camera(page,'overview');
   await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBe(0);
   await context.close();
 });
@@ -127,7 +128,7 @@ test('rook cavalry changes to Eastern dragons on promotion, returns to horses on
   await expect(page.locator('#unitdesc')).toHaveText('8騎 · 騎馬隊形');
   const first=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='R'));
   expect(first).toHaveLength(16);expect(first.every(p=>!p.airborne&&Math.abs(p.y-p.ground-.025)<.0001)).toBe(true);
-  await page.locator('#closeView').click();
+  await camera(page,'close');
   await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().detailedSquads)).toBeGreaterThan(0);
   // View the horse and Japanese rider from the front quarter.
   await page.mouse.move(760,440);await page.mouse.down();await page.mouse.move(320,440,{steps:12});await page.mouse.up();
@@ -143,7 +144,7 @@ test('rook cavalry changes to Eastern dragons on promotion, returns to horses on
     expect(flying).toHaveLength(8);expect(flying.every(p=>p.model==='D'&&p.y-p.ground>3)).toBe(true);
     await page.waitForTimeout(200);const later=await page.evaluate(()=>window.__aether.contacts().filter(p=>p.airborne));expect(later.some((p,i)=>Math.abs(p.y-flying[i].y)>.005)).toBe(true);
     const point=await page.evaluate(i=>window.__aether.projectFlying(i),destination);await page.mouse.click(point.x,point.y);
-    await page.locator('#closeView').click();await page.waitForTimeout(1100);
+    await camera(page,'close');await page.waitForTimeout(1100);
     if(side===0){
       // Inspect it on its own turn so the selected unit information is visible.
       await cell(page,4);await cell(page,3);await settle(page);await cell(page,destination);
@@ -151,11 +152,11 @@ test('rook cavalry changes to Eastern dragons on promotion, returns to horses on
       await page.mouse.move(760,440);await page.mouse.down();await page.mouse.move(320,440,{steps:12});await page.mouse.up();await page.waitForTimeout(400);
       await page.screenshot({path:'docs/verification/rook-eastern-dragon.png'});
       await writeFile('docs/verification/rook-eastern-dragon-performance.json',JSON.stringify(await measure(page),null,2));
-      await page.locator('#undo').click(); // Undo the king reply, then undo promotion.
+      await control(page,'#undo','click'); // Undo the king reply, then undo promotion.
     }
     await page.reload();await ready(page);expect(await page.evaluate(i=>window.__aether.state().g.b[i].p,destination)).toBe(true);
     expect(await page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='D').length)).toBe(8);
-    await page.locator('#undo').click();expect(await page.evaluate(()=>window.__aether.state().g.b[40])).toEqual({t:'R',s:side,p:false});
+    await control(page,'#undo','click');expect(await page.evaluate(()=>window.__aether.state().g.b[40])).toEqual({t:'R',s:side,p:false});
     await expect.poll(()=>page.evaluate(()=>window.__aether.contacts().filter(p=>p.model==='R').length)).toBe(8);
     expect(await page.evaluate(()=>window.__aether.contacts().some(p=>p.airborne))).toBe(false);
   }

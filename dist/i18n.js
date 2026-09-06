@@ -2,6 +2,8 @@ export let language='ja';
 try{if(localStorage.getItem('aether-language')==='en')language='en';}catch{}
 export function setLanguage(value){language=value==='en'?'en':'ja';document.documentElement.lang=language;try{localStorage.setItem('aether-language',language);}catch{}}
 const en={
+ '戦況':'Battle status','指揮':'Command','履歴':'History','設定':'Settings','対局メニュー':'Match menu','対局情報':'Match information','パネルを閉じる':'Close panel','閉じる':'Close',
+ '先手の戦法':'Blue opening','先手の作戦':'Blue orders','後手の戦法':'Red opening','後手の作戦':'Red orders',
  '蒼穹の盤上':'Battle beneath the blue sky','風渡る草原':'The Windward Meadow','40部隊、392人。丘陵に布陣する両軍。':'40 squads, 392 soldiers. Two armies on the hills.',
  '戦場を準備しています…':'Preparing the battlefield…','全景':'Overview','部隊に寄る':'Close view','↻ 視点回転':'↻ Rotate view','俯瞰':'Top view',
  '左ドラッグで移動 · 右ドラッグで回転 · ホイールで拡大':'Left drag: pan · Right drag: rotate · Wheel: zoom','タップで選択 · 2本指で拡大':'Tap to select · Pinch to zoom',

@@ -1,3 +1,4 @@
+import {control,camera} from './ui-controls.js';
 import {test,expect} from '@playwright/test';
 import {Match} from '../../dist/match.mjs';
 const ready=page=>page.waitForFunction(()=>window.__aether?.diagnostics().lastTime>0);
@@ -14,9 +15,9 @@ test('reserve camps group hands without shrinking soldiers and follow drops, und
   await page.mouse.click(p.x,p.y);await expect(page.locator('#unitname')).toHaveText('足軽隊');
   const to=await page.evaluate(()=>window.__aether.projectCell(40));await page.mouse.click(to.x,to.y);
   await expect.poll(()=>page.evaluate(()=>window.__aether.reserves().find(s=>s.side===0&&s.type==='P').count)).toBe(8);
-  await page.locator('#undo').click();expect(await page.evaluate(()=>window.__aether.reserves().find(s=>s.side===0&&s.type==='P').count)).toBe(9);
-  await page.locator('#labels').click();expect(await page.evaluate(()=>window.__aether.reserves().every(s=>!s.labelVisible))).toBe(true);
+  await control(page,'#undo','click');expect(await page.evaluate(()=>window.__aether.reserves().find(s=>s.side===0&&s.type==='P').count)).toBe(9);
+  await control(page,'#labels','click');expect(await page.evaluate(()=>window.__aether.reserves().every(s=>!s.labelVisible))).toBe(true);
   await page.setViewportSize({width:390,height:844});await page.reload();await ready(page);
   expect(await page.evaluate(()=>window.__aether.reserves().reduce((n,s)=>n+s.members.length,0))).toBe(28);
-  await page.locator('#reset').click();await page.locator('#reset-confirm').click();expect(await page.evaluate(()=>window.__aether.reserves())).toHaveLength(0);expect(errors).toEqual([]);
+  await control(page,'#reset','click');await page.locator('#reset-confirm').click();expect(await page.evaluate(()=>window.__aether.reserves())).toHaveLength(0);expect(errors).toEqual([]);
 });

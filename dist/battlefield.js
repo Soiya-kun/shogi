@@ -226,7 +226,7 @@ export async function createBattlefield(canvas,onPick,onReserve) {
     return p.x>groundBounds.min.x&&p.x<groundBounds.max.x&&p.z>groundBounds.min.z&&p.z<groundBounds.max.z?h(p.x,p.z)+.8:-Infinity;
   }
   function updateCamera(){
-    const r=zoom*(camera.aspect<1?1.50:1);
+    const r=zoom*(camera.aspect<1?Math.max(1.5,.95/camera.aspect):1);
     camera.position.set(target.x+Math.sin(angle)*Math.cos(elevation)*r,target.y+Math.sin(elevation)*r,target.z+Math.cos(angle)*Math.cos(elevation)*r);
     // Lift the view together, keeping its orientation stable near hills.
     const lift=Math.max(0,cameraFloor(camera.position)-camera.position.y);

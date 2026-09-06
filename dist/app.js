@@ -55,8 +55,21 @@ function pick(i){
   if(p?.s===match.g.turn){selected={from:i};moves=match.moves.filter(m=>m.from===i);showUnit(p);if(!moves.length)toast('この部隊は今は移動できません');}
   else {selected=null;moves=[];showUnit(null);}refresh();
 }
-$('#closeView').onclick=()=>view?.close();$('#overview').onclick=()=>view?.overview();
-$('#rotate').onclick=()=>view?.rotate();$('#top').onclick=()=>view?.top();
+
+let activePanel='status';
+function setPanel(next){
+  activePanel=next;$('#side-panel').hidden=!next;document.querySelector('main').classList.toggle('panel-closed',!next);
+  for(const kind of ['status','command','history']){$('#'+kind+'-panel').hidden=kind!==next;$('#open-'+kind).setAttribute('aria-expanded',String(kind===next));}
+  $('#panel-title').textContent=({status:'戦況',command:'指揮',history:'履歴'})[next]??'戦況';translateUI();
+}
+for(const kind of ['status','command','history'])$('#open-'+kind).onclick=()=>setPanel(activePanel===kind?null:kind);
+$('#close-panel').onclick=()=>{const previous=activePanel;setPanel(null);$('#open-'+previous)?.focus();};
+const settingsDialog=$('#settings-dialog');
+$('#open-settings').onclick=()=>{if(!settingsDialog.open)settingsDialog.showModal();};
+$('#close-settings').onclick=()=>settingsDialog.close();
+const compactPanel=matchMedia('(max-width:900px)');if(compactPanel.matches)setPanel(null);
+compactPanel.addEventListener('change',()=>setPanel(null));
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activePanel&&!document.querySelector('dialog[open]'))$('#close-panel').click();});
 $('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));translateUI();}};
 $('#undo').onclick=()=>{if(!view)return;controller.undo();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 const resetDialog=$('#reset-confirmation');
@@ -105,7 +118,7 @@ controller.setTempo(preferences.tempo);
 refresh();
 try {
   view=await createBattlefield($('#scene'),pick,selectReserve);view.draw(match.g.b,controller.diagnostics());view.setPresentation(preferences.effects);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';controller.start();
-  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,presentation:view.presentation,war:()=>war.diagnostics(),projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,reserves:view.reserves,state:()=>structuredClone({...controller.serialize(),presentation:war.serialize()}),ai:()=>controller.diagnostics()};
+  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,presentation:view.presentation,war:()=>war.diagnostics(),projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,reserves:view.reserves,cameraControls:{close: view.close,overview:view.overview,rotate:view.rotate,top:view.top},state:()=>structuredClone({...controller.serialize(),presentation:war.serialize()}),ai:()=>controller.diagnostics()};
 } catch(error) {
   console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);translateUI();
 }
