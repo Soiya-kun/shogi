@@ -8,7 +8,7 @@ export class PresentationDirector {
   }
   later(fn,ms){const id=this.timer(()=>{this.timers.delete(id);fn();},ms);this.timers.add(id);return id;}
   cancel(reason='cancelled'){
-    const keep=reason==='next-position'&&this.active&&!this.active.control&&this.activeUntil>this.now();
+    const keep=reason==='next-position'&&this.active&&(!this.active.control||this.active.id===95)&&this.activeUntil>this.now();
     this.serial++;for(const id of this.timers)this.clearTimer(id);this.timers.clear();this.flushTimer=null;this.pending=[];this.reason=reason;
     if(keep)this.expireActive();else{this.active=null;this.view?.clear();}
   }
@@ -53,7 +53,7 @@ export class PresentationDirector {
     if(!this.valid(e))return;
     if(e.id===95&&this.now()-this.commandTimes[e.side]<60000)return;
     if(e.id===95)this.commandTimes[e.side]=this.now();
-    // Commands use the control card, and do not consume the move's main title.
+    // Command replies do not consume the move's main title; AI start uses the field banner.
     this.show({...e,control:true});
   }
   diagnostics(){return {active:this.active?{...this.active}:null,pending:this.pending.length,log:structuredClone(this.log),settings:{...this.settings},timers:this.timers.size,reason:this.reason,audio:this.view?.audioStatus?.()??null};}

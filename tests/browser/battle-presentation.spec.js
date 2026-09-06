@@ -38,6 +38,8 @@ test('actual checkmate plays 29 then 30 once, after arrival; reload does not rep
 test('actual AI command acknowledgements use the current request, 3-second cadence and stop cancellation',async({page})=>{
   await load(page,new Match().g);await page.locator('#ai-toggle-1').click();expect(await page.evaluate(()=>window.__aether.war().log.some(e=>e.id===95))).toBe(false);
   await page.locator('#ai-toggle-0').click();await logged(page,95);
+  await expect(page.locator('#war-presentation > .war-banner[data-event="95"]')).toBeVisible();
+  await expect(page.locator('#ai-card-0 .war-banner[data-event="95"]')).toHaveCount(0);
   await page.evaluate(()=>{for(const value of ['attack','defend','counter']){const el=document.querySelector('#ai-order-0');el.value=value;el.dispatchEvent(new Event('change'));}});
   await logged(page,97);expect(await page.evaluate(()=>window.__aether.war().log.filter(e=>e.id===97).at(-1).subtitle)).toContain('watch for our moment');
   const times=[];for(let n=1;n<=3;n++){await page.waitForFunction(n=>window.__aether.state().g.ply>=n,n);times.push(Date.now());}

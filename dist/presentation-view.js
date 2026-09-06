@@ -18,14 +18,15 @@ export class PresentationView {
   }
   show(e,settings){
     this.layer.replaceChildren();this.markers.replaceChildren();for(const node of document.querySelectorAll('.war-command'))node.remove();
-    const card=document.createElement('div');card.className=`war-banner ${e.control?'war-command':''}`;card.dataset.intensity=e.intensity;card.dataset.side=e.side;card.dataset.mode=this.reduced.matches?'subtle':settings.mode;card.dataset.event=e.id;
+    const commandCard=e.control&&e.id!==95;
+    const card=document.createElement('div');card.className=`war-banner ${commandCard?'war-command':''}`;card.dataset.intensity=e.intensity;card.dataset.side=e.side;card.dataset.mode=this.reduced.matches?'subtle':settings.mode;card.dataset.event=e.id;
     const side=document.createElement('div');side.className='war-side';side.textContent=e.side?'△ 後手 · RED':'▲ 先手 · BLUE';
     const title=document.createElement('strong');title.className='war-kanji';title.textContent=e.kanji;
     card.append(side,title);
     if(e.resultSubtitle){const sub=document.createElement('span');sub.className='war-english';sub.textContent=e.resultSubtitle;card.append(sub);}
     if(settings.english){const en=document.createElement('span');en.className='war-english';en.textContent=e.english;card.append(en);}
     if(settings.subtitles){const ja=document.createElement('p');ja.className='war-subtitle';ja.textContent=e.ja;card.append(ja);if(settings.english){const en=document.createElement('p');en.className='war-translation';en.textContent=e.subtitle;card.append(en);}}
-    if(e.control)document.querySelector(`#ai-card-${e.side}`)?.append(card);else this.layer.append(card);
+    if(commandCard)document.querySelector(`#ai-card-${e.side}`)?.append(card);else this.layer.append(card);
     this.current=e;this.staticMarkers=settings.mode==='subtle'||this.reduced.matches;this.updateMarkers();
     return this.play(e,settings);
   }
