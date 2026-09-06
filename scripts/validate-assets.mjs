@@ -109,4 +109,13 @@ for(const [name,expected] of Object.entries(stageManifest.files)){
   assert.equal(bytes.length,expected.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),expected.sha256);stageBytes+=bytes.length;
 }
 assert.equal(Object.keys(stageManifest.files).length,9);reports.yankee={files:9,bytes:stageBytes,figuresPerPiece:1};
+const ashigaruManifest=JSON.parse(await readFile(new URL('../dist/assets/ashigaru/manifest.json',import.meta.url),'utf8'));
+let ashigaruBytes=0;
+for(const [name,expected] of Object.entries(ashigaruManifest.files)){
+  const bytes=await readFile(new URL('../dist/assets/ashigaru/'+name,import.meta.url));
+  assert.equal(bytes.readUInt32LE(0),0x46546c67);
+  assert.equal(bytes.length,expected.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),expected.sha256);ashigaruBytes+=bytes.length;
+}
+assert.equal(Object.keys(ashigaruManifest.files).length,2);reports.ashigaru={files:2,bytes:ashigaruBytes};
+assert(textureBytes+reports.meadow.bytes+reports.army.bytes+ashigaruBytes<34*1024*1024,'Updated artwork budget: 34 MiB');
 console.log(JSON.stringify(reports,null,2));

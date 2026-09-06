@@ -1,4 +1,5 @@
 import {stage} from './stages.js';
+import {updateAshigaru} from './ashigaru-assets.js';
 import {createStreetRenderer} from './street-renderer.js';
 import * as T from './three.module.js';
 import {GLTFLoader} from './vendor/loaders/GLTFLoader.js';
@@ -30,6 +31,7 @@ export async function createBattlefield(canvas,onPick,onReserve) {
   const loader=new GLTFLoader();
   const street=stage.id==='yankee';
   const [field,army,landMaterial]=await Promise.all([loader.loadAsync(street?'./assets/stages/yankee/city.glb':'./assets/meadow.glb'),street?Promise.all(['P','L','N','S','G','B','R','K'].map(async type=>[type,(await loader.loadAsync('./assets/stages/yankee/'+type+'.glb')).scene])).then(Object.fromEntries):loader.loadAsync('./assets/army.glb'),street?Promise.resolve(new T.MeshStandardMaterial({color:0x303744,roughness:.55})):terrainMaterial(renderer)]);
+  if(!street)await updateAshigaru(army.scene,loader);
   if(street){field.scene.scale.setScalar(4);const floor=new T.Mesh(new T.PlaneGeometry(110,110,2,2),landMaterial);floor.rotation.x=-Math.PI/2;floor.name='Terrain';field.scene.add(floor);scene.background.set(0x111a2d);scene.fog.color.set(0x111a2d);}
   scene.add(field.scene);field.scene.updateMatrixWorld(true);
   const ground=field.scene.getObjectByName('Terrain');if(!ground)throw new Error('GLBにTerrainがありません');

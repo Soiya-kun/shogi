@@ -14,13 +14,13 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
   function compile(type,side,promoted,near,articulated=near,bearer=false) {
     const key=[type,side,+promoted,+near,+articulated,+bearer].join(':');
     if(compiled.has(key))return compiled.get(key);
-    const root=army.getObjectByName((near?'Unit_':'LOD_')+type);
+    const root=army.getObjectByName((near||(type==='P'&&bearer)?'Unit_':'LOD_')+type);
     if(!root)throw new Error('GLB template missing: '+key);
     const pieces=new Map();
     root.traverse(o=>{
       if(!o.isMesh)return;
       // The selected existing soldier carries the standard instead of a right-hand weapon.
-      if(bearer&&/_(Yari|Tachi|Gunbai|Ofuda|Arrow)$/.test(o.name))return;
+      if(bearer&&(/_(Yari|Tachi|Gunbai|Ofuda|Arrow)$/.test(o.name)||(type==='P'&&o.name.startsWith('P_Yari'))))return;
       let branch=o,part='Body',pivot=new T.Vector3(),promotion=false;
       while(branch&&branch!==root){
         if(branch.name.endsWith('_Promotion'))promotion=true;
@@ -42,13 +42,16 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
       }
       for(const attr of Object.keys(geo.attributes))if(!['position','normal'].includes(attr))geo.deleteAttribute(attr);
       geo.setAttribute('color',new T.BufferAttribute(color,3));
-      if(!pieces.has(part))pieces.set(part,{geometries:[],pivot:pivot.multiplyScalar(uniformScale)});
-      pieces.get(part).geometries.push(geo);
+      const group=type==='P'?`${part}:${o.material.name}`:part;
+      if(!pieces.has(group))pieces.set(group,{geometries:[],part,sourceMaterial:type==='P'?o.material:null,pivot:pivot.multiplyScalar(uniformScale)});
+      pieces.get(group).geometries.push(geo);
     });
     const result=[];
-    for(const [part,{geometries,pivot}] of pieces){
+    for(const [group,{geometries,pivot,part,sourceMaterial}] of pieces){
       const geometry=mergeGeometries(geometries);geometries.forEach(g=>g.dispose());
-      result.push({key:key+':'+part,geometry,part,pivot});
+      let partMaterial=material;
+      if(sourceMaterial){partMaterial=sourceMaterial.clone();partMaterial.color.set(0xffffff);partMaterial.vertexColors=true;partMaterial.side=T.DoubleSide;}
+      result.push({key:key+':'+group,geometry,part,pivot,material:partMaterial});
     }
     compiled.set(key,result);return result;
   }
@@ -56,7 +59,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
     if(!batches.has(spec.key)) {
       // A legal position can hold all 18 pawns on one side: 216 members.
       // Up to eight transient captured squads may coexist with the logical position.
-      const mesh=new T.InstancedMesh(spec.geometry,material,384);
+      const mesh=new T.InstancedMesh(spec.geometry,spec.material,384);
       mesh.userData={flying:spec.key.startsWith('D:'),cells:[]};
       mesh.instanceMatrix.setUsage(T.DynamicDrawUsage);mesh.count=0;
       mesh.castShadow=true;mesh.receiveShadow=true;mesh.frustumCulled=false;
@@ -92,7 +95,8 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
         s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying,model:m.type,unitId:s.id,generation:s.generation,ghost:!!s.ghost,side:piece.s,fall:fallen?.fall??0,pose,flagBearer:bearer};
         memberRoot.position.set(x,y,z);memberRoot.rotation.set((pose?.lean??0)+(fallen?.lean??0),heading+(pose?.twist??0),fallen?.roll??0,'YXZ');
         memberRoot.scale.setScalar((s.scale??1)*(fallen?.scale??1));memberRoot.updateMatrix();
-        for(const spec of compile(m.type,piece.s,piece.p,s.near,articulated||bearer,bearer)){
+        const detail=s.near&&(m.type!=='P'||camera.position.distanceTo(memberRoot.position)<45);
+        for(const spec of compile(m.type,piece.s,piece.p,detail,articulated||bearer,bearer)){
           const mesh=batch(spec),p=spec.pivot;
           unit.position.copy(p);unit.rotation.set(0,0,0);
           let swing=0,wing=0,tail=0;
@@ -111,7 +115,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
           if(bearer&&spec.part==='ArmR'){swing=0;tail=0;}
           unit.rotateX(swing);unit.rotateZ(wing);unit.rotateY(tail);unit.scale.setScalar(1);unit.updateMatrix();matrix.multiplyMatrices(memberRoot.matrix,unit.matrix);
           if(bearer&&spec.part==='ArmR'){
-            if(!grips.has(m.type)){const hand=army.getObjectByName('Unit_'+m.type).getObjectByName(m.type+'_Hand1');if(!hand)throw new Error('Flag bearer hand missing: '+m.type);grips.set(m.type,new T.Box3().setFromObject(hand).getCenter(new T.Vector3()).multiplyScalar(uniformScale));}
+            if(!grips.has(m.type)){const hand=army.getObjectByName('Unit_'+m.type).getObjectByName(m.type==='P'?'P_PalmR':m.type+'_Hand1');if(!hand)throw new Error('Flag bearer hand missing: '+m.type);grips.set(m.type,new T.Box3().setFromObject(hand).getCenter(new T.Vector3()).multiplyScalar(uniformScale));}
             const grip=grips.get(m.type);
             handPoint.copy(grip).sub(p).applyMatrix4(matrix);s.contacts[j].flagHand=handPoint.toArray();
             flagMatrix.copy(matrix).multiply(flagOffset.makeTranslation(grip.x-p.x,grip.y-p.y-.8,grip.z-p.z));

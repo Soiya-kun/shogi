@@ -1,0 +1,14 @@
+{
+  "source": "assets/blender/ashigaru-reference/ashigaru-reference.blend",
+  "scale": 0.8,
+  "files": {
+    "detail.glb": {
+      "bytes": 627828,
+      "sha256": "d57b2bf103879e7884187aec6be88399751d439e2eb5c57b06bc80f8e394c245"
+    },
+    "lod.glb": {
+      "bytes": 140264,
+      "sha256": "665f84748d23c3ab86edec02a4c160dc1f5ba6df1eed8710bb4fb3243939d946"
+    }
+  }
+}
