@@ -21,7 +21,7 @@ function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clear
 function save(){try{localStorage.setItem(storageKey,JSON.stringify({...controller.serialize(),presentation:war?.serialize()}));}catch{toast('このブラウザでは対局を保存できません');}}
 function showUnit(p){const spec=p?squadSpec(p.t,p.p):null;$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+spec.name:'部隊を選択';$('#unitdesc').textContent=p?spec.count+(spec.unit||'人')+' · '+spec.formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
 function refresh(){
-  const g=match.g;
+  const g=match.g;view?.setHands(g.h);
   $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の武士団':'蒼の武士団';
   $('#turnIcon').style.background=g.turn?'#793e40':'#244b67';$('#count').textContent=String(g.ply+1).padStart(3,'0');
   $('#status').textContent=match.end||(controller.phase==='error'?'AIを再試行するか、停止して手動で指せます':controller.activeRequest?(controller.engine.ready?'AIが作戦を考えています':'AIを準備しています…'):check(g,g.turn)?'王手 — 王を守ってください':selected?'光るマスへ移動できます':'部隊を選択してください');
@@ -31,11 +31,12 @@ function refresh(){
   $('#hands').replaceChildren();
   const entries=Object.entries(g.h[g.turn]).filter(([,n])=>n>0);
   if(!entries.length){const p=document.createElement('p');p.className='muted';p.textContent='待機中の部隊はありません';$('#hands').append(p);}
-  for(const [t,n] of entries){const b=document.createElement('button');b.textContent=names[t]+' ×'+n;b.disabled=!controller.canPlay;b.setAttribute('aria-pressed',String(selected?.drop===t));b.onclick=()=>{selected={drop:t};moves=match.moves.filter(m=>m.drop===t);showUnit({t,p:false});refresh();};$('#hands').append(b);}
+  for(const [t,n] of entries){const b=document.createElement('button');b.textContent=names[t]+' ×'+n;b.disabled=!controller.canPlay;b.setAttribute('aria-pressed',String(selected?.drop===t));b.onclick=()=>selectReserve(t,g.turn);$('#hands').append(b);}
   $('#undo').disabled=!match.past.length&&match.resignation===null;
   refreshAI();
   view?.highlight(selected,moves,g.b,match.records.at(-1)?.m);
 }
+function selectReserve(t,side){if(!controller.canPlay||side!==match.g.turn||!match.g.h[side][t])return;selected={drop:t};moves=match.moves.filter(m=>m.drop===t);showUnit({t,p:false});refresh();}
 async function finish(m){
   if(!controller.canPlay)return;selected=null;moves=[];
   try{const {after,m:move}=await controller.play(m);if(move.promote)toast('部隊昇格 / '+squadSpec(after.b[move.to].t,true).name);if(match.end)toast(match.end);}
@@ -100,8 +101,8 @@ for(const field of ['mode','subtitles','english','voice','volume','analysis']){
 controller.setTempo(preferences.tempo);
 refresh();
 try {
-  view=await createBattlefield($('#scene'),pick);view.draw(match.g.b,controller.diagnostics());view.setPresentation(preferences.effects);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';controller.start();
-  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,presentation:view.presentation,war:()=>war.diagnostics(),projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,state:()=>structuredClone({...controller.serialize(),presentation:war.serialize()}),ai:()=>controller.diagnostics()};
+  view=await createBattlefield($('#scene'),pick,selectReserve);view.draw(match.g.b,controller.diagnostics());view.setPresentation(preferences.effects);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';controller.start();
+  if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,presentation:view.presentation,war:()=>war.diagnostics(),projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,reserves:view.reserves,state:()=>structuredClone({...controller.serialize(),presentation:war.serialize()}),ai:()=>controller.diagnostics()};
 } catch(error) {
   console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);
 }

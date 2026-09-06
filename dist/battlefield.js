@@ -2,13 +2,13 @@ import * as T from './three.module.js';
 import {GLTFLoader} from './vendor/loaders/GLTFLoader.js';
 import {CELL_SIZE,HALF_FIELD,cellXZ,cellAt,terrainSampler} from './terrain.mjs';
 import {names} from './rules.mjs';
-import {SQUADS} from './formations.mjs';
+import {SQUADS,formation} from './formations.mjs';
 import {createSquadRenderer} from './squad-renderer.js';
 import {terrainMaterial} from './terrain-material.js';
 import {COMBATS,COMBAT_LIMITS,combatStyle,combatStage,battleProgress,clamp,smooth} from './combat-motion.mjs';
 import {createCombatEffects,createCombatAudio} from './combat-effects.js';
 const symbols={P:'と',L:'杏',N:'圭',S:'全',R:'龍',B:'馬'};
-export async function createBattlefield(canvas,onPick) {
+export async function createBattlefield(canvas,onPick,onReserve) {
   const mobile=matchMedia('(max-width: 900px)').matches,reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
   const renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(devicePixelRatio,mobile?1.25:1.6));
@@ -39,7 +39,8 @@ export async function createBattlefield(canvas,onPick) {
   field.scene.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=!['GrassAndFlowers','Terrain'].includes(o.name);}});
   const rocks=field.scene.getObjectByName('Rocks');
   if(rocks){const p=rocks.geometry.attributes.position,uv=new Float32Array(p.count*2),v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(rocks.matrixWorld);uv[i*2]=v.x/3;uv[i*2+1]=-v.z/3;}rocks.geometry.setAttribute('uv',new T.BufferAttribute(uv,2));rocks.material=landMaterial.userData.rockMaterial;}
-  const armyView=createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),labelMaterials=new Map();
+  const armyView=createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),reserveView=createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),labelMaterials=new Map();
+  let reserves=[],reserveKey='';
   const combatEffects=createCombatEffects(scene,h),combatAudio=createCombatAudio();
   addEventListener('pagehide',()=>combatAudio.clear());
   function label(text,color,count='',background='#13241eef') {
@@ -106,6 +107,21 @@ export async function createBattlefield(canvas,onPick) {
     badge.position.set(0,5.3,0);badge.visible=labels;banner.add(badge);scene.add(banner);
     for(const child of banner.children)child.userData.cell=cell;
     return {id:identity?.id??++squadSequence,generation:identity?.generation??1,cell,piece:{...piece},x,z,banner,badge,flag,heading:piece.s?Math.PI:0,progress:0};
+  }
+  function setHands(hands){
+    const key=JSON.stringify(hands);if(key===reserveKey)return;reserveKey=key;
+    for(const s of reserves)s.banner.removeFromParent();reserves=[];
+    const types=['P','L','N','S','G','B','R'];
+    for(let side=0;side<2;side++)for(const [i,type] of types.entries()){
+      const count=hands[side][type]??0;if(!count)continue;
+      const s=makeSquad({t:type,s:side,p:false},-1),sign=side?-1:1;
+      s.x=sign*(62+(i%2)*9);s.z=sign*(28+Math.floor(i/2)*8);
+      const members=formation(type),models=[members[0],members.at(-1)];
+      s.reserveMembers=models.map((m,j)=>({...m,x:(j-.5)*2.8,z:0}));s.reserveCount=count;
+      s.badge.material=label(names[type],side?'#ffc2b3':'#c9edff','×'+count,side?'#8c2028f5':'#153c62f5').material;
+      for(const child of s.banner.children)child.userData.reserve={type,side};reserves.push(s);
+    }
+    reserveView.setSquads(reserves);renderer.shadowMap.needsUpdate=true;
   }
   function draw(board,identity={}) {
     epoch++;viewGameId=identity.gameId??viewGameId;viewRevision=identity.positionRevision??viewRevision;logicalBoard=structuredClone(board);
@@ -286,7 +302,9 @@ export async function createBattlefield(canvas,onPick) {
       // A label can cover a legal destination; movement keeps priority there.
       const unitCell=flying&&(!marker||flying.distance<marker.distance)?flying.cell:marker?.object.userData.cell;
       const i=availableTargets.has(groundCell)?groundCell:unitCell??groundCell;
-      if(i!==null&&i>=0){focusCell=i;onPick(i);}
+      const reserve=ray.intersectObjects(reserves.flatMap(s=>s.banner.children.filter(c=>c.visible)),false)[0];
+      if(reserve&&!availableTargets.has(groundCell)&&(!marker||reserve.distance<marker.distance)&&(!hit||reserve.distance<hit.distance)){const {type,side}=reserve.object.userData.reserve;onReserve?.(type,side);}
+      else if(i!==null&&i>=0){focusCell=i;onPick(i);}
     }releasePointer(e);
   });
   canvas.addEventListener('pointercancel',releasePointer);
@@ -310,13 +328,13 @@ export async function createBattlefield(canvas,onPick) {
     target.lerp(aim,reducedMotion?1:1-Math.exp(-dt*7));updateCamera();
     for(const fx of [...effects]){if(!effects.includes(fx))continue;const f=clamp((t-fx.start)/fx.duration);fx.update(f);if(f===1)removeEffect(fx);}
     combatEffects.update(effects);
-    const changed=armyView.update(time,camera,busy);
-    for(const s of instances){
+    const changed=armyView.update(time,camera,busy),reserveChanged=reserveView.update(time,camera);
+    for(const s of [...instances,...reserves]){
       // The squad renderer attaches the standard to an existing soldier's hand.
       // Never replace that physical transform with the committed destination.
       s.flag.rotation.y=reducedMotion?0:Math.sin(time*2+s.cell)*.10;const badgeScale=(mobile?1.5:1)*Math.min(1,camera.position.distanceTo(s.banner.position)/140);s.badge.scale.set(3.4*badgeScale,4.25*badgeScale,1);
     }
-    if(changed&&frames%3===0)renderer.shadowMap.needsUpdate=true;
+    if((changed||reserveChanged)&&frames%3===0)renderer.shadowMap.needsUpdate=true;
     const a=performance.now();renderer.render(scene,camera);renderMs+=performance.now()-a;frames++;lastTime=t;
   }
   requestAnimationFrame(frame);
@@ -325,8 +343,9 @@ export async function createBattlefield(canvas,onPick) {
     setSound:combatAudio.enable,
     presentation:()=>({enabled:presentationEnabled,reducedMotion,epoch,gameId:viewGameId,positionRevision:viewRevision,history:structuredClone(presentationHistory),squads:instances.map(s=>({id:s.id,generation:s.generation,cell:s.cell,piece:{...s.piece},ghost:!!s.ghost,x:s.x,z:s.z,labelVisible:s.badge.visible,flagBearer:s.carrierIndex,flagGrip:new T.Vector3(0,.8,0).applyMatrix4(s.banner.matrixWorld).toArray(),moving:!!s.motion,combat:s.combat?{...s.combat}:null,defeat:s.defeat?{...s.defeat}:null}))}),
     close:()=>{aim.copy(position(selectedCell??focusCell));zoom=48;elevation=.36;},overview:()=>{zoom=185;elevation=.93;aim.set(0,0,0);},
-    labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels;return labels;},
+    labels:()=>{labels=!labels;for(const s of [...instances,...reserves])s.badge.visible=labels;return labels;},
     diagnostics:()=>({units:instances.filter(s=>!s.ghost).length,ghosts:instances.filter(s=>s.ghost).length,activeMotions:instances.filter(s=>s.motion).length,activeBattles:effects.filter(f=>f.combat).length,...combatEffects.stats(),...combatAudio.stats(),...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
+    setHands,reserves:()=>reserves.map(s=>({side:s.piece.s,type:s.piece.t,count:s.reserveCount,x:s.x,z:s.z,scale:s.scale??1,labelVisible:s.badge.visible,members:s.members,contacts:reserveView.contacts().filter(p=>p.unitId===s.id)})),
     contacts:armyView.contacts,zoomAnchor:(x,y)=>zoomAnchor(x,y).toArray(),projectPoint:point=>{const p=new T.Vector3(...point).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectFlying:i=>{const member=armyView.contacts().find(p=>p.cell===i&&p.airborne),p=new T.Vector3(member.x,member.y+1.1,member.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectBanner:i=>{const s=instances.find(s=>s.cell===i),p=s.badge.getWorldPosition(new T.Vector3()).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},height:h};

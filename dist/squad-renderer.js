@@ -77,7 +77,7 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
       const heading=s.heading??(s.piece.s?Math.PI:0),cos=Math.cos(heading),sin=Math.sin(heading);
       if(s.near)detailed++;
       const piece=s.renderPiece??s.piece,memberKey=piece.t+Number(piece.p),articulated=s.near||!!s.combat||!!s.defeat;
-      if(s.memberKey!==memberKey){s.members=formation(piece.t,mobile,piece.p);s.memberKey=memberKey;s.contacts=[];s.carrierIndex=s.members.reduce((best,m,i)=>m.z-Math.abs(m.x)*.1>s.members[best].z-Math.abs(s.members[best].x)*.1?i:best,0);}
+      if(s.memberKey!==memberKey){s.members=s.reserveMembers??formation(piece.t,mobile,piece.p);s.memberKey=memberKey;s.contacts=[];s.carrierIndex=s.members.reduce((best,m,i)=>m.z-Math.abs(m.x)*.1>s.members[best].z-Math.abs(s.members[best].x)*.1?i:best,0);}
       for(let j=0;j<s.members.length;j++){
         const m=s.members[j],phase=time*10+j*1.3,bearer=j===s.carrierIndex;
         const pose=s.combat?attackPose(s.combat.style,m,j,s.combat.progress):null;
