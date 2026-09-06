@@ -194,7 +194,7 @@ export async function createBattlefield(canvas,onPick) {
     canvas.focus();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});canvas.setPointerCapture(e.pointerId);
     if(pointers.size===1){
       down={id:e.pointerId,button:e.button,x:e.clientX,y:e.clientY,angle,elevation};drag=false;
-      if(e.button===2){e.preventDefault();aim.copy(target);updateCamera();down.pan=panAnchor(e.clientX,e.clientY);canvas.classList.add('panning');}
+      if(e.button===0&&e.pointerType!=='touch'){e.preventDefault();aim.copy(target);updateCamera();down.pan=panAnchor(e.clientX,e.clientY);canvas.classList.add('panning');}
     }
     else{const [a,b]=[...pointers.values()];pinch={distance:Math.hypot(a.x-b.x,a.y-b.y),zoom,anchor:zoomAnchor((a.x+b.x)/2,(a.y+b.y)/2)};drag=true;}
   });

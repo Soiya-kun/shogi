@@ -9,9 +9,9 @@ async function anchored(page,anchor,point){
 }
 async function pan(page,start,end){
   const before=await view(page),anchor=await page.evaluate(p=>window.__aether.zoomAnchor(p.x,p.y),start);
-  await page.mouse.move(start.x,start.y);await page.mouse.down({button:'right'});
+  await page.mouse.move(start.x,start.y);await page.mouse.down({button:'left'});
   await expect(page.locator('#scene')).toHaveCSS('cursor','grabbing');
-  await page.mouse.move(end.x,end.y,{steps:8});await page.mouse.up({button:'right'});
+  await page.mouse.move(end.x,end.y,{steps:8});await page.mouse.up({button:'left'});
   await expect(page.locator('#scene')).toHaveCSS('cursor','grab');
   await anchored(page,anchor,end);
   const after=await view(page);
@@ -21,12 +21,12 @@ async function pan(page,start,end){
   await page.waitForTimeout(120);await anchored(page,anchor,end);
 }
 
-test('right drag pans at the grabbed depth while left drag rotates and the wheel still anchors',async({page})=>{
+test('left drag pans at the grabbed depth while right drag rotates and the wheel still anchors',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.emulateMedia({reducedMotion:'reduce'});await ready(page);
   await pan(page,{x:530,y:510},{x:700,y:580});
   const before=await view(page);
-  await page.mouse.move(600,500);await page.mouse.down();await page.mouse.move(690,470,{steps:8});await page.mouse.up();
+  await page.mouse.move(600,500);await page.mouse.down({button:'right'});await page.mouse.move(690,470,{steps:8});await page.mouse.up({button:'right'});
   const after=await view(page);
   expect(after.cameraTarget).toEqual(before.cameraTarget);expect(after.zoom).toBe(before.zoom);
   expect(Math.hypot(...offset(after).map((v,i)=>v-offset(before)[i]))).toBeGreaterThan(1);
@@ -65,26 +65,26 @@ test('panning interrupts easing, ends outside the canvas or on capture loss, and
   await page.evaluate(()=>document.querySelector('#scene').addEventListener('pointerdown',e=>{
     window.panCheck={anchor:window.__aether.zoomAnchor(e.clientX,e.clientY),id:e.pointerId};
   },{capture:true,once:true}));
-  await page.mouse.move(580,450);await page.mouse.down({button:'right'});
+  await page.mouse.move(580,450);await page.mouse.down({button:'left'});
   const check=await page.evaluate(()=>window.panCheck);
-  await page.mouse.move(1300,420,{steps:8});await page.mouse.up({button:'right'});
+  await page.mouse.move(1300,420,{steps:8});await page.mouse.up({button:'left'});
   await anchored(page,check.anchor,{x:1300,y:420});
   const released=await view(page);await page.mouse.move(600,500);await page.waitForTimeout(500);
   expect((await view(page)).cameraPosition).toEqual(released.cameraPosition);
   await expect(page.locator('#scene')).toHaveCSS('cursor','grab');
-  await page.mouse.down({button:'right'});await page.mouse.move(650,500,{steps:4});
+  await page.mouse.down({button:'left'});await page.mouse.move(650,500,{steps:4});
   await page.evaluate(id=>document.querySelector('#scene').releasePointerCapture(id),check.id);
   // The browser applies pending capture changes before the next pointer event.
   await page.mouse.move(650,500);
   await expect(page.locator('#scene')).toHaveCSS('cursor','grab');
-  const cancelled=await view(page);await page.mouse.move(800,540);await page.mouse.up({button:'right'});
+  const cancelled=await view(page);await page.mouse.move(800,540);await page.mouse.up({button:'left'});
   expect((await view(page)).cameraPosition).toEqual(cancelled.cameraPosition);
   // Reset near the soldiers, zoom in, then push the camera towards the ground.
   await page.locator('#closeView').click();await page.waitForTimeout(1200);
   const centre=await page.evaluate(()=>window.__aether.projectCell(54));await page.mouse.move(centre.x,centre.y);
   for(let i=0;i<3;i++){await page.mouse.wheel(0,-800);await page.waitForTimeout(80);}
   const near=await view(page);expect(near.zoom).toBeLessThan(12);
-  await page.mouse.move(550,500);await page.mouse.down({button:'right'});await page.mouse.move(550,950,{steps:20});await page.mouse.up({button:'right'});
+  await page.mouse.move(550,500);await page.mouse.down({button:'left'});await page.mouse.move(550,950,{steps:20});await page.mouse.up({button:'left'});
   const final=await view(page);
   expect(final.cameraPosition.every(Number.isFinite)).toBe(true);
   expect(await page.evaluate(()=>{const p=window.__aether.diagnostics().cameraPosition;return p[1]-window.__aether.height(p[0],p[2]);})).toBeGreaterThanOrEqual(.799);
