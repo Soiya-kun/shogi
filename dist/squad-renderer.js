@@ -7,18 +7,20 @@ import {attackPose,defeatPose} from './combat-motion.mjs';
 // No per-soldier Object3D hierarchy is placed in the scene.
 export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
   army.updateMatrixWorld(true);
-  const compiled=new Map(), batches=new Map(), unit=new T.Object3D(),memberRoot=new T.Object3D(),matrix=new T.Matrix4();
+  const compiled=new Map(), batches=new Map(), grips=new Map(),unit=new T.Object3D(),memberRoot=new T.Object3D(),matrix=new T.Matrix4(),flagMatrix=new T.Matrix4(),flagOffset=new T.Matrix4(),handPoint=new T.Vector3();
   const material=new T.MeshStandardMaterial({vertexColors:true,roughness:.67,metalness:.32,side:T.DoubleSide});
   const uniformScale=1.25;
   let squads=[], detailed=0, represented=0, dirty=true, previousNear='';
-  function compile(type,side,promoted,near,articulated=near) {
-    const key=[type,side,+promoted,+near,+articulated].join(':');
+  function compile(type,side,promoted,near,articulated=near,bearer=false) {
+    const key=[type,side,+promoted,+near,+articulated,+bearer].join(':');
     if(compiled.has(key))return compiled.get(key);
     const root=army.getObjectByName((near?'Unit_':'LOD_')+type);
     if(!root)throw new Error('GLB template missing: '+key);
     const pieces=new Map();
     root.traverse(o=>{
       if(!o.isMesh)return;
+      // The selected existing soldier carries the standard instead of a right-hand weapon.
+      if(bearer&&/_(Yari|Tachi|Gunbai|Ofuda|Arrow)$/.test(o.name))return;
       let branch=o,part='Body',pivot=new T.Vector3(),promotion=false;
       while(branch&&branch!==root){
         if(branch.name.endsWith('_Promotion'))promotion=true;
@@ -75,9 +77,9 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
       const heading=s.heading??(s.piece.s?Math.PI:0),cos=Math.cos(heading),sin=Math.sin(heading);
       if(s.near)detailed++;
       const piece=s.renderPiece??s.piece,memberKey=piece.t+Number(piece.p),articulated=s.near||!!s.combat||!!s.defeat;
-      if(s.memberKey!==memberKey){s.members=formation(piece.t,mobile,piece.p);s.memberKey=memberKey;s.contacts=[];}
+      if(s.memberKey!==memberKey){s.members=formation(piece.t,mobile,piece.p);s.memberKey=memberKey;s.contacts=[];s.carrierIndex=s.members.reduce((best,m,i)=>m.z-Math.abs(m.x)*.1>s.members[best].z-Math.abs(s.members[best].x)*.1?i:best,0);}
       for(let j=0;j<s.members.length;j++){
-        const m=s.members[j],phase=time*10+j*1.3;
+        const m=s.members[j],phase=time*10+j*1.3,bearer=j===s.carrierIndex;
         const pose=s.combat?attackPose(s.combat.style,m,j,s.combat.progress):null;
         const fallen=s.defeat?defeatPose(m,j,s.defeat.progress,s.defeat.impact):null;
         // Followers start in sequence, then close ranks on arrival.
@@ -87,10 +89,10 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
         const flying=m.type==='D';
         const lift=flying?(SQUADS.R.flightHeight+(m.altitudeOffset??0)+(pose?.lift??0)+(reducedMotion?0:Math.sin(time*2.4+j*.9)*.16+(s.moving?Math.sin(Math.PI*s.progress)*.6:0)))*(1-(fallen?.fall??0)):s.moving?Math.abs(Math.sin(phase))*.065:0;
         const y=h(x,z)+.025+lift;
-        s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying,model:m.type,unitId:s.id,generation:s.generation,ghost:!!s.ghost,side:piece.s,fall:fallen?.fall??0,pose};
+        s.contacts??=[];s.contacts[j]={x,y:flying?y:y-lift,z,airborne:flying,model:m.type,unitId:s.id,generation:s.generation,ghost:!!s.ghost,side:piece.s,fall:fallen?.fall??0,pose,flagBearer:bearer};
         memberRoot.position.set(x,y,z);memberRoot.rotation.set((pose?.lean??0)+(fallen?.lean??0),heading+(pose?.twist??0),fallen?.roll??0,'YXZ');
         memberRoot.scale.setScalar((s.scale??1)*(fallen?.scale??1));memberRoot.updateMatrix();
-        for(const spec of compile(m.type,piece.s,piece.p,s.near,articulated)){
+        for(const spec of compile(m.type,piece.s,piece.p,s.near,articulated||bearer,bearer)){
           const mesh=batch(spec),p=spec.pivot;
           unit.position.copy(p);unit.rotation.set(0,0,0);
           let swing=0,wing=0,tail=0;
@@ -106,7 +108,15 @@ export function createSquadRenderer(scene, army, h, mobile, reducedMotion) {
             if(spec.part==='ArmL'&&pose){swing=pose.armL;tail=pose.armLY;}
             if(fallen?.guard&&['ArmR','ArmL'].includes(spec.part))swing=-(spec.part==='ArmR'?1.15:.85)*fallen.guard;
           }
+          if(bearer&&spec.part==='ArmR'){swing=0;tail=0;}
           unit.rotateX(swing);unit.rotateZ(wing);unit.rotateY(tail);unit.scale.setScalar(1);unit.updateMatrix();matrix.multiplyMatrices(memberRoot.matrix,unit.matrix);
+          if(bearer&&spec.part==='ArmR'){
+            if(!grips.has(m.type)){const hand=army.getObjectByName('Unit_'+m.type).getObjectByName(m.type+'_Hand1');if(!hand)throw new Error('Flag bearer hand missing: '+m.type);grips.set(m.type,new T.Box3().setFromObject(hand).getCenter(new T.Vector3()).multiplyScalar(uniformScale));}
+            const grip=grips.get(m.type);
+            handPoint.copy(grip).sub(p).applyMatrix4(matrix);s.contacts[j].flagHand=handPoint.toArray();
+            flagMatrix.copy(matrix).multiply(flagOffset.makeTranslation(grip.x-p.x,grip.y-p.y-.8,grip.z-p.z));
+            flagMatrix.decompose(s.banner.position,s.banner.quaternion,s.banner.scale);
+          }
           // Moving models and defeated ghosts cannot select a stale physical location.
           mesh.userData.cells[mesh.count]=s.ghost||s.motion?-1:s.cell;mesh.setMatrixAt(mesh.count++,matrix);mesh.visible=true;
         }

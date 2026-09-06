@@ -137,7 +137,7 @@ export async function createBattlefield(canvas,onPick) {
     arriving.generation++;arriving.piece={...after.b[m.to]};arriving.renderPiece=attackerPiece;
     arriving.cell=m.to;for(const child of arriving.banner.children)child.userData.cell=m.to;
     arriving.flag.material=arriving.piece.p?promotedFlag:flagMaterials[arriving.piece.s];
-    arriving.badge.material=squadLabel(arriving.piece);
+    arriving.badge.material=squadLabel(arriving.piece).material;
     if(victim){
       const key=`${arriving.piece.s}:${victim.piece.t}`;if(!handIdentities.has(key))handIdentities.set(key,[]);
       handIdentities.get(key).push({id:victim.id,generation:victim.generation+1});
@@ -166,7 +166,6 @@ export async function createBattlefield(canvas,onPick) {
         }else arriving.scale=Math.max(.01,Math.sin(f*Math.PI/2));
         if(victim){
           victim.defeat={progress:f,impact:spec.impact};victim.heading=heading+Math.PI;
-          victim.banner.rotation.z=smooth(f,spec.impact+.04,.78)*1.2;victim.banner.scale.setScalar(1-smooth(f,.78,.95));
           if(!fx.sounded&&f>=spec.impact){fx.sounded=true;if(f<spec.impact+.12)combatAudio.play(record.event.eventId,style);}
         }
         armyView.setSquads(instances);renderer.shadowMap.needsUpdate=true;
@@ -312,9 +311,8 @@ export async function createBattlefield(canvas,onPick) {
     combatEffects.update(effects);
     const changed=armyView.update(time,camera,busy);
     for(const s of instances){
-      // The live flag always marks the committed cell; only a defeated flag follows its ghost.
-      const [x,z]=s.ghost?[s.x,s.z]:cellXZ(s.cell),flagX=x+(SQUADS[s.piece.t].bannerOffsetX??0);
-      s.banner.position.set(flagX,h(flagX,z+3.6),z+3.6);if(!s.ghost)s.banner.scale.setScalar(1);
+      // The squad renderer attaches the standard to an existing soldier's hand.
+      // Never replace that physical transform with the committed destination.
       s.flag.rotation.y=reducedMotion?0:Math.sin(time*2+s.cell)*.10;const badgeScale=(mobile?1.5:1)*Math.min(1,camera.position.distanceTo(s.banner.position)/140);s.badge.scale.set(3.4*badgeScale,4.25*badgeScale,1);
     }
     if(changed&&frames%3===0)renderer.shadowMap.needsUpdate=true;
@@ -324,7 +322,7 @@ export async function createBattlefield(canvas,onPick) {
   return {draw,highlight,transition,rotate:()=>angle+=Math.PI,top:()=>elevation=elevation>1.3?.93:1.49,
     setPresentation:enabled=>{const next=!!enabled&&!reducedMotion;if(next===presentationEnabled)return;presentationEnabled=next;draw(logicalBoard,{gameId:viewGameId,positionRevision:viewRevision});},
     setSound:combatAudio.enable,
-    presentation:()=>({enabled:presentationEnabled,reducedMotion,epoch,gameId:viewGameId,positionRevision:viewRevision,history:structuredClone(presentationHistory),squads:instances.map(s=>({id:s.id,generation:s.generation,cell:s.cell,piece:{...s.piece},ghost:!!s.ghost,x:s.x,z:s.z,moving:!!s.motion,combat:s.combat?{...s.combat}:null,defeat:s.defeat?{...s.defeat}:null}))}),
+    presentation:()=>({enabled:presentationEnabled,reducedMotion,epoch,gameId:viewGameId,positionRevision:viewRevision,history:structuredClone(presentationHistory),squads:instances.map(s=>({id:s.id,generation:s.generation,cell:s.cell,piece:{...s.piece},ghost:!!s.ghost,x:s.x,z:s.z,flagBearer:s.carrierIndex,flagGrip:new T.Vector3(0,.8,0).applyMatrix4(s.banner.matrixWorld).toArray(),moving:!!s.motion,combat:s.combat?{...s.combat}:null,defeat:s.defeat?{...s.defeat}:null}))}),
     close:()=>{aim.copy(position(selectedCell??focusCell));zoom=48;elevation=.36;},overview:()=>{zoom=185;elevation=.93;aim.set(0,0,0);},
     labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels&&!s.ghost;return labels;},
     diagnostics:()=>({units:instances.filter(s=>!s.ghost).length,ghosts:instances.filter(s=>s.ghost).length,activeMotions:instances.filter(s=>s.motion).length,activeBattles:effects.filter(f=>f.combat).length,...combatEffects.stats(),...combatAudio.stats(),...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),

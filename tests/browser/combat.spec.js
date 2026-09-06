@@ -44,6 +44,7 @@ test('every troop attacks, hits, staggers the enemy and occupies; promotion and 
     expect(attack.event).toMatchObject({style,status:'playing'});expect(attack.event.event.actor.piece).toEqual(g.b[from]);expect(attack.event.event.target.piece).toEqual(g.b[to]);
     expect(attack.squads.filter(s=>!s.ghost&&s.cell===to)).toHaveLength(1);
     expect(attack.contacts.some(p=>p.pose&&Math.abs(p.pose.armR)>.3)).toBe(true);
+    for(const squad of attack.squads){const carrier=attack.contacts.find(p=>p.unitId===squad.id&&p.generation===squad.generation&&p.flagBearer);expect(carrier?.flagHand).toBeTruthy();expect(Math.hypot(...squad.flagGrip.map((v,i)=>v-carrier.flagHand[i]))).toBeLessThan(.0001);}
     const actor=attack.squads.find(s=>s.cell===to);expect(Math.hypot(actor.x-((to%9)-4)*12,actor.z-(Math.floor(to/9)-4)*12)).toBeGreaterThan(4);
     expect(attack.view.zoom).toBe(before.zoom); // No forced camera cut.
     if(['N','B','D'].includes(style))expect(attack.view.particles).toBeGreaterThan(0);
