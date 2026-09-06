@@ -30,3 +30,6 @@
 .war-banner:not(.war-command){bottom:118px}@media(max-width:900px){.war-banner:not(.war-command){bottom:116px}}
 
 #reset-confirmation{max-width:480px}.reset-actions{display:flex;justify-content:flex-end;gap:12px;flex-wrap:wrap;margin-top:24px}#reset-confirm{background:#456478}
+
+.language-control{display:flex;align-items:center;gap:8px;font-size:12px;color:#b5c5ca}.language-control select{font:inherit;background:#15232c;color:#efe6cd;border:1px solid #41535c;padding:8px;border-radius:3px}@media(max-width:900px){.language-control span{display:none}.language-control select{min-height:38px}}
+.unit>div:last-child{min-width:0}.unit p{overflow-wrap:anywhere}

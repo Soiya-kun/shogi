@@ -1,3 +1,4 @@
+import {language} from './i18n.js';
 export class PresentationView {
   constructor({world,project,manifestURL='./audio/voices.json',audioFactory=()=>new Audio()}={}){
     this.world=world;this.project=project;this.audioFactory=audioFactory;this.sources={};this.audio=null;this.audioState='unavailable';this.reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -10,7 +11,7 @@ export class PresentationView {
   stopAudio(){this.audioGeneration=(this.audioGeneration??0)+1;if(this.audio){this.audio.pause();this.audio.removeAttribute('src');this.audio.load();this.audio=null;}if(this.audioState==='playing')this.audioState='ready';}
   play(e,settings){
     this.stopAudio();if(!settings.canVoice||document.hidden)return false;
-    const entry=this.sources[e.voiceKey]?.[e.side],src=typeof entry==='string'?entry:entry?.src;if(!src)return false;
+    const entry=this.sources[e.voiceKey]?.[e.side],localized=entry?.[language],src=typeof localized==='string'?localized:localized?.src??(language==='ja'?(typeof entry==='string'?entry:entry?.src):undefined);if(!src)return false;
     const url=new URL(src,location.href);if(url.origin!==location.origin||!url.pathname.startsWith('/audio/'))return false;
     const player=this.audio=this.audioFactory(),generation=this.audioGeneration;player.src=url.href;player.volume=settings.volume;this.audioState='playing';
     player.onended=()=>{if(this.audio===player)this.stopAudio();};
@@ -20,12 +21,12 @@ export class PresentationView {
     this.layer.replaceChildren();this.markers.replaceChildren();for(const node of document.querySelectorAll('.war-command'))node.remove();
     const commandCard=e.control&&e.id!==95;
     const card=document.createElement('div');card.className=`war-banner ${commandCard?'war-command':''}`;card.dataset.intensity=e.intensity;card.dataset.side=e.side;card.dataset.mode=this.reduced.matches?'subtle':settings.mode;card.dataset.event=e.id;
-    const side=document.createElement('div');side.className='war-side';side.textContent=e.side?'△ 後手 · RED':'▲ 先手 · BLUE';
+    const side=document.createElement('div');side.className='war-side';side.textContent=language==='en'?(e.side?'△ RED · Second':'▲ BLUE · First'):(e.side?'△ 後手 · RED':'▲ 先手 · BLUE');
     const title=document.createElement('strong');title.className='war-kanji';title.textContent=e.kanji;
     card.append(side,title);
     if(e.resultSubtitle){const sub=document.createElement('span');sub.className='war-english';sub.textContent=e.resultSubtitle;card.append(sub);}
     if(settings.english){const en=document.createElement('span');en.className='war-english';en.textContent=e.english;card.append(en);}
-    if(settings.subtitles){const ja=document.createElement('p');ja.className='war-subtitle';ja.textContent=e.ja;card.append(ja);if(settings.english){const en=document.createElement('p');en.className='war-translation';en.textContent=e.subtitle;card.append(en);}}
+    if(settings.subtitles){const line=document.createElement('p');line.className='war-subtitle';line.lang=language;line.textContent=language==='en'?e.subtitle:e.ja;card.append(line);}
     if(commandCard)document.querySelector(`#ai-card-${e.side}`)?.append(card);else this.layer.append(card);
     this.current=e;this.staticMarkers=settings.mode==='subtle'||this.reduced.matches;this.updateMarkers();
     return this.play(e,settings);
@@ -41,9 +42,10 @@ export class PresentationView {
   }
   hide(e){if(this.current?.eventId===e.eventId)this.clear();}
   clear(){this.current=null;cancelAnimationFrame(this.frame);this.layer.replaceChildren();this.markers.replaceChildren();for(const node of document.querySelectorAll('.war-command'))node.remove();this.stopAudio();}
+  localize(settings,events){if(this.current)this.show(this.current,{...settings,canVoice:false});this.log(events);}
   log(events){
     if(!this.logNode)return;this.logNode.replaceChildren();
-    for(const e of events.slice(-12).reverse()){const li=document.createElement('li');li.dataset.event=e.id;li.textContent=`${e.side?'△':'▲'} ${e.ply}手 · ${e.detail??e.kanji}${e.shown?'':'（記録）'}`;li.title=e.ja;this.logNode.append(li);}
+    for(const e of events.slice(-12).reverse()){const li=document.createElement('li');li.dataset.event=e.id;li.textContent=`${e.side?'△':'▲'} ${e.ply}${language==='en'?' moves':'手'} · ${language==='en'?e.kanji:e.detail??e.kanji}${e.shown?'':language==='en'?' (recorded)':'（記録）'}`;li.title=language==='en'?e.subtitle:e.ja;this.logNode.append(li);}
   }
   audioStatus(){return {state:this.audioState,playing:!!this.audio,available:Object.keys(this.sources).length};}
   destroy(){this.clear();document.removeEventListener('visibilitychange',this.onHidden);this.layer.remove();this.markers.remove();}

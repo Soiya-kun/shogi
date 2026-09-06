@@ -16,7 +16,7 @@ const logged=(page,id)=>expect.poll(()=>page.evaluate(id=>window.__aether.war().
 test('promotion, reinforcement and check render kanji/subtitles without voices; undo/reset cancel',async({page})=>{
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   let g=base();put(g,31,'R');await load(page,g);expect(await page.locator('.war-banner').count()).toBe(0);
-  await move(page,31,22,true);await logged(page,17);await expect(page.locator('.war-kanji')).toHaveText('昇龍');await expect(page.locator('.war-translation')).toHaveText('Take the skies! Dragon, command the battlefield!');
+  await move(page,31,22,true);await logged(page,17);await expect(page.locator('.war-kanji')).toHaveText('昇龍');await expect(page.locator('.war-subtitle')).toHaveAttribute('lang','ja');await expect(page.locator('.war-translation')).toHaveCount(0);
   expect(await page.locator('#war-presentation').evaluate(el=>getComputedStyle(el).pointerEvents)).toBe('none');
   await page.screenshot({path:'docs/verification/war-promotion.png'});
   expect(await page.evaluate(()=>window.__aether.war().audio.available)).toBe(0);

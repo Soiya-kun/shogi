@@ -1,3 +1,4 @@
+import {language,setLanguage,translateUI,t} from './i18n.js';
 import {createBattlefield} from './battlefield.js';
 import {check,names,roles} from './rules.mjs';
 import {GameController} from './game-controller.mjs';
@@ -17,7 +18,7 @@ let view,war,selected=null,moves=[];
 const controller=new GameController({saved,animate:async({before,after,m,event})=>{try{await view.transition(before,after,m,event);}catch(error){if(controller.animations.has(event))view.draw(controller.match.g.b,controller.diagnostics());throw error;}},onChange:()=>{if(!controller.canPlay){selected=null;moves=[];if(promotion.open)promotion.close();showUnit(null);}refresh();save();},onNotice:toast,onEvent:(type,data)=>war?.handle(type,data)});
 const match=controller.match;
 const promotion=$('#promotion');
-function toast(text){$('#toast').textContent=text;$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
+function toast(text){$('#toast').textContent=t(text);$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
 function save(){try{localStorage.setItem(storageKey,JSON.stringify({...controller.serialize(),presentation:war?.serialize()}));}catch{toast('このブラウザでは対局を保存できません');}}
 function showUnit(p){const spec=p?squadSpec(p.t,p.p):null;$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+spec.name:'部隊を選択';$('#unitdesc').textContent=p?spec.count+(spec.unit||'人')+' · '+spec.formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
 function refresh(){
@@ -34,7 +35,7 @@ function refresh(){
   for(const [t,n] of entries){const b=document.createElement('button');b.textContent=names[t]+' ×'+n;b.disabled=!controller.canPlay;b.setAttribute('aria-pressed',String(selected?.drop===t));b.onclick=()=>selectReserve(t,g.turn);$('#hands').append(b);}
   $('#undo').disabled=!match.past.length&&match.resignation===null;
   refreshAI();
-  view?.highlight(selected,moves,g.b,match.records.at(-1)?.m);
+  view?.highlight(selected,moves,g.b,match.records.at(-1)?.m);translateUI();
 }
 function selectReserve(t,side){if(!controller.canPlay||side!==match.g.turn||!match.g.h[side][t])return;selected={drop:t};moves=match.moves.filter(m=>m.drop===t);showUnit({t,p:false});refresh();}
 async function finish(m){
@@ -56,7 +57,7 @@ function pick(i){
 }
 $('#closeView').onclick=()=>view?.close();$('#overview').onclick=()=>view?.overview();
 $('#rotate').onclick=()=>view?.rotate();$('#top').onclick=()=>view?.top();
-$('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));}};
+$('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));translateUI();}};
 $('#undo').onclick=()=>{if(!view)return;controller.undo();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 const resetDialog=$('#reset-confirmation');
 $('#reset').onclick=()=>{if(view&&!resetDialog.open)resetDialog.showModal();};
@@ -98,11 +99,13 @@ for(const field of ['mode','subtitles','english','voice','volume','analysis']){
   const input=$('#war-'+field);if(input.type==='checkbox')input.checked=warSettings[field];else input.value=warSettings[field];
   input.onchange=()=>{warSettings[field]=input.type==='checkbox'?input.checked:field==='volume'?Number(input.value):input.value;war.configure(warSettings);try{localStorage.setItem('aether-war-presentation-v1',JSON.stringify(warSettings));}catch{}};
 }
+$('#language').value=language;
+$('#language').onchange=()=>{setLanguage($('#language').value);refresh();showUnit(selected?.drop?{t:selected.drop,p:false}:selected?match.g.b[selected.from]:null);translateUI();warView.localize(warSettings,war.director?.log??[]);};
 controller.setTempo(preferences.tempo);
 refresh();
 try {
   view=await createBattlefield($('#scene'),pick,selectReserve);view.draw(match.g.b,controller.diagnostics());view.setPresentation(preferences.effects);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';controller.start();
   if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,presentation:view.presentation,war:()=>war.diagnostics(),projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,reserves:view.reserves,state:()=>structuredClone({...controller.serialize(),presentation:war.serialize()}),ai:()=>controller.diagnostics()};
 } catch(error) {
-  console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);
+  console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);translateUI();
 }
