@@ -1,4 +1,4 @@
-const duration={small:900,medium:1400,large:2000};
+const duration={small:5000,medium:5000,large:5000};
 export const defaultPresentation=()=>({mode:'normal',subtitles:true,english:true,voice:false,volume:.7,analysis:true});
 export function sanitizePresentation(p){return {mode:['normal','subtle','off'].includes(p?.mode)?p.mode:'normal',subtitles:p?.subtitles!==false,english:p?.english!==false,voice:p?.voice===true,volume:Number.isFinite(p?.volume)?Math.max(0,Math.min(1,p.volume)):.7,analysis:p?.analysis!==false};}
 export class PresentationDirector {
@@ -8,8 +8,11 @@ export class PresentationDirector {
   }
   later(fn,ms){const id=this.timer(()=>{this.timers.delete(id);fn();},ms);this.timers.add(id);return id;}
   cancel(reason='cancelled'){
-    this.serial++;for(const id of this.timers)this.clearTimer(id);this.timers.clear();this.flushTimer=null;this.pending=[];this.active=null;this.view?.clear();this.reason=reason;
+    const keep=reason==='next-position'&&this.active&&!this.active.control&&this.activeUntil>this.now();
+    this.serial++;for(const id of this.timers)this.clearTimer(id);this.timers.clear();this.flushTimer=null;this.pending=[];this.reason=reason;
+    if(keep)this.expireActive();else{this.active=null;this.view?.clear();}
   }
+  expireActive(){const e=this.active,serial=this.serial;this.later(()=>{if(serial===this.serial&&this.active===e){this.active=null;this.view?.hide(e);}},Math.max(0,this.activeUntil-this.now()));}
   begin(identity){if(this.current?.gameId!==identity.gameId){this.frequency.clear();this.sideVoice=[-Infinity,-Infinity];this.voicedTerminals.clear();}this.cancel('next-position');this.current={...identity};this.presented=false;this.pending=[];}
   configure(settings){this.settings=sanitizePresentation(settings);this.cancel('settings');}
   valid(e){return this.current&&e.gameId===this.current.gameId&&e.positionRevision===this.current.positionRevision&&e.policyRevision===this.current.policyRevision;}
@@ -44,8 +47,7 @@ export class PresentationDirector {
     const canVoice=this.settings.voice&&e.voice!==false&&(terminal?!this.voicedTerminals.has(terminalKey):(now-this.voiceAt>=8000&&(e.ownMove??0)-this.sideVoice[e.side]>=4));
     const voiced=this.view?.show(e,{...this.settings,canVoice});
     if(voiced){this.voiceAt=now;this.sideVoice[e.side]=e.ownMove??0;row.voiced=true;if(terminal)this.voicedTerminals.add(terminalKey);}
-    this.view?.log(this.log);const serial=this.serial;
-    this.later(()=>{if(serial===this.serial&&this.active===e){this.active=null;this.view?.hide(e);}},duration[e.intensity]);
+    this.view?.log(this.log);this.activeUntil=this.now()+duration[e.intensity];this.expireActive();
   }
   control(e){
     if(!this.valid(e))return;

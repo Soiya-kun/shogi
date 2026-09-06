@@ -194,10 +194,20 @@ test('priority, dedupe, terminal sequence, cancellation, off and voice cooldowns
   director.begin(identity);const e=id=>event(id,{...identity,side:0,ply:1},{ownMove:1});
   director.submit([e(18),e(19),e(17),e(19)]);advance(0);assert.deepEqual(shown.map(e=>e.id),[19]);assert.equal(director.log.length,3);
   director.submit([e(29)]);advance(0);assert.equal(shown.length,1); // A late analysis cannot add another headline.
-  director.begin({...identity,positionRevision:2});director.submit([29,30,19].map(id=>({...e(id),positionRevision:2})));advance(0);assert.equal(shown.at(-1).id,29);advance(2100);assert.equal(shown.at(-1).id,30);
+  director.begin({...identity,positionRevision:2});director.submit([29,30,19].map(id=>({...e(id),positionRevision:2})));advance(0);assert.equal(shown.at(-1).id,29);advance(5100);assert.equal(shown.at(-1).id,30);
   director.begin({...identity,positionRevision:3});director.submit([{...e(17),positionRevision:3}],{delay:100});director.cancel('undo');advance(100);assert.equal(shown.at(-1).id,30);
   director.configure({mode:'off'});director.begin({...identity,positionRevision:4});director.submit([{...e(19),positionRevision:4}]);advance(0);assert.equal(shown.at(-1).id,30);
   director.configure({voice:true});director.begin({...identity,positionRevision:5});director.submit([{...e(18),positionRevision:5}]);advance(0);assert.equal(shown.at(-1).voice,false);
+});
+test('headlines last five seconds across moves; undo still cancels immediately',()=>{
+  const timers=new Map();let now=0,n=0,visible=null;
+  const director=new PresentationDirector({view:{show:e=>{visible=e.id;},hide:()=>{visible=null;},clear:()=>{visible=null;},log(){}},now:()=>now,timer:(fn,delay)=>{timers.set(++n,{fn,at:now+delay});return n;},clearTimer:id=>timers.delete(id)});
+  const advance=ms=>{now+=ms;for(const [id,t] of [...timers])if(t.at<=now){timers.delete(id);t.fn();}};
+  director.begin(identity);director.show(event(17,{...identity,side:0,ply:1},{ownMove:1}));
+  advance(3000);director.cancel('next-position');director.begin({...identity,positionRevision:2});
+  advance(1999);assert.equal(visible,17);advance(1);assert.equal(visible,null);
+  director.show(event(19,{...identity,positionRevision:2,side:0,ply:2},{ownMove:2}));
+  advance(100);director.cancel('undo');assert.equal(visible,null);assert.equal(timers.size,0);
 });
 class Engine {
   ready=false;pending=[];async init(){this.ready=true;}stop(){}destroy(){}

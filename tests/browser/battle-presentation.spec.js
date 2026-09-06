@@ -32,7 +32,7 @@ test('actual checkmate plays 29 then 30 once, after arrival; reload does not rep
   const g=base();g.b[0]=null;put(g,4,'K',1);put(g,22,'G');put(g,12,'G');put(g,14,'G');await load(page,g,{effects:true});
   await move(page,22,13);await logged(page,29);await expect(page.locator('.war-kanji')).toHaveText('詰み');await expect(page.locator('#status')).toContainText('詰み');
   await page.screenshot({path:'docs/verification/war-checkmate.png'});
-  await expect(page.locator('.war-kanji')).toHaveText('凱歌');expect(await page.evaluate(()=>window.__aether.war().log.filter(e=>e.id===30).length)).toBe(1);
+  await expect(page.locator('.war-kanji')).toHaveText('凱歌',{timeout:7000});expect(await page.evaluate(()=>window.__aether.war().log.filter(e=>e.id===30).length)).toBe(1);
   await page.reload();await ready(page);expect(await page.locator('.war-banner').count()).toBe(0);await expect(page.locator('#status')).toContainText('詰み');
 });
 test('actual AI command acknowledgements use the current request, 3-second cadence and stop cancellation',async({page})=>{
