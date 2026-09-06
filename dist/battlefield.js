@@ -40,6 +40,11 @@ export async function createBattlefield(canvas,onPick,onReserve) {
   const pos=ground.geometry.attributes.position,uv=new Float32Array(pos.count*2);
   for(let i=0;i<pos.count;i++){uv[i*2]=pos.getX(i)/8;uv[i*2+1]=-pos.getZ(i)/8;}
   ground.geometry.setAttribute('uv',new T.BufferAttribute(uv,2));ground.material=landMaterial;ground.receiveShadow=true;
+  if(street){
+    // Keep the invisible logical plane for picking; show the artist's pavement below it.
+    ground.material.colorWrite=false;ground.material.depthWrite=false;ground.receiveShadow=false;
+    sun.intensity=.7;scene.children.find(o=>o.isHemisphereLight).intensity=.8;
+  }
   const h=terrainSampler(pos.array,ground.geometry.index?.array);
   ground.geometry.computeBoundingBox();const groundBounds=ground.geometry.boundingBox;
   field.scene.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=!['GrassAndFlowers','Terrain'].includes(o.name);}});

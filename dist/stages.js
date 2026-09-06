@@ -1,6 +1,6 @@
 export const STAGES={
  samurai:{id:'samurai',title:'風渡る草原',description:'40部隊、392人。丘陵に布陣する両軍。',eyebrow:'THE WINDWARD MEADOW',width:108},
- yankee:{id:'yankee',title:'暁の交差点',description:'40人の抗争。雨上がりの繁華街。',eyebrow:'MIDNIGHT CROSSROADS',width:27},
+ yankee:{id:'yankee',title:'黒金一番街',description:'40人の抗争。雨上がりの繁華街。',eyebrow:'KUROGANE NIGHT DISTRICT',width:27},
 };
 export let stage=STAGES.samurai;
 export let stageChosen=false;

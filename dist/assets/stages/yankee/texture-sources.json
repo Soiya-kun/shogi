@@ -1,0 +1,65 @@
+[
+  {
+    "license": "CC0",
+    "asset": "asphalt_02",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_02/asphalt_02_diff_2k.jpg",
+    "map": "Diffuse",
+    "file": "asphalt_02_Diffuse.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "asphalt_02",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_02/asphalt_02_rough_2k.jpg",
+    "map": "rough",
+    "file": "asphalt_02_rough.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "asphalt_02",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/asphalt_02/asphalt_02_nor_gl_2k.jpg",
+    "map": "nor_gl",
+    "file": "asphalt_02_nor_gl.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "damaged_plaster",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/damaged_plaster/damaged_plaster_diff_2k.jpg",
+    "map": "Diffuse",
+    "file": "damaged_plaster_Diffuse.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "damaged_plaster",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/damaged_plaster/damaged_plaster_rough_2k.jpg",
+    "map": "rough",
+    "file": "damaged_plaster_rough.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "damaged_plaster",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/damaged_plaster/damaged_plaster_nor_gl_2k.jpg",
+    "map": "nor_gl",
+    "file": "damaged_plaster_nor_gl.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "metal_grate_rusty",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/metal_grate_rusty/metal_grate_rusty_diff_2k.jpg",
+    "map": "Diffuse",
+    "file": "metal_grate_rusty_Diffuse.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "metal_grate_rusty",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/metal_grate_rusty/metal_grate_rusty_rough_2k.jpg",
+    "map": "rough",
+    "file": "metal_grate_rusty_rough.jpg"
+  },
+  {
+    "license": "CC0",
+    "asset": "metal_grate_rusty",
+    "url": "https://dl.polyhaven.org/file/ph-assets/Textures/jpg/2k/metal_grate_rusty/metal_grate_rusty_nor_gl_2k.jpg",
+    "map": "nor_gl",
+    "file": "metal_grate_rusty_nor_gl.jpg"
+  }
+]

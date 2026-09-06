@@ -1,7 +1,7 @@
 {
   "version": 1,
   "theme": "yankee",
-  "source": "assets/blender/yankee (v1 snapshot)",
+  "source": "assets/blender/yankee/crossroads-v3/yankee-neon-district-v3.blend (city v3; characters v1)",
   "cellMetres": 3,
   "figuresPerPiece": 1,
   "files": {
@@ -10,8 +10,8 @@
       "sha256": "b94a67cb0ecc198e638685ecefdfca127a687d3c3ba80362ab057d1af62383fd"
     },
     "city.glb": {
-      "bytes": 1489712,
-      "sha256": "395b9adbe384b2d6377a17b0081a33b2f8f598a87d96cb1ef5176dafe9d57afe"
+      "bytes": 54084340,
+      "sha256": "60f488f1cfc7dae4a64dc330e2a1c1e82c92e41b313c4225a99445dc28672740"
     },
     "G.glb": {
       "bytes": 307364,
