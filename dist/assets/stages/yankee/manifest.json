@@ -1,0 +1,45 @@
+{
+  "version": 1,
+  "theme": "yankee",
+  "source": "assets/blender/yankee (v1 snapshot)",
+  "cellMetres": 3,
+  "figuresPerPiece": 1,
+  "files": {
+    "B.glb": {
+      "bytes": 291272,
+      "sha256": "b94a67cb0ecc198e638685ecefdfca127a687d3c3ba80362ab057d1af62383fd"
+    },
+    "city.glb": {
+      "bytes": 1489712,
+      "sha256": "395b9adbe384b2d6377a17b0081a33b2f8f598a87d96cb1ef5176dafe9d57afe"
+    },
+    "G.glb": {
+      "bytes": 307364,
+      "sha256": "8d9d201777bfd0c221e0c9c67a85465a22af0d98fb755b1d5d0f44ec8eeb7135"
+    },
+    "K.glb": {
+      "bytes": 280952,
+      "sha256": "501fbc61163ec4dddee6c69a66665bcd0c977cc23dd8c236ce623e8dc1ba3082"
+    },
+    "L.glb": {
+      "bytes": 279856,
+      "sha256": "8035e157ecdcad9e8210c8baf2a92f98ca7093db5f627af6c604e02fbfea1772"
+    },
+    "N.glb": {
+      "bytes": 554608,
+      "sha256": "cf1b463ee9852dbcffc84212753916c17038fe3b8733589cc2c923cb9646e931"
+    },
+    "P.glb": {
+      "bytes": 280744,
+      "sha256": "a90ba119c3d1e7559b8dc6e6d0f09e8ac3c82d362d70f345b732949c28517fd3"
+    },
+    "R.glb": {
+      "bytes": 564052,
+      "sha256": "f6cba0495338032d5b929cff6b5c45f3069ed3b3cb83953ad2941173e1ecfbf9"
+    },
+    "S.glb": {
+      "bytes": 273044,
+      "sha256": "b06bdea1eab0baa7982ebb960f4de10453b0d89cec7bff6dfb7c3b4a8bb41807"
+    }
+  }
+}

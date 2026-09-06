@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 test('independent command, history and settings controls leave a collapsible full-width battlefield',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/?debug');await page.waitForFunction(()=>window.__aether);
  for(const id of ['overview','closeView','rotate','top'])await expect(page.locator('#'+id)).toHaveCount(0);

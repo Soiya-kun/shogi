@@ -1,5 +1,5 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {Match} from '../../dist/match.mjs';
 const ready=page=>page.waitForFunction(()=>window.__aether?.diagnostics().lastTime>0);
 test('reserve camps group hands without shrinking soldiers and follow drops, undo, labels and reset',async({page})=>{

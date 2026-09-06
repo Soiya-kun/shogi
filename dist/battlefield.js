@@ -1,3 +1,5 @@
+import {stage} from './stages.js';
+import {createStreetRenderer} from './street-renderer.js';
 import * as T from './three.module.js';
 import {GLTFLoader} from './vendor/loaders/GLTFLoader.js';
 import {CELL_SIZE,HALF_FIELD,cellXZ,cellAt,terrainSampler} from './terrain.mjs';
@@ -26,7 +28,9 @@ export async function createBattlefield(canvas,onPick,onReserve) {
   let epoch=0,viewGameId=null,viewRevision=-1,logicalBoard=[],presentationEnabled=!reducedMotion;
   const handIdentities=new Map(),presentationHistory=[];
   const loader=new GLTFLoader();
-  const [field,army,landMaterial]=await Promise.all([loader.loadAsync('./assets/meadow.glb'),loader.loadAsync('./assets/army.glb'),terrainMaterial(renderer)]);
+  const street=stage.id==='yankee';
+  const [field,army,landMaterial]=await Promise.all([loader.loadAsync(street?'./assets/stages/yankee/city.glb':'./assets/meadow.glb'),street?Promise.all(['P','L','N','S','G','B','R','K'].map(async type=>[type,(await loader.loadAsync('./assets/stages/yankee/'+type+'.glb')).scene])).then(Object.fromEntries):loader.loadAsync('./assets/army.glb'),street?Promise.resolve(new T.MeshStandardMaterial({color:0x303744,roughness:.55})):terrainMaterial(renderer)]);
+  if(street){field.scene.scale.setScalar(4);const floor=new T.Mesh(new T.PlaneGeometry(110,110,2,2),landMaterial);floor.rotation.x=-Math.PI/2;floor.name='Terrain';field.scene.add(floor);scene.background.set(0x111a2d);scene.fog.color.set(0x111a2d);}
   scene.add(field.scene);field.scene.updateMatrixWorld(true);
   const ground=field.scene.getObjectByName('Terrain');if(!ground)throw new Error('GLBにTerrainがありません');
   ground.geometry=ground.geometry.clone().applyMatrix4(ground.matrixWorld);
@@ -39,7 +43,7 @@ export async function createBattlefield(canvas,onPick,onReserve) {
   field.scene.traverse(o=>{if(o.isMesh){o.receiveShadow=true;o.castShadow=!['GrassAndFlowers','Terrain'].includes(o.name);}});
   const rocks=field.scene.getObjectByName('Rocks');
   if(rocks){const p=rocks.geometry.attributes.position,uv=new Float32Array(p.count*2),v=new T.Vector3();for(let i=0;i<p.count;i++){v.fromBufferAttribute(p,i).applyMatrix4(rocks.matrixWorld);uv[i*2]=v.x/3;uv[i*2+1]=-v.z/3;}rocks.geometry.setAttribute('uv',new T.BufferAttribute(uv,2));rocks.material=landMaterial.userData.rockMaterial;}
-  const armyView=createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),reserveView=createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),labelMaterials=new Map();
+  const armyView=street?createStreetRenderer(scene,army,h):createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),reserveView=street?createStreetRenderer(scene,army,h):createSquadRenderer(scene,army.scene,h,mobile,reducedMotion),labelMaterials=new Map();
   let reserves=[],reserveKey='';
   const combatEffects=createCombatEffects(scene,h),combatAudio=createCombatAudio();
   addEventListener('pagehide',()=>combatAudio.clear());
@@ -55,7 +59,7 @@ export async function createBattlefield(canvas,onPick,onReserve) {
     const sprite=new T.Sprite(labelMaterials.get(key));sprite.scale.set(3.4,4.25,1);return sprite;
   }
   function squadLabel(piece){
-    return label(piece.p?symbols[piece.t]||names[piece.t]:names[piece.t],piece.p?'#ffe49a':piece.s?'#ffc2b3':'#c9edff',String(SQUADS[piece.t].count),piece.s?'#8c2028f5':'#153c62f5');
+    return label(piece.p?symbols[piece.t]||names[piece.t]:names[piece.t],piece.p?'#ffe49a':piece.s?'#ffc2b3':'#c9edff',String(street?1:SQUADS[piece.t].count),piece.s?'#8c2028f5':'#153c62f5');
   }
   function line(points,color,opacity=1) {
     const geo=new T.BufferGeometry().setFromPoints(points.map(([x,z])=>new T.Vector3(x,h(x,z)+.10,z)));
@@ -115,7 +119,7 @@ export async function createBattlefield(canvas,onPick,onReserve) {
     for(let side=0;side<2;side++)for(const [i,type] of types.entries()){
       const count=hands[side][type]??0;if(!count)continue;
       const s=makeSquad({t:type,s:side,p:false},-1),sign=side?-1:1;
-      s.x=sign*(62+(i%2)*9);s.z=sign*(28+Math.floor(i/2)*8);
+      s.x=sign*(street?58+(i%2)*7:62+(i%2)*9);s.z=sign*(street?12+Math.floor(i/2)*8:28+Math.floor(i/2)*8);
       const members=formation(type),models=[members[0],members.at(-1)];
       s.reserveMembers=models.map((m,j)=>({...m,x:(j-.5)*2.8,z:0}));s.reserveCount=count;
       s.badge.material=label(names[type],side?'#ffc2b3':'#c9edff','×'+count,side?'#8c2028f5':'#153c62f5').material;
@@ -327,7 +331,7 @@ export async function createBattlefield(canvas,onPick,onReserve) {
     scene.fog.near=200*(camera.aspect<1?1.5:1);scene.fog.far=485*(camera.aspect<1?1.5:1);
     target.lerp(aim,reducedMotion?1:1-Math.exp(-dt*7));updateCamera();
     for(const fx of [...effects]){if(!effects.includes(fx))continue;const f=clamp((t-fx.start)/fx.duration);fx.update(f);if(f===1)removeEffect(fx);}
-    combatEffects.update(effects);
+    combatEffects.update(street?[]:effects);
     const changed=armyView.update(time,camera,busy),reserveChanged=reserveView.update(time,camera);
     for(const s of [...instances,...reserves]){
       // The squad renderer attaches the standard to an existing soldier's hand.
@@ -344,7 +348,7 @@ export async function createBattlefield(canvas,onPick,onReserve) {
     presentation:()=>({enabled:presentationEnabled,reducedMotion,epoch,gameId:viewGameId,positionRevision:viewRevision,history:structuredClone(presentationHistory),squads:instances.map(s=>({id:s.id,generation:s.generation,cell:s.cell,piece:{...s.piece},ghost:!!s.ghost,x:s.x,z:s.z,labelVisible:s.badge.visible,flagBearer:s.carrierIndex,flagGrip:new T.Vector3(0,.8,0).applyMatrix4(s.banner.matrixWorld).toArray(),moving:!!s.motion,combat:s.combat?{...s.combat}:null,defeat:s.defeat?{...s.defeat}:null}))}),
     close:()=>{aim.copy(position(selectedCell??focusCell));zoom=48;elevation=.36;},overview:()=>{zoom=185;elevation=.93;aim.set(0,0,0);},
     labels:()=>{labels=!labels;for(const s of [...instances,...reserves])s.badge.visible=labels;return labels;},
-    diagnostics:()=>({units:instances.filter(s=>!s.ghost).length,ghosts:instances.filter(s=>s.ghost).length,activeMotions:instances.filter(s=>s.motion).length,activeBattles:effects.filter(f=>f.combat).length,...combatEffects.stats(),...combatAudio.stats(),...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
+    diagnostics:()=>({units:instances.filter(s=>!s.ghost).length,ghosts:instances.filter(s=>s.ghost).length,activeMotions:instances.filter(s=>s.motion).length,activeBattles:effects.filter(f=>f.combat).length,...combatEffects.stats(),...combatAudio.stats(),...armyView.stats(),stage:stage.id,fieldWidth:stage.width,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
     setHands,reserves:()=>reserves.map(s=>({side:s.piece.s,type:s.piece.t,count:s.reserveCount,x:s.x,z:s.z,scale:s.scale??1,labelVisible:s.badge.visible,members:s.members,contacts:reserveView.contacts().filter(p=>p.unitId===s.id)})),
     contacts:armyView.contacts,zoomAnchor:(x,y)=>zoomAnchor(x,y).toArray(),projectPoint:point=>{const p=new T.Vector3(...point).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectFlying:i=>{const member=armyView.contacts().find(p=>p.cell===i&&p.airborne),p=new T.Vector3(member.x,member.y+1.1,member.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},

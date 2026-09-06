@@ -1,5 +1,5 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {writeFile} from 'node:fs/promises';
 import {Match} from '../../dist/match.mjs';
 import {COMBATS,COMBAT_LIMITS} from '../../dist/combat-motion.mjs';

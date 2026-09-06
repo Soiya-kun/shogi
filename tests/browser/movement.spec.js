@@ -1,4 +1,4 @@
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {initial} from '../../dist/rules.mjs';
 
 test('squads settle through the shortest turn after forward moves, captures and diagonals',async({page})=>{

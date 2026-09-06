@@ -1,5 +1,5 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {writeFile} from 'node:fs/promises';
 
 async function ready(page){await expect(page.locator('body')).toHaveAttribute('data-ready','true');await page.waitForFunction(()=>window.__aether.diagnostics().lastTime>0);}

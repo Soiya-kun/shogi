@@ -1,12 +1,12 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {readFile,writeFile} from 'node:fs/promises';
 import {createServer} from 'node:http';
 import {fileURLToPath} from 'node:url';
 import {resolve,sep,extname} from 'node:path';
 import {Match} from '../../dist/match.mjs';
 
-async function ready(page){await expect(page.locator('body')).toHaveAttribute('data-ready','true');}
+async function ready(page){await page.waitForFunction(()=>document.querySelector('#stage-dialog')?.open||document.body.dataset.ready==='true');if(await page.locator('#stage-dialog').isVisible())await page.locator('#stage-start').click();await expect(page.locator('body')).toHaveAttribute('data-ready','true');}
 async function settled(page){await expect.poll(()=>page.evaluate(()=>window.__aether.ai().phase)).toBe('human-turn');await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().busy)).toBe(false);}
 async function ply(page,n){await expect.poll(()=>page.evaluate(()=>window.__aether.state().g.ply),{timeout:20000}).toBeGreaterThanOrEqual(n);}
 async function manual(page){const state=await page.evaluate(()=>window.__aether.state()),m=new Match(state).moves.find(m=>m.from!==undefined&&!m.promote);for(const i of [m.from,m.to]){const p=await page.evaluate(i=>window.__aether.projectCell(i),i);await page.mouse.click(p.x,p.y);}}

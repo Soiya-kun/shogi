@@ -1,5 +1,5 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {Match} from '../../dist/match.mjs';
 test('language switches UI and one dialogue line while preserving kanji titles, game state and saved preference',async({page})=>{
  const errors=[];page.on('pageerror',e=>errors.push(e.message));await page.goto('/?debug');await page.waitForFunction(()=>window.__aether);

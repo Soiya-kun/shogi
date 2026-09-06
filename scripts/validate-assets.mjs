@@ -101,4 +101,12 @@ for(const [name,expected] of Object.entries(engineManifest.files)){
 }
 assert((await readFile(new URL('../dist/ai/vendor/NOTICE.html',import.meta.url),'utf8')).includes('corresponding-source.zip'));
 reports.ai={engine:engineManifest.engine,wasmBytes:engineManifest.files['yaneuraou.wasm'].bytes,lazyLoaded:true};
+const stageManifest=JSON.parse(await readFile(new URL('../dist/assets/stages/yankee/manifest.json',import.meta.url),'utf8'));
+let stageBytes=0;
+for(const [name,expected] of Object.entries(stageManifest.files)){
+  const bytes=await readFile(new URL('../dist/assets/stages/yankee/'+name,import.meta.url));
+  assert.equal(bytes.readUInt32LE(0),0x46546c67,'Stage asset must be GLB');
+  assert.equal(bytes.length,expected.bytes);assert.equal(createHash('sha256').update(bytes).digest('hex'),expected.sha256);stageBytes+=bytes.length;
+}
+assert.equal(Object.keys(stageManifest.files).length,9);reports.yankee={files:9,bytes:stageBytes,figuresPerPiece:1};
 console.log(JSON.stringify(reports,null,2));

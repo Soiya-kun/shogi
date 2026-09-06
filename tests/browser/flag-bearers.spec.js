@@ -1,5 +1,5 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 const ready=page=>page.waitForFunction(()=>window.__aether?.diagnostics().lastTime>0);
 async function attachment(page){
   const result=await page.evaluate(()=>{

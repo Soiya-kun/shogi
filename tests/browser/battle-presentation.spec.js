@@ -1,5 +1,5 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {writeFile} from 'node:fs/promises';
 import {Match} from '../../dist/match.mjs';
 const base=()=>{const g=new Match().g;g.b.fill(null);g.b[80]={t:'K',s:0,p:false};g.b[0]={t:'K',s:1,p:false};return g;};

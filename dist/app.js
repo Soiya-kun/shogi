@@ -1,3 +1,4 @@
+import {stage,stageChosen,setStage,STREET_NAMES} from './stages.js';
 import {language,setLanguage,translateUI,t} from './i18n.js';
 import {createBattlefield} from './battlefield.js';
 import {check,names,roles} from './rules.mjs';
@@ -19,11 +20,11 @@ const controller=new GameController({saved,animate:async({before,after,m,event})
 const match=controller.match;
 const promotion=$('#promotion');
 function toast(text){$('#toast').textContent=t(text);$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
-function save(){try{localStorage.setItem(storageKey,JSON.stringify({...controller.serialize(),presentation:war?.serialize()}));}catch{toast('このブラウザでは対局を保存できません');}}
-function showUnit(p){const spec=p?squadSpec(p.t,p.p):null;$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+spec.name:'部隊を選択';$('#unitdesc').textContent=p?spec.count+(spec.unit||'人')+' · '+spec.formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
+function save(){try{localStorage.setItem(storageKey,JSON.stringify({...controller.serialize(),stage:stage.id,presentation:war?.serialize()}));}catch{toast('このブラウザでは対局を保存できません');}}
+function showUnit(p){const spec=p?(stage.id==='yankee'?{name:STREET_NAMES[p.t],count:1,unit:'人',formation:'1マス1名'}:squadSpec(p.t,p.p)):null;$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+spec.name:'部隊を選択';$('#unitdesc').textContent=p?spec.count+(spec.unit||'人')+' · '+spec.formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
 function refresh(){
-  const g=match.g;view?.setHands(g.h);
-  $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=g.turn?'紅の武士団':'蒼の武士団';
+  const g=match.g;view?.setHands(g.h);document.body.dataset.stage=stage.id;document.querySelector('.scene-title h1').textContent=stage.title;document.querySelector('.chapter span').textContent=stage.title;document.querySelector('.scene-title p').textContent=stage.description;document.querySelector('.scene-title>span').textContent=stage.eyebrow;document.querySelector('.scene-footer>span:last-child').textContent=stage.width+' × '+stage.width+' m / '+(stage.id==='yankee'?'40 PIECES':'40 SQUADS');
+  $('#phase').textContent=g.turn?'後手のターン':'先手のターン';$('#army').textContent=stage.id==='yankee'?(g.turn?'紅の走り屋':'蒼の走り屋'):(g.turn?'紅の武士団':'蒼の武士団');
   $('#turnIcon').style.background=g.turn?'#793e40':'#244b67';$('#count').textContent=String(g.ply+1).padStart(3,'0');
   $('#status').textContent=match.end||(controller.phase==='error'?'AIを再試行するか、停止して手動で指せます':controller.activeRequest?(controller.engine.ready?'AIが作戦を考えています':'AIを準備しています…'):check(g,g.turn)?'王手 — 王を守ってください':selected?'光るマスへ移動できます':'部隊を選択してください');
   $('#moveCount').textContent=g.ply+' 手';$('#history').replaceChildren();
@@ -73,9 +74,9 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'&&activePanel&&!docum
 $('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));translateUI();}};
 $('#undo').onclick=()=>{if(!view)return;controller.undo();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 const resetDialog=$('#reset-confirmation');
-$('#reset').onclick=()=>{if(view&&!resetDialog.open)resetDialog.showModal();};
+$('#reset').onclick=()=>{if(view&&!resetDialog.open){document.querySelector('input[name=reset-stage][value='+stage.id+']').checked=true;resetDialog.showModal();}};
 $('#reset-cancel').onclick=()=>resetDialog.close();
-$('#reset-confirm').onclick=()=>{if(!view||!resetDialog.open)return;resetDialog.close();controller.reset();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
+$('#reset-confirm').onclick=()=>{if(!view||!resetDialog.open)return;const next=document.querySelector('input[name=reset-stage]:checked').value,changed=next!==stage.id;resetDialog.close();setStage(next);controller.reset();if(changed){save();location.reload();return;}selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 function refreshAI(){
   for(const side of [0,1]){
     const policy=controller.settings[side],toggle=$('#ai-toggle-'+side),error=controller.errors[side];
@@ -114,11 +115,13 @@ for(const field of ['mode','subtitles','english','voice','volume','analysis']){
 }
 $('#language').value=language;
 $('#language').onchange=()=>{setLanguage($('#language').value);refresh();showUnit(selected?.drop?{t:selected.drop,p:false}:selected?match.g.b[selected.from]:null);translateUI();warView.localize(warSettings,war.director?.log??[]);};
+$('#stage-language').value=language;$('#stage-language').onchange=()=>{$('#language').value=$('#stage-language').value;$('#language').dispatchEvent(new Event('change'));};
 controller.setTempo(preferences.tempo);
 refresh();
 try {
+  if(!stageChosen){const chooser=$('#stage-dialog');chooser.addEventListener('cancel',e=>e.preventDefault());chooser.showModal();await new Promise(resolve=>$('#stage-start').onclick=()=>{const next=document.querySelector('input[name=initial-stage]:checked').value;if(next!==(saved?.stage??'samurai'))controller.reset();setStage(next);chooser.close();save();resolve();});}
   view=await createBattlefield($('#scene'),pick,selectReserve);view.draw(match.g.b,controller.diagnostics());view.setPresentation(preferences.effects);refresh();$('#loading').hidden=true;document.body.dataset.ready='true';controller.start();
   if(new URLSearchParams(location.search).has('debug'))window.__aether={diagnostics:view.diagnostics,presentation:view.presentation,war:()=>war.diagnostics(),projectCell:view.projectCell,projectBanner:view.projectBanner,projectFlying:view.projectFlying,projectPoint:view.projectPoint,zoomAnchor:view.zoomAnchor,height:view.height,contacts:view.contacts,reserves:view.reserves,cameraControls:{close: view.close,overview:view.overview,rotate:view.rotate,top:view.top},state:()=>structuredClone({...controller.serialize(),presentation:war.serialize()}),ai:()=>controller.diagnostics()};
 } catch(error) {
-  console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();$('#loading').append(p,b);translateUI();
+  console.error(error);$('#loading').replaceChildren();const p=document.createElement('p');p.textContent='戦場を読み込めませんでした。WebGL対応ブラウザで再度お試しください。';const b=document.createElement('button');b.textContent='再読み込み';b.onclick=()=>location.reload();const choose=document.createElement('button');choose.textContent='舞台を選び直す';choose.onclick=()=>{try{localStorage.removeItem('aether-stage');}catch{}location.reload();};$('#loading').append(p,b,choose);translateUI();
 }

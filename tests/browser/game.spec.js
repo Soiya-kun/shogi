@@ -1,9 +1,9 @@
 import {control,camera} from './ui-controls.js';
-import {test,expect} from '@playwright/test';
+import {test,expect} from './game-fixture.js';
 import {initial} from '../../dist/rules.mjs';
 import {writeFile} from 'node:fs/promises';
 
-async function ready(page){await expect(page.locator('body')).toHaveAttribute('data-ready','true');}
+async function ready(page){await page.waitForFunction(()=>document.querySelector('#stage-dialog')?.open||document.body.dataset.ready==='true');if(await page.locator('#stage-dialog').isVisible())await page.locator('#stage-start').click();await expect(page.locator('body')).toHaveAttribute('data-ready','true');}
 async function cell(page,i){const p=await page.evaluate(i=>window.__aether.projectCell(i),i);await page.mouse.click(p.x,p.y);}
 async function settle(page){await expect.poll(()=>page.evaluate(()=>window.__aether.diagnostics().busy)).toBe(false);}
 async function fixture(page,g){await page.evaluate(g=>localStorage.setItem('aether-shogi-v1',JSON.stringify({g,past:[],records:[],end:''})),g);await page.reload();await ready(page);}
