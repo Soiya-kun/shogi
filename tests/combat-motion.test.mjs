@@ -4,9 +4,9 @@ import {COMBATS,COMBAT_TIMING,attackPose,combatStage,battleProgress,defeatPose} 
 import {formation} from '../dist/formations.mjs';
 
 test('every attack stays finite, every rank falls before occupation, and all joint offsets settle',()=>{
-  assert.equal(COMBAT_TIMING.battle,3000);
+  assert.equal(COMBAT_TIMING.battle,1500);
   assert.equal(battleProgress(COMBAT_TIMING.approach/COMBAT_TIMING.total),.23);
-  assert.equal(battleProgress((COMBAT_TIMING.approach+3000)/COMBAT_TIMING.total),.76);
+  assert.equal(battleProgress((COMBAT_TIMING.approach+1500)/COMBAT_TIMING.total),.76);
   for(const [style,spec] of Object.entries(COMBATS))for(const compact of [false,true]){
     const members=formation(style==='D'?'R':style,compact,style==='D');
     for(const [i,m] of members.entries()){

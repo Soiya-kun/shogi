@@ -1,6 +1,6 @@
 // A presentation clock never controls a shogi turn. All poses are sampled by age.
 export const COMBAT_LIMITS=Object.freeze({battles:6,mobileBattles:4,particles:192,history:48});
-export const COMBAT_TIMING=Object.freeze({approach:600,battle:3000,occupy:600,total:4200});
+export const COMBAT_TIMING=Object.freeze({approach:600,battle:1500,occupy:600,total:2700});
 export const COMBATS=Object.freeze({
   P:{name:'足軽の連続槍突き',duration:COMBAT_TIMING.total,reach:9.2,impact:.46},
   L:{name:'長槍の一斉突撃',duration:COMBAT_TIMING.total,reach:10,impact:.46},

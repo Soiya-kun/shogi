@@ -152,7 +152,7 @@ test('compact touch view bounds concurrent combat and reduced motion skips all d
   expect(errors).toEqual([]);await context.close();
 });
 
-test('standard AI commits about every three seconds while the previous three-second battle continues',async({page})=>{
+test('standard AI retains three-second cadence after the shorter battle finishes',async({page})=>{
   await load(page,skirmish(),{effects:true,sound:false,tempo:'normal'});
   expect(await page.evaluate(()=>window.__aether.ai().minimumThinkMs)).toBe(3000);
   await page.locator('#ai-toggle-0').click();await page.locator('#ai-toggle-1').click();
@@ -161,7 +161,7 @@ test('standard AI commits about every three seconds while the previous three-sec
   await page.locator('#ai-stop-all').click();
   const [first,second]=check.history,interval=second.started-first.started;
   expect(interval).toBeGreaterThanOrEqual(2950);expect(interval).toBeLessThan(4200);
-  expect(first).toMatchObject({status:'playing',duration:4200});expect(second).toMatchObject({status:'playing',duration:4200});
-  expect(check.view.activeBattles).toBe(2);expect(check.ai.activeRequest.positionRevision).toBeGreaterThan(first.event.positionRevision);
+  expect(first).toMatchObject({status:'complete',duration:2700});expect(second).toMatchObject({status:'playing',duration:2700});
+  expect(check.view.activeBattles).toBe(1);expect(check.ai.activeRequest.positionRevision).toBeGreaterThan(first.event.positionRevision);
   await writeFile('docs/verification/combat-standard-tempo.json',JSON.stringify({interval,...check},null,2));await synced(page);
 });
