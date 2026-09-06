@@ -141,7 +141,7 @@ export async function createBattlefield(canvas,onPick) {
     if(victim){
       const key=`${arriving.piece.s}:${victim.piece.t}`;if(!handIdentities.has(key))handIdentities.set(key,[]);
       handIdentities.get(key).push({id:victim.id,generation:victim.generation+1});
-      victim.ghost=true;victim.cell=-1;victim.badge.visible=false;for(const child of victim.banner.children)child.userData.cell=-1;
+      victim.ghost=true;victim.cell=-1;victim.badge.visible=labels;for(const child of victim.banner.children)child.userData.cell=-1;
     }
     busy=true;
     const style=combatStyle(attackerPiece),spec=COMBATS[style],duration=victim?spec.duration:m.drop?700:1150;
@@ -322,9 +322,9 @@ export async function createBattlefield(canvas,onPick) {
   return {draw,highlight,transition,rotate:()=>angle+=Math.PI,top:()=>elevation=elevation>1.3?.93:1.49,
     setPresentation:enabled=>{const next=!!enabled&&!reducedMotion;if(next===presentationEnabled)return;presentationEnabled=next;draw(logicalBoard,{gameId:viewGameId,positionRevision:viewRevision});},
     setSound:combatAudio.enable,
-    presentation:()=>({enabled:presentationEnabled,reducedMotion,epoch,gameId:viewGameId,positionRevision:viewRevision,history:structuredClone(presentationHistory),squads:instances.map(s=>({id:s.id,generation:s.generation,cell:s.cell,piece:{...s.piece},ghost:!!s.ghost,x:s.x,z:s.z,flagBearer:s.carrierIndex,flagGrip:new T.Vector3(0,.8,0).applyMatrix4(s.banner.matrixWorld).toArray(),moving:!!s.motion,combat:s.combat?{...s.combat}:null,defeat:s.defeat?{...s.defeat}:null}))}),
+    presentation:()=>({enabled:presentationEnabled,reducedMotion,epoch,gameId:viewGameId,positionRevision:viewRevision,history:structuredClone(presentationHistory),squads:instances.map(s=>({id:s.id,generation:s.generation,cell:s.cell,piece:{...s.piece},ghost:!!s.ghost,x:s.x,z:s.z,labelVisible:s.badge.visible,flagBearer:s.carrierIndex,flagGrip:new T.Vector3(0,.8,0).applyMatrix4(s.banner.matrixWorld).toArray(),moving:!!s.motion,combat:s.combat?{...s.combat}:null,defeat:s.defeat?{...s.defeat}:null}))}),
     close:()=>{aim.copy(position(selectedCell??focusCell));zoom=48;elevation=.36;},overview:()=>{zoom=185;elevation=.93;aim.set(0,0,0);},
-    labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels&&!s.ghost;return labels;},
+    labels:()=>{labels=!labels;for(const s of instances)s.badge.visible=labels;return labels;},
     diagnostics:()=>({units:instances.filter(s=>!s.ghost).length,ghosts:instances.filter(s=>s.ghost).length,activeMotions:instances.filter(s=>s.motion).length,activeBattles:effects.filter(f=>f.combat).length,...combatEffects.stats(),...combatAudio.stats(),...armyView.stats(),fieldWidth:CELL_SIZE*9,quality:mobile?'compact':'full',zoom,cameraPosition:camera.position.toArray(),cameraTarget:target.toArray(),drawCalls:renderer.info.render.calls,triangles:renderer.info.render.triangles,geometries:renderer.info.memory.geometries,textures:renderer.info.memory.textures,averageRenderMs:frames?renderMs/frames:0,busy,lastTime}),
     contacts:armyView.contacts,zoomAnchor:(x,y)=>zoomAnchor(x,y).toArray(),projectPoint:point=>{const p=new T.Vector3(...point).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},projectCell:i=>{const p=position(i).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},
     projectFlying:i=>{const member=armyView.contacts().find(p=>p.cell===i&&p.airborne),p=new T.Vector3(member.x,member.y+1.1,member.z).project(camera),r=canvas.getBoundingClientRect();return {x:r.left+(p.x+1)*r.width/2,y:r.top+(1-p.y)*r.height/2};},

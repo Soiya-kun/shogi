@@ -31,6 +31,21 @@ function skirmish(){
   return g;
 }
 
+test('piece labels follow ON/OFF for both battling squads and restored positions',async({page})=>{
+  const {g,from,to}=capturePosition('P');await load(page,g);
+  const labels=async expected=>expect(await page.evaluate(v=>window.__aether.presentation().squads.every(s=>s.labelVisible===v),expected)).toBe(true);
+  await move(page,from,to,1);
+  await page.waitForFunction(()=>window.__aether.presentation().squads.some(s=>s.ghost));
+  await labels(true);
+  await page.locator('#labels').click();await labels(false);
+  await page.locator('#labels').click();await labels(true);
+  expect(await page.evaluate(()=>window.__aether.presentation().squads.some(s=>s.ghost&&s.labelVisible))).toBe(true);
+  await synced(page);await labels(true);
+  await page.locator('#labels').click();await page.locator('#undo').click();await labels(false);
+  await move(page,from,to,1);await labels(false);
+  await page.locator('#labels').click();await labels(true);
+});
+
 test('every troop attacks, hits, staggers the enemy and occupies; promotion and rear army keep their identity',async({page})=>{
   test.setTimeout(180000);const errors=[],results=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error')errors.push(m.text());});
   const cases=[['P',false,0],['L',false,1],['N',false,0],['S',false,1],['G',false,0],['B',false,1],['R',false,0],['R',true,1],['K',false,0],['N',true,1],['B',true,0]];
