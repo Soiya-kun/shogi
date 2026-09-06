@@ -16,6 +16,8 @@ async function pan(page,start,end){
   await anchored(page,anchor,end);
   const after=await view(page);
   expect(after.zoom).toBe(before.zoom);
+  expect(after.cameraPosition[1]).toBeCloseTo(before.cameraPosition[1],5);
+  expect(after.cameraTarget[1]).toBeCloseTo(before.cameraTarget[1],5);
   offset(after).forEach((v,i)=>expect(v).toBeCloseTo(offset(before)[i],5));
   expect(Math.hypot(...after.cameraTarget.map((v,i)=>v-before.cameraTarget[i]))).toBeGreaterThan(.1);
   await page.waitForTimeout(120);await anchored(page,anchor,end);

@@ -232,7 +232,8 @@ export async function createBattlefield(canvas,onPick) {
   }
   function panAnchor(x,y){
     const anchor=zoomAnchor(x,y);
-    return {anchor,plane:new T.Plane().setFromNormalAndCoplanarPoint(camera.getWorldDirection(new T.Vector3()),anchor)};
+    // Drag along the field's horizontal XZ plane, not the tilted screen plane.
+    return {anchor,plane:new T.Plane().setFromNormalAndCoplanarPoint(new T.Vector3(0,1,0),anchor)};
   }
   function panView(x,y){
     const {anchor,plane}=down.pan,point=pointerRay(x,y).ray.intersectPlane(plane,new T.Vector3());
