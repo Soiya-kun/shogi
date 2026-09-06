@@ -1,45 +1,45 @@
 {
   "version": 1,
   "theme": "yankee",
-  "source": "assets/blender/yankee/crossroads-v3/yankee-neon-district-v3.blend (city v3; characters v1)",
+  "source": "Blender city v3 + clothing v2; clothing-sources.json records the eight source archives",
   "cellMetres": 3,
   "figuresPerPiece": 1,
   "files": {
     "B.glb": {
-      "bytes": 291272,
-      "sha256": "b94a67cb0ecc198e638685ecefdfca127a687d3c3ba80362ab057d1af62383fd"
+      "bytes": 2813828,
+      "sha256": "99250386ff52afdfb85b37ec1cf330b5b228592f5e9c650cefc6b8555e9a93a4"
     },
     "city.glb": {
       "bytes": 54084340,
       "sha256": "60f488f1cfc7dae4a64dc330e2a1c1e82c92e41b313c4225a99445dc28672740"
     },
     "G.glb": {
-      "bytes": 307364,
-      "sha256": "8d9d201777bfd0c221e0c9c67a85465a22af0d98fb755b1d5d0f44ec8eeb7135"
+      "bytes": 3079200,
+      "sha256": "1f0b7b91305ff781d9e7a8956b363a7f954ff8b6c9723ce6099a5d595813ffff"
     },
     "K.glb": {
-      "bytes": 280952,
-      "sha256": "501fbc61163ec4dddee6c69a66665bcd0c977cc23dd8c236ce623e8dc1ba3082"
+      "bytes": 3050160,
+      "sha256": "9250f8414a09fd33c74020ef335a75002a326533d8cfc6df68b58544d2c944da"
     },
     "L.glb": {
-      "bytes": 279856,
-      "sha256": "8035e157ecdcad9e8210c8baf2a92f98ca7093db5f627af6c604e02fbfea1772"
+      "bytes": 2596756,
+      "sha256": "faf86241aaa526964d32b054149011aa43b91f57bff93845df8926bbe32576e7"
     },
     "N.glb": {
-      "bytes": 554608,
-      "sha256": "cf1b463ee9852dbcffc84212753916c17038fe3b8733589cc2c923cb9646e931"
+      "bytes": 2751376,
+      "sha256": "6f4da1722cd05adca4686390153826bd6876d19bc6309bbb1f3bce2a85a661ee"
     },
     "P.glb": {
-      "bytes": 280744,
-      "sha256": "a90ba119c3d1e7559b8dc6e6d0f09e8ac3c82d362d70f345b732949c28517fd3"
+      "bytes": 2538756,
+      "sha256": "3fc3bb9ed2a6f8e8f564d0d1284215c27e7e2331097e63ec2ab57701b739e923"
     },
     "R.glb": {
-      "bytes": 564052,
-      "sha256": "f6cba0495338032d5b929cff6b5c45f3069ed3b3cb83953ad2941173e1ecfbf9"
+      "bytes": 3213752,
+      "sha256": "87caabc0b1cc45997ce59f082771d5b23bc89e29f48ba5d95c16630e07f5b9e6"
     },
     "S.glb": {
-      "bytes": 273044,
-      "sha256": "b06bdea1eab0baa7982ebb960f4de10453b0d89cec7bff6dfb7c3b4a8bb41807"
+      "bytes": 2164540,
+      "sha256": "38b3b0b8a47fc35cf3b453863c567175264ab4e7d0e056af6d4ffb2a801987ea"
     }
   }
 }

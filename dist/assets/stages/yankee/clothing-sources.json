@@ -1,0 +1,34 @@
+{
+  "P": {
+    "source": "assets/blender/yankee/clothing-v2/tanran/tanran-v2.blend",
+    "sourceSha256": "77ded4bb060d477a416821a4915d7d6bfe710f9089a8618e8c9dbe585974bee5"
+  },
+  "L": {
+    "source": "assets/blender/yankee/clothing-v2/longcoat/longcoat-v2.blend",
+    "sourceSha256": "84586d4a67a0b52f48ad96ed5d7148eaf0fe8e85a13ce6e50f66b110bd2c5b94"
+  },
+  "N": {
+    "source": "assets/blender/yankee/clothing-v2/biker/biker-v2.blend",
+    "sourceSha256": "aec8960d8778e6b08246927556a902f7b6505bdd812994b9669fe9e614e626d9"
+  },
+  "S": {
+    "source": "assets/blender/yankee/clothing-v2/brawler/brawler-v2.blend",
+    "sourceSha256": "f25e7e2e077427112ee77d19385f8bb90dd7f94eee86e50418ebf43de8b7e08c"
+  },
+  "G": {
+    "source": "assets/blender/yankee/clothing-v2/vice-leader/vice-leader-v2.blend",
+    "sourceSha256": "39a1019d0a060861fc335bd7db405cbbb49ecc9c8438598ff735e7aa200940a4"
+  },
+  "B": {
+    "source": "assets/blender/yankee/clothing-v2/strategist/strategist-v2.blend",
+    "sourceSha256": "0f9e766554597a36ad063d7258acb7db4110f0aa726956e4bd252e5240dcc3bb"
+  },
+  "R": {
+    "source": "assets/blender/yankee/clothing-v2/bike-captain/bike-captain-v2.blend",
+    "sourceSha256": "b563c216f2990e893548f3c7168b403519df56518b258708d5ff4d68982d6297"
+  },
+  "K": {
+    "source": "assets/blender/yankee/clothing-v2/leader/leader-v2.blend",
+    "sourceSha256": "6f4dd1b0b47b99cb1ff4e7dc66d2a72bf498b2845d7bd8072ce37cf6c2e0c7af"
+  }
+}
