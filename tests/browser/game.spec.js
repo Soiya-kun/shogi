@@ -35,7 +35,6 @@ test('40 squads: mouse move, undo, keyboard, restore, views and desktop render',
   await page.locator('#undo').click();await page.locator('#top').click();await page.locator('#rotate').click();
   await page.locator('#labels').click();await expect(page.locator('#labels')).toHaveText('駒名 OFF');await page.locator('#labels').click();
   await page.locator('#rotate').click();await page.locator('#top').click();
-  await page.locator('#design').click();await expect(page.locator('#architecture')).toBeVisible();await page.locator('.close').click();
   const timing=await measure(page);
   await writeFile('docs/verification/desktop-performance.json',JSON.stringify(timing,null,2));
   expect(timing.drawCalls).toBeLessThan(500);expect(timing.triangles).toBeLessThan(1100000);

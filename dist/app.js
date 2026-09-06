@@ -56,7 +56,6 @@ function pick(i){
 $('#closeView').onclick=()=>view?.close();$('#overview').onclick=()=>view?.overview();
 $('#rotate').onclick=()=>view?.rotate();$('#top').onclick=()=>view?.top();
 $('#labels').onclick=()=>{if(view){const on=view.labels();$('#labels').textContent='駒名 '+(on?'ON':'OFF');$('#labels').setAttribute('aria-pressed',String(on));}};
-$('#design').onclick=()=>$('#architecture').showModal();$('.close').onclick=()=>$('#architecture').close();
 $('#undo').onclick=()=>{if(!view)return;controller.undo();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 $('#reset').onclick=()=>{if(!view||!confirm('対局を最初から始めますか？'))return;controller.reset();selected=null;moves=[];view.draw(match.g.b,controller.diagnostics());showUnit(null);refresh();save();};
 function refreshAI(){
