@@ -8,6 +8,7 @@ import {squadSpec} from './formations.mjs';
 import {BattlePresentation} from './battle-presentation.mjs';
 import {PresentationDirector,sanitizePresentation} from './presentation-director.mjs';
 import {PresentationView} from './presentation-view.js';
+import {createSupport} from './support.mjs';
 
 const $=s=>document.querySelector(s), storageKey='aether-shogi-v1';
 let saved;try{saved=JSON.parse(localStorage.getItem(storageKey));}catch{}
@@ -15,12 +16,12 @@ const reducedMotion=matchMedia('(prefers-reduced-motion: reduce)').matches;
 let preferences={effects:!reducedMotion,sound:false,tempo:'normal'};
 try{const p=JSON.parse(localStorage.getItem('aether-presentation-v1'));if(p)preferences={effects:p.effects!==false,sound:p.sound===true,tempo:['fast','normal','slow'].includes(p.tempo)?p.tempo:'normal'};}catch{}
 function savePreferences(){try{localStorage.setItem('aether-presentation-v1',JSON.stringify(preferences));}catch{}}
-let view,war,selected=null,moves=[];
+let view,war,support,selected=null,moves=[];
 const controller=new GameController({saved,animate:async({before,after,m,event})=>{try{await view.transition(before,after,m,event);}catch(error){if(controller.animations.has(event))view.draw(controller.match.g.b,controller.diagnostics());throw error;}},onChange:()=>{if(!controller.canPlay){selected=null;moves=[];if(promotion.open)promotion.close();showUnit(null);}refresh();save();},onNotice:toast,onEvent:(type,data)=>war?.handle(type,data)});
 const match=controller.match;
 const promotion=$('#promotion');
 function toast(text){$('#toast').textContent=t(text);$('#toast').hidden=false;clearTimeout(toast.timer);toast.timer=setTimeout(()=>$('#toast').hidden=true,2600);}
-function save(){try{localStorage.setItem(storageKey,JSON.stringify({...controller.serialize(),stage:stage.id,presentation:war?.serialize()}));}catch{toast('このブラウザでは対局を保存できません');}}
+function save(){try{localStorage.setItem(storageKey,JSON.stringify({...controller.serialize(),stage:stage.id,presentation:war?.serialize(),support:support?.serialize()??saved?.support}));}catch{toast('このブラウザでは対局を保存できません');}}
 function showUnit(p){const spec=p?(stage.id==='yankee'?{name:STREET_NAMES[p.t],count:1,unit:'人',formation:'1マス1名'}:squadSpec(p.t,p.p)):null;$('#symbol').textContent=p?names[p.t]:'選';$('#unitname').textContent=p?(p.p?'昇格 ': '')+spec.name:'部隊を選択';$('#unitdesc').textContent=p?spec.count+(spec.unit||'人')+' · '+spec.formation+(p.p?' · 成駒':''):'光るマスへ移動できます';}
 function refresh(){
   const g=match.g;view?.setHands(g.h);document.body.dataset.stage=stage.id;document.querySelector('.scene-title h1').textContent=stage.title;document.querySelector('.chapter span').textContent=stage.title;document.querySelector('.scene-title p').textContent=stage.description;document.querySelector('.scene-title>span').textContent=stage.eyebrow;document.querySelector('.scene-footer>span:last-child').textContent=stage.width+' × '+stage.width+' m / '+(stage.id==='yankee'?'40 PIECES':'40 SQUADS');
@@ -36,7 +37,7 @@ function refresh(){
   for(const [t,n] of entries){const b=document.createElement('button');b.textContent=names[t]+' ×'+n;b.disabled=!controller.canPlay;b.setAttribute('aria-pressed',String(selected?.drop===t));b.onclick=()=>selectReserve(t,g.turn);$('#hands').append(b);}
   $('#undo').disabled=!match.past.length&&match.resignation===null;
   refreshAI();
-  view?.highlight(selected,moves,g.b,match.records.at(-1)?.m);translateUI();
+  view?.highlight(selected,moves,g.b,match.records.at(-1)?.m);translateUI();support?.update();
 }
 function selectReserve(t,side){if(!controller.canPlay||side!==match.g.turn||!match.g.h[side][t])return;selected={drop:t};moves=match.moves.filter(m=>m.drop===t);showUnit({t,p:false});refresh();}
 async function finish(m){
@@ -104,11 +105,12 @@ $('#battle-effects').onchange=()=>{preferences.effects=$('#battle-effects').chec
 $('#battle-sound').checked=preferences.sound;
 $('#battle-sound').onchange=()=>{preferences.sound=$('#battle-sound').checked;view?.setSound(preferences.sound);savePreferences();};
 document.addEventListener('pointerdown',()=>{if(preferences.sound)view?.setSound(true);});
-addEventListener('pagehide',()=>controller.destroy());
+addEventListener('pagehide',()=>{support?.destroy();controller.destroy();});
 let warSettings;try{warSettings=JSON.parse(localStorage.getItem('aether-war-presentation-v1'));}catch{}
 warSettings=sanitizePresentation(warSettings);
 const warView=new PresentationView({world:$('#world'),project:i=>view?.projectCell(i)});
 war=new BattlePresentation({controller,director:new PresentationDirector({view:warView,settings:warSettings}),saved:saved?.presentation,save,animated:()=>preferences.effects&&!reducedMotion});
+support=createSupport({controller,saved:saved?.support,save,busy:()=>controller.animating||(war.director.settings.mode!=='off'&&(!!war.director.active||war.director.timers.size>0))});
 for(const field of ['mode','subtitles','english','voice','volume','analysis']){
   const input=$('#war-'+field);if(input.type==='checkbox')input.checked=warSettings[field];else input.value=warSettings[field];
   input.onchange=()=>{warSettings[field]=input.type==='checkbox'?input.checked:field==='volume'?Number(input.value):input.value;war.configure(warSettings);try{localStorage.setItem('aether-war-presentation-v1',JSON.stringify(warSettings));}catch{}};

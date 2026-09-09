@@ -1,0 +1,9 @@
+{
+  "app": "node infra/app.mjs",
+  "context": {
+    "account": "830765133573",
+    "region": "us-east-1",
+    "domainName": "shogi-battle.com",
+    "hostedZoneId": "Z02626345FXOJIXOXAH9"
+  }
+}

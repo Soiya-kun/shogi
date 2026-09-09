@@ -39,6 +39,7 @@ npm run test:web
 - [部隊化・広域フィールドの仕様](docs/squad-scale.md)
 - [実装・検証結果](docs/implementation-report.md)
 - [AIの操作・採用版・配信設定](docs/ai-implementation.md)
+- [AWS/CDKによる独自ドメインへのデプロイ](docs/aws-deployment.md)
 
 ## 構成
 
